@@ -1,0 +1,12 @@
+#ifndef MODELCORE_GLOBAL_H
+#define MODELCORE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(MODELCORE_LIBRARY)
+#  define MODELCORESHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define MODELCORESHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // MODELCORE_GLOBAL_H
