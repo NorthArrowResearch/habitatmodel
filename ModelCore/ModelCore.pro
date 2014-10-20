@@ -20,7 +20,6 @@ DEFINES += MODELCORE_LIBRARY
 
 SOURCES += model.cpp \
     simulation.cpp \
-    xmlfilehandler.cpp \
     fileinput.cpp \
     rasterinput.cpp \
     vectorinput.cpp \
@@ -39,7 +38,6 @@ SOURCES += model.cpp \
 HEADERS += model.h\
         modelcore_global.h \
     simulation.h \
-    xmlfilehandler.h \
     fileinput.h \
     rasterinput.h \
     vectorinput.h \
