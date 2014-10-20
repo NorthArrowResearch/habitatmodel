@@ -3,20 +3,19 @@
 
 #include <QString>
 #include <QHash>
-
 #include "namedobject.h"
-#include "unit.h"
-#include "hmvariable.h"
-#include "hsccategory.h"
-#include "hsccoordinatepair.h"
 
 namespace HabitatModel{
 
-class HSC : NamedObjectWithID
+class Unit;
+class HMVariable;
+class HSCCategory;
+class HSCCoordinatePair;
+
+class HSC : public NamedObjectWithID
 {
 public:
-    HSC();
-
+    HSC(const char *sName, int nID);
 private:
     NamedObjectWithID * m_source;
     NamedObjectWithID * m_lifestage;
@@ -28,8 +27,8 @@ private:
     QHash<int, HSCCategory *> m_categories;
     QHash<int, HSCCoordinatePair *> m_coordinate_pairs;
 
-    HMVariable m_variable;
-    Unit m_unit;
+    HMVariable * m_variable;
+    Unit * m_unit;
 
 };
 

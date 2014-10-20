@@ -6,14 +6,13 @@
 #include <string>
 #include <vector>
 #include <QHash>
-
-#include "simulationhscinput.h"
-
 #include "xmlfilehandler.h"
-#include "hsi.h"
 #include "namedobject.h"
 
 namespace HabitatModel{
+
+class HSI;
+class SimulationHSCInput;
 
 class Simulation : public NamedObjectWithID
 {
@@ -37,7 +36,7 @@ private:
 
     QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
 
-    QDateTime qd_created_on;
+    QString qd_created_on;
 
     bool b_queued;
 

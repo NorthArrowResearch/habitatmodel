@@ -3,21 +3,21 @@
 
 namespace HabitatModel{
 
-ProjectInput::ProjectInput()
+ProjectInput::ProjectInput(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
 }
 
 Project ProjectInput::getProject()
 {
-    return m_project;
+    return * m_project;
 }
 
 NamedObjectWithID ProjectInput::getSourceType()
 {
-    return m_source_type;
+    return * m_source_type;
 }
 
-QDate ProjectInput::getCreatedOn()
+QString ProjectInput::getCreatedOn()
 {
     return qd_created_on;
 }
@@ -29,12 +29,12 @@ QString ProjectInput::getSourcePath()
 
 HMVariable ProjectInput::getVariable()
 {
-    return m_variable;
+    return * m_variable;
 }
 
 Unit ProjectInput::getUnit()
 {
-    return m_unit;
+    return * m_unit;
 }
 
 }

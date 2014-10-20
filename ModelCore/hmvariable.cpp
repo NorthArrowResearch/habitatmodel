@@ -2,18 +2,18 @@
 
 namespace HabitatModel{
 
-HMVariable::HMVariable()
+HMVariable::HMVariable(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
 }
 
 NamedObjectWithID HMVariable::getDimentsion()
 {
-    return m_dimension;
+    return * m_dimension;
 }
 
 NamedObjectWithID HMVariable::getCategory()
 {
-    return m_category;
+    return * m_category;
 }
 
 }

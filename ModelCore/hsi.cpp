@@ -2,7 +2,7 @@
 
 namespace HabitatModel{
 
-HSI::HSI()
+HSI::HSI(const char * sName) : NamedObject(sName)
 {
 }
 

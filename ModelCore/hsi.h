@@ -13,8 +13,7 @@ class HSI : public NamedObject
 {
 
 public:
-    HSI();
-
+    HSI(const char *sName);
 private:
     QHash<int, HSICurve *> m_curves;
     NamedObjectWithID * m_lifestage;

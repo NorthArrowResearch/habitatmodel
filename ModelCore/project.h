@@ -12,8 +12,7 @@ namespace HabitatModel{
 class Project : public NamedObjectWithID
 {
 public:
-    Project();
-
+    Project(const char *sName, int nID);
 private:
 
     QDate qd_date_created;

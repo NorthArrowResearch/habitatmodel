@@ -2,7 +2,7 @@
 
 namespace HabitatModel{
 
-HSC::HSC()
+HSC::HSC(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
 }
 

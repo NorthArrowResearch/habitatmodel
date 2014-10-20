@@ -1,8 +1,6 @@
 #ifndef PROJECTINPUT_H
 #define PROJECTINPUT_H
 
-#include "QDate"
-
 #include "unit.h"
 #include "hmvariable.h"
 #include "namedobject.h"
@@ -14,20 +12,21 @@ class ProjectInput : public NamedObjectWithID
 {
 public:
 
-    ProjectInput();
+    ProjectInput(const char *sName, int nID);
     Project getProject();
     NamedObjectWithID getSourceType();
-    QDate getCreatedOn();
+    QString getCreatedOn();
     QString getSourcePath();
     HMVariable getVariable();
     Unit getUnit();
+
 
 private:
 
     Project * m_project;
     NamedObjectWithID * m_source_type;
 
-    QDate qd_created_on;
+    QString qd_created_on;
     QString s_sourcepath;
 
     HMVariable * m_variable;

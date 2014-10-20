@@ -2,7 +2,7 @@
 
 namespace HabitatModel{
 
-Unit::Unit()
+Unit::Unit(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
 
 }

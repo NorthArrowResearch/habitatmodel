@@ -23,9 +23,9 @@ std::string NamedObject::GetName() const
 }
 
 
-NamedObjectWithID::NamedObjectWithID(const char * sName, int nID){
+NamedObjectWithID::NamedObjectWithID(const char * sName, int nID) : NamedObject(sName)
+{
     id = nID;
-    NamedObject(sName);
 }
 
 int NamedObjectWithID::GetID() const

@@ -2,7 +2,7 @@
 
 namespace HabitatModel{
 
-Project::Project()
+Project::Project(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
 
 }
