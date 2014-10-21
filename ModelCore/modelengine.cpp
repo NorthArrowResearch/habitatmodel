@@ -6,6 +6,7 @@
 
 #include "xmlfilehander.h"
 #include "simulation.h"
+#include "hsi.h"
 
 namespace HabitatModel{
 
@@ -20,18 +21,22 @@ void ModelEngine::Load(QString sXMLConfig)
 
     xConfig.Load(sXMLConfig);
 
-    QDomElement elSimulation = xConfig.Document()->documentElement().firstChildElement("Simulations");
+    QDomElement elConfig = xConfig.Document()->documentElement();
+
+    QDomElement elSimulation = elConfig.firstChildElement("Simulations");
 
     if (elSimulation.isNull())
         throw "The main Simulation node is missing from the Configuration XML file.";
     else
     {
-        QString sName = elSimulation.firstChildElement("Title").text();
-        QString nID = elSimulation.firstChildElement("SimulationID").text();
+        // Create our simulation object
+        Simulation theSimulation(&elSimulation, &elConfig);
 
-        Simulation theSimulation(&elSimulation);
-
-        QString testname = theSimulation.GetName();
+        // Now Create our HSI object if there is one.
+        QDomElement elHSI = elConfig.firstChildElement("HSI");
+        if (!elHSI.isNull() && elHSI.firstChildElement("HSIID").text().toInt() == theSimulation.GetID()){
+            HSI simHSI(&elHSI, &elConfig);
+        }
     }
 
 }

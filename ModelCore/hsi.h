@@ -14,6 +14,12 @@ class HSI : public NamedObject
 
 public:
     HSI(const char *sName);
+    /**
+     * @brief HSI
+     * @param elSimulation the Dom node containing the HSI element
+     * @param elConfig the entire configuration file root dom node
+     */
+    HSI(QDomElement *elHSI, QDomElement *elConfig);
 private:
     QHash<int, HSICurve *> m_curves;
     NamedObjectWithID * m_lifestage;

@@ -23,7 +23,7 @@ public:
 
     void clean();
 
-    Simulation(QDomElement *elSimulation);
+    Simulation(QDomElement *elSimulation, QDomElement *elConfig);
 private:
 
     HSI * m_hsiRef;
