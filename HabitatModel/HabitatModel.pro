@@ -32,6 +32,7 @@ win32 {
 
     CONFIG(release, debug|release): LIBS += -L$$PWD/../../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
     else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+
 }
 
 unix{
@@ -40,7 +41,11 @@ unix{
 
     CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/RasterManager/ -lGCDCore
     else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Debug/RasterManager/ -lGCDCore
+
 }
+
+CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ModelCore/ -lModelCore
+else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ModelCore/ -lModelCore
 
 INCLUDEPATH += $$PWD/../../GCD/gcd-console/GCDCore
 DEPENDPATH += $$PWD/../../GCD/gcd-console/GCDCore
