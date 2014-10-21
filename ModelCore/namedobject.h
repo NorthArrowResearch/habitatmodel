@@ -1,7 +1,8 @@
 #ifndef NAMEDOBJECT_H
 #define NAMEDOBJECT_H
 
-#include <string>
+#include <QString>
+#include <QDomElement>
 
 namespace HabitatModel {
 
@@ -18,6 +19,13 @@ public:
      * @param sName
      */
     NamedObject(const char * sName);
+
+    /**
+     * @brief NamedObject
+     * @param elObject a domelement containing the object's properties
+     * @param sTitleName the name of the element containing the name of the object
+     */
+    NamedObject(QDomElement * elObject, QString sTitleName);
 
     // Copy Constructor
     /**
@@ -40,7 +48,7 @@ public:
      *
      * @return std::string
      */
-    std::string GetName() const;
+    QString GetName() const;
     /**
      * @brief
      *
@@ -48,8 +56,9 @@ public:
      */
     void SetName(const char * sName);
 
+
 private:
-    std::string m_sName; /**< TODO */
+    QString m_sName; /**< TODO */
 };
 
 /**
@@ -65,7 +74,13 @@ public:
      * @param sName
      */
     NamedObjectWithID(const char * sName, int nID);
-
+    /**
+     * @brief NamedObject
+     * @param elObject a domelement containing the object's properties
+     * @param sTitleName the name of the element containing the name of the object
+     * @param sIDName the name of the element containing the id of the object
+     */
+    NamedObjectWithID(QDomElement * elObject, QString sTitleName, QString sIDName);
     // Copy Constructor
     /**
      * @brief
@@ -96,7 +111,7 @@ public:
     void SetID(int nID);
 
 private:
-    int id; /**< TODO */
+    int m_id; /**< TODO */
 
 };
 }

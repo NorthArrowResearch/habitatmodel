@@ -10,7 +10,7 @@ class MODELCORESHARED_EXPORT ModelEngine
 public:
     ModelEngine(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile);
 private:
-    void Load();
+    void Load(QString sXMLConfig);
 };
 
 }

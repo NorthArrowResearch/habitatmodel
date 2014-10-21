@@ -1,10 +1,20 @@
 #include "namedobject.h"
+#include <QString>
+#include <QTextStream>
+#include <QXmlStreamWriter>
+#include <QDomElement>
 
 namespace HabitatModel {
+
 
 NamedObject::NamedObject(const char * sName)
 {
     m_sName = sName;
+}
+
+NamedObject::NamedObject(QDomElement * elObject, QString sTitleName)
+{
+    m_sName = elObject->firstChildElement(sTitleName).text();
 }
 
 NamedObject::NamedObject(const NamedObject &obj)
@@ -17,7 +27,7 @@ void NamedObject::operator =(const NamedObject &obj)
     m_sName = obj.GetName();
 }
 
-std::string NamedObject::GetName() const
+QString NamedObject::GetName() const
 {
     return m_sName;
 }
@@ -25,12 +35,18 @@ std::string NamedObject::GetName() const
 
 NamedObjectWithID::NamedObjectWithID(const char * sName, int nID) : NamedObject(sName)
 {
-    id = nID;
+    m_id = nID;
 }
+
+NamedObjectWithID::NamedObjectWithID(QDomElement * elObject, QString sTitleName, QString sIDName) : NamedObject(elObject, sTitleName)
+{
+    m_id = elObject->firstChildElement(sIDName).text().toInt();
+}
+
 
 int NamedObjectWithID::GetID() const
 {
-    return id;
+    return m_id;
 }
 
 

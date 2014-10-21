@@ -67,23 +67,23 @@ unix {
     INSTALLS += target
 }
 
-
 win32 {
     CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lRasterManager
     else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lRasterManager
 
     CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/GCDCore/release/ -lGCDCore
     else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/GCDCore/debug/ -lGCDCore
-
-    message($$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/)
 }
 unix{
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/GCDCore/ -lGCDCore
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/GCDCore/ -lGCDCore
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/GCDCore/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Debug/GCDCore/ -lGCDCore
+
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/RasterManager/ -lRasterManager
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Debug/RasterManager/ -lRasterManager
 }
 
-INCLUDEPATH += $$PWD/../../GCD/gcd-console/GCDCore
-DEPENDPATH += $$PWD/../../GCD/gcd-console/GCDCore
+INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
+DEPENDPATH += $$PWD/../../../GCD/gcd-console/GCDCore
 
-INCLUDEPATH += $$PWD/../../GCD/gcd-console/RasterManager
-DEPENDPATH += $$PWD/../../GCD/gcd-console/RasterManager
+INCLUDEPATH += $$PWD/../../../GCD/gcd-console/RasterManager
+DEPENDPATH += $$PWD/../../../GCD/gcd-console/RasterManager

@@ -11,11 +11,13 @@
 
 HabitatModelEngine::HabitatModelEngine(int argc, char *argv[])
 {
-    bool bRecognizedCommand = true;
+    bool bRecognizedCommand = false;
 
-    if (argc == 3)
+    if (argc == 4)
     {
+        bRecognizedCommand = true;
         RunHabitatModel(argc, argv);
+
     }
 
     if (!bRecognizedCommand)
@@ -38,8 +40,8 @@ void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     try
     {
-        QString sXMLConfig = GetFile(argc, argv, 2, true);
-        QString sXMLOutput = GetFile(argc, argv, 3, false);
+        QString sXMLConfig = GetFile(argc, argv, 1, true);
+        QString sXMLOutput = GetFile(argc, argv, 2, false);
         QString sXMLLogFile = GetFile(argc, argv, 3, false);
 
         HabitatModel::ModelEngine theSimulation(sXMLConfig, sXMLOutput, sXMLLogFile);
@@ -48,7 +50,7 @@ void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cout <<"\nError: " << ex.what() << std::endl;
     }
 }
 

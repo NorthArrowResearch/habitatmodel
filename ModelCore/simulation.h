@@ -23,31 +23,27 @@ public:
 
     void clean();
 
+    Simulation(QDomElement *elSimulation);
 private:
-    void LoadXML(QString qsXMLFile);
 
-    void CreateModelFromXML();
-
-    QDomElement theXMLOutput;
     HSI * m_hsiRef;
 
-    QString s_folder;
-    QString qd_created_by;
+    QString m_sfolder;
+    QString m_screated_by;
 
     QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
 
-    QString qd_created_on;
+    QString m_screated_on;
 
-    bool b_queued;
+    bool m_bqueued;
 
-    QString s_hsi_source_path;
+    QString m_shsi_source_path;
 
-    bool b_add_individual_output;
+    bool m_badd_individual_output;
 
 };
 
 }
-
 
 
 #endif // SIMULATION_H

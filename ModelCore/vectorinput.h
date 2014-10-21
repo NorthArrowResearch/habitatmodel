@@ -1,7 +1,7 @@
 #ifndef VECTORINPUT_H
 #define VECTORINPUT_H
 
-#include "fileinput.h"∫
+#include "fileinput.h"
 
 namespace HabitatModel{
 
