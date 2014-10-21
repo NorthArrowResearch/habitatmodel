@@ -8,6 +8,10 @@ QT       += core
 
 QT       -= gui
 
+QMAKE_CXXFLAGS += -stdlib=libc++
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2
+
 TARGET = HabitatModel
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -15,4 +19,30 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    habitatmodelengine.cpp
+
+HEADERS += \
+    habitatmodelengine.h
+
+
+win32 {
+    CONFIG(release, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+
+    CONFIG(release, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+}
+
+unix{
+    LIBS += -L$$PWD/../../GCD/gcd-console-Qt_5_3_clang_64_release/GCDCore/ -lGCDCore
+}
+
+INCLUDEPATH += $$PWD/../../GCD/gcd-console/GCDCore
+DEPENDPATH += $$PWD/../../GCD/gcd-console/GCDCore
+
+INCLUDEPATH += $$PWD/../../GCD/gcd-console/RasterManager
+DEPENDPATH += $$PWD/../../GCD/gcd-console/RasterManager
+
+INCLUDEPATH += $$PWD/../ModelCore
+DEPENDPATH += $$PWD/../ModelCore

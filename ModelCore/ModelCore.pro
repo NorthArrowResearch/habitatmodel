@@ -33,7 +33,8 @@ SOURCES += model.cpp \
     unit.cpp \
     hsccategory.cpp \
     hsccoordinatepair.cpp \
-    hmvariable.cpp
+    hmvariable.cpp \
+    modelengine.cpp
 
 HEADERS += model.h\
         modelcore_global.h \
@@ -52,9 +53,29 @@ HEADERS += model.h\
     unit.h \
     hsccategory.h \
     hsccoordinatepair.h \
-    hmvariable.h
+    hmvariable.h \
+    modelengine.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+
+win32 {
+    CONFIG(release, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+
+    CONFIG(release, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+}
+
+unix{
+    LIBS += -L$$PWD/../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/GCDCore/ -lGCDCore
+}
+
+INCLUDEPATH += $$PWD/../../GCD/gcd-console/GCDCore
+DEPENDPATH += $$PWD/../../GCD/gcd-console/GCDCore
+
+INCLUDEPATH += $$PWD/../../GCD/gcd-console/RasterManager
+DEPENDPATH += $$PWD/../../GCD/gcd-console/RasterManager
