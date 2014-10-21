@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <QHash>
-#include "xmlfilehandler.h"
+#include <QDomDocument>
 #include "namedobject.h"
 
 namespace HabitatModel{

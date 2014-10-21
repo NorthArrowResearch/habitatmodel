@@ -63,15 +63,16 @@ unix {
 
 
 win32 {
-    CONFIG(release, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
-    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+    CONFIG(release, debug|release): LIBS += -L$$PWD/../../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
 
-    CONFIG(release, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
-    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
+    CONFIG(release, debug|release): LIBS += -L$$PWD/../../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../GCD/build-gcp-console-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lGCDCore
 }
 
 unix{
-    LIBS += -L$$PWD/../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/GCDCore/ -lGCDCore
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/GCDCore/ -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Debug/GCDCore/ -lGCDCore
 }
 
 INCLUDEPATH += $$PWD/../../GCD/gcd-console/GCDCore
