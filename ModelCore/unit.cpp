@@ -12,9 +12,9 @@ QString Unit::getAbbreviation()
     return s_abbreviation;
 }
 
-NamedObjectWithID Unit::getDimension()
+NamedObjectWithID * Unit::getDimension()
 {
-    return * m_dimension;
+    return m_dimension;
 }
 
 }

@@ -11,7 +11,7 @@ class Unit : NamedObjectWithID
 public:
     Unit(const char * sName, int nID);
     QString getAbbreviation();
-    NamedObjectWithID getDimension();
+    NamedObjectWithID * getDimension();
 private:
     NamedObjectWithID * m_dimension;
     QString s_abbreviation;
