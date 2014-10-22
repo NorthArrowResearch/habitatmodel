@@ -11,12 +11,11 @@ namespace HabitatModel{
 
 class HSICurve
 {
-public:
-    HSICurve();
-
+public:    
+    HSICurve(QDomElement *elHSICurve);
 private:
     HSC * m_hsc;
-    double weight;
+    double m_weight;
 };
 
 

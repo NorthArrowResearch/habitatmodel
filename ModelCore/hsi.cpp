@@ -6,10 +6,6 @@
 
 namespace HabitatModel{
 
-HSI::HSI(const char * sName) : NamedObject(sName)
-{
-}
-
 HSI::HSI(QDomElement * elHSI) : NamedObject(elHSI, "Title")
 {
 
@@ -30,26 +26,15 @@ HSI::HSI(QDomElement * elHSI) : NamedObject(elHSI, "Title")
 }
 
 void HSI::LoadCurves(){
+
     QDomNodeList elHSICurves = ModelEngine::GetConfig()->elementsByTagName("HSICurves");
 
-    //    Example Node:
-    //    <HSICurves>
-    //    <HSICurveID>3</HSICurveID>
-    //    <HSIID>2</HSIID>
-    //    <HSCID>60</HSCID>
-    //    <Weight>0.5</Weight>
-    //    </HSICurves>
+    for(int n= 0; n < elHSICurves.length(); n++){
+        QDomElement elCurve = elHSICurves.at(n).toElement();
+        int nCurveID = elCurve.firstChildElement("HSICurveID").text().toInt();
+        m_curves.insert(nCurveID, new HSICurve(&elCurve));
+    }
 
-//    for(int n= 0; n < elListItems.length(); n++){
-//        QDomNode elListItem = elListItems.at(n);
-//        int nListItemID = elListItem.firstChildElement("HSICurveID").text().toInt();
-
-//        //        NamedObjectWithID * dimensionID = GetLookupTableItem(&elUnit,"DimensionID");
-
-//        m_curves.insert(nListItemID, new NamedObjectWithID(sname.toStdString().c_str(), nListItemID));
-//    }
-
-    //    m_curves.insert(new HSICurve());
 }
 
 
