@@ -9,6 +9,7 @@
 #include "simulation.h"
 #include "hsisimulation.h"
 #include "hmvariable.h"
+#include "unit.h"
 
 namespace HabitatModel{
 
@@ -37,18 +38,59 @@ Unit * ModelEngine::GetUnit(int nid)
     return m_unit_store.value(nid);
 }
 
-NamedObjectWithID *ModelEngine::GetLookupTableValue(int nid)
+NamedObjectWithID * ModelEngine::GetLookupTable(int nlistid)
 {
-    return m_lookup_table.value(nid);
+    return m_lookup_table.value(nlistid);
 }
+
 
 QDomElement * ModelEngine::GetConfig()
 {
     return &m_elConfig;
 }
 
-void LoadUnits(){
+void ModelEngine::LoadUnits(){
 
+    QDomNodeList elUnits = m_elConfig.elementsByTagName("Units");
+
+    for(int n= 0; n < elUnits.length(); n++){
+
+        QDomNode elUnit = elUnits.at(n);
+        int nListItemID = elUnit.firstChildElement("UnitID").text().toInt();
+        QString sname = elUnit.firstChildElement("Title").text();
+        QString sabbrev = elUnit.firstChildElement("Abbreviation").text();
+        int ndimensionid = elUnit.firstChildElement("DimensionID").text().toInt();
+        m_unit_store.insert(nListItemID, new Unit(sname.toStdString().c_str(), nListItemID, sabbrev, m_lookup_table.value(ndimensionid)));
+
+    }
+
+}
+
+void ModelEngine::LoadLookupTable(){
+
+    QDomNodeList elListItems = m_elConfig.elementsByTagName("LookupListItems");
+
+    for(int n= 0; n < elListItems.length(); n++){
+
+        QDomNode elListItem = elListItems.at(n);
+        int nListItemID = elListItem.firstChildElement("ItemID").text().toInt();
+        QString sname = elListItem.firstChildElement("ItemName").text();
+        m_lookup_table.insert(nListItemID, new NamedObjectWithID(sname.toStdString().c_str(), nListItemID));
+    }
+}
+
+void ModelEngine::LoadHMVariables(){
+    QDomNodeList elvars = m_elConfig.elementsByTagName("Variables");
+
+    for(int n= 0; n < elvars.length(); n++){
+        QDomNode elvar = elvars.at(n);
+        int nvarID = elvar.firstChildElement("VariableID").text().toInt();
+        QString sname = elvar.firstChildElement("VariableName").text();
+        int ncatid = elvar.firstChildElement("CategoryID").text().toInt();
+        int ndimensionid = elvar.firstChildElement("DimensionID").text().toInt();
+
+        m_hmvariable_store.insert(nvarID, new HMVariable(sname.toStdString().c_str(), nvarID, m_lookup_table.value(ndimensionid), m_lookup_table.value(ncatid)));
+    }
 }
 
 void ModelEngine::Load(QString sXMLConfig)
@@ -65,6 +107,11 @@ void ModelEngine::Load(QString sXMLConfig)
     else
     {
         Simulation * p_simulation;
+
+        // Populate our lookup table hashes
+        LoadLookupTable();
+        LoadHMVariables();
+        LoadUnits();
 
         int nHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
         int nFISID = elSimulation.firstChildElement("FISID").text().toInt();

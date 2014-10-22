@@ -16,14 +16,20 @@ public:
     ModelEngine(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile);
     void Load(QString sXMLConfig);
 
+    void LoadHMVariables();
+    void LoadLookupTable();
+    void LoadUnits();
+
     static QDomElement *GetConfig();
     static HMVariable * GetVariable(int nid);
     static Unit * GetUnit(int nid);
     static NamedObjectWithID * GetLookupTableValue(int nid);
 
+    NamedObjectWithID * GetLookupTable(int nlistid);
 private:
     static QHash<int, HMVariable *> m_hmvariable_store;
     static QHash<int, Unit *> m_unit_store;
+
     static QHash<int, NamedObjectWithID *> m_lookup_table;
     static QDomElement m_elConfig;
 

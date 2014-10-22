@@ -9,7 +9,7 @@ namespace HabitatModel{
 class Unit : NamedObjectWithID
 {
 public:
-    Unit(const char * sName, int nID);
+    Unit(const char *sName, int nID, QString sAbbrev, NamedObjectWithID *p_dimension);
     QString getAbbreviation();
     NamedObjectWithID * getDimension();
 private:

@@ -8,8 +8,8 @@ namespace HabitatModel{
 
 Simulation::Simulation(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
-//    QString qsFilePath = "blah.xml";
-//    LoadXML(sName);
+
+
 }
 
 Simulation::Simulation(QDomElement * elSimulation)
