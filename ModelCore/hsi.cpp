@@ -1,4 +1,5 @@
 #include "hsi.h"
+#include <QDomElement>
 
 namespace HabitatModel{
 

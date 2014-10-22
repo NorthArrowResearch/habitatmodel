@@ -1,6 +1,7 @@
 #include <QString>
 
 #include "simulation.h"
+#include "hsi.h"
 
 
 namespace HabitatModel{
@@ -33,6 +34,11 @@ Simulation::Simulation(QDomElement * elSimulation, QDomElement * elConfig) : Nam
     m_screated_on = elSimulation->firstChildElement("CreatedOn").text();
     m_screated_by = elSimulation->firstChildElement("CreatedBy").text();
 
+    // Now Create our HSI object if there is one.
+    QDomElement elHSI = elConfig->firstChildElement("HSI");
+    if (!elHSI.isNull() && elHSI.firstChildElement("HSIID").text().toInt() == this->GetID()){
+        m_hsiRef = new HSI(&elHSI, elConfig);
+    }
 
 }
 
