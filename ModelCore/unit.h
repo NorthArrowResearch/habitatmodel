@@ -10,8 +10,11 @@ class Unit : NamedObjectWithID
 {
 public:
     Unit(const char *sName, int nID, QString sAbbrev, NamedObjectWithID *p_dimension);
+    Unit(QDomElement *elUnit);
+
     QString getAbbreviation();
     NamedObjectWithID * getDimension();
+
 private:
     NamedObjectWithID * m_dimension;
     QString s_abbreviation;

@@ -16,6 +16,20 @@ Simulation::Simulation(QDomElement * elSimulation)
     : NamedObjectWithID(elSimulation, "Title", "SimulationID")
 {
 
+    //    Example Node:
+    //    <Simulations>
+    //    <SimulationID>4</SimulationID>
+    //    <HSIID>3</HSIID>
+    //    <CreatedBy>James</CreatedBy>
+    //    <CreatedOn>2014-10-17T14:03:00.676-06:00</CreatedOn>
+    //    <IsQueuedToRun>true</IsQueuedToRun>
+    //    <HSISourcePath>HSI Source Path</HSISourcePath>
+    //    <Title>ChinookSpawner</Title>
+    //    <Folder>C:\Users\A01674762\Desktop\ScratchWorkspace\HabitatSuitabilityModeling\JohnStockton\Simulations\ChinookSpawner</Folder>
+    //    <AddIndividualOutput>true</AddIndividualOutput>
+    //    </Simulations>
+
+
     // First set all the member variables according to what's in the XML
     m_sfolder = elSimulation->firstChildElement("Folder").text();
     m_shsi_source_path = elSimulation->firstChildElement("HSISourcePath").text();

@@ -16,13 +16,16 @@ class HSC : public NamedObjectWithID
 {
 public:
     HSC(const char *sName, int nID);
+    HSC(QDomElement *elHSC);
+    void LoadCoordinatePairs();
+    void LoadCategories();
 private:
     NamedObjectWithID * m_source;
     NamedObjectWithID * m_lifestage;
     NamedObjectWithID * m_species;
 
-    int figure;
-    QString location;
+    int m_figure;
+    QString m_location;
 
     QHash<int, HSCCategory *> m_categories;
     QHash<int, HSCCoordinatePair *> m_coordinate_pairs;
