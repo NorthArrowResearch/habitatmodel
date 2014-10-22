@@ -9,9 +9,8 @@ class HMVariable : NamedObjectWithID
 {
 public:
     HMVariable(const char *sName, int nID);
-    NamedObjectWithID getDimentsion();
-    NamedObjectWithID getCategory();
-
+    NamedObjectWithID * getDimentsion();
+    NamedObjectWithID * getCategory();
 
 private:
     NamedObjectWithID * m_dimension;

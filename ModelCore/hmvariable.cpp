@@ -6,14 +6,14 @@ HMVariable::HMVariable(const char * sName, int nID) : NamedObjectWithID(sName, n
 {
 }
 
-NamedObjectWithID HMVariable::getDimentsion()
+NamedObjectWithID * HMVariable::getDimentsion()
 {
-    return * m_dimension;
+    return m_dimension;
 }
 
-NamedObjectWithID HMVariable::getCategory()
+NamedObjectWithID * HMVariable::getCategory()
 {
-    return * m_category;
+    return m_category;
 }
 
 }

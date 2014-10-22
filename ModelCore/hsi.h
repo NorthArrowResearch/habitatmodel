@@ -19,7 +19,7 @@ public:
      * @param elSimulation the Dom node containing the HSI element
      * @param elConfig the entire configuration file root dom node
      */
-    HSI(QDomElement *elHSI, QDomElement *elConfig);
+    HSI(QDomElement *elHSI);
 private:
     QHash<int, HSICurve *> m_curves;
     NamedObjectWithID * m_lifestage;

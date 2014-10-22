@@ -2,7 +2,7 @@
 
 #include "simulation.h"
 #include "hsi.h"
-
+#include "modelengine.h"
 
 namespace HabitatModel{
 
@@ -12,7 +12,8 @@ Simulation::Simulation(const char * sName, int nID) : NamedObjectWithID(sName, n
 //    LoadXML(sName);
 }
 
-Simulation::Simulation(QDomElement * elSimulation, QDomElement * elConfig) : NamedObjectWithID(elSimulation, "Title", "SimulationID")
+Simulation::Simulation(QDomElement * elSimulation)
+    : NamedObjectWithID(elSimulation, "Title", "SimulationID")
 {
 
     // First set all the member variables according to what's in the XML
@@ -33,12 +34,6 @@ Simulation::Simulation(QDomElement * elSimulation, QDomElement * elConfig) : Nam
 
     m_screated_on = elSimulation->firstChildElement("CreatedOn").text();
     m_screated_by = elSimulation->firstChildElement("CreatedBy").text();
-
-    // Now Create our HSI object if there is one.
-    QDomElement elHSI = elConfig->firstChildElement("HSI");
-    if (!elHSI.isNull() && elHSI.firstChildElement("HSIID").text().toInt() == this->GetID()){
-        m_hsiRef = new HSI(&elHSI, elConfig);
-    }
 
 }
 
