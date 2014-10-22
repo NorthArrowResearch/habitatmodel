@@ -1,5 +1,6 @@
 #include "hsc.h"
 #include "modelengine.h"
+#include "hsccoordinatepair.h"
 
 #include <QDomElement>
 
@@ -42,35 +43,27 @@ HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "Title", "HSCID")
 
 void HSC::LoadCategories(){
 
-//    QDomNodeList elvars = m_elConfig.elementsByTagName("Variables");
+//    TODO: I don't have an example for the structure of this
 
-//    for(int n= 0; n < elvars.length(); n++){
-//        QDomNode elvar = elvars.at(n);
-//        int nvarID = elvar.firstChildElement("VariableID").text().toInt();
-//        QString sname = elvar.firstChildElement("VariableName").text();
-//        int ncatid = elvar.firstChildElement("CategoryID").text().toInt();
-//        int ndimensionid = elvar.firstChildElement("DimensionID").text().toInt();
+//    QDomNodeList elCategory = ModelEngine::GetConfig()->elementsByTagName("HSCCategories");
 
-//        m_hmvariable_store.insert(nvarID, new HMVariable(sname.toStdString().c_str(), nvarID, m_lookup_table.value(ndimensionid), m_lookup_table.value(ncatid)));
+//    for(int n= 0; n < elCategory.length(); n++){
+//        QDomElement elCategory = elCoordPairs.at(n).toElement();
+//        int nCategory = elCategory.firstChildElement("HSCCategoriesID").text().toInt();
+//        m_categories.insert(nCategory, new HSCCoordinatePair(elCategory));
 //    }
 
-//    m_categories.insert();
 }
 void HSC::LoadCoordinatePairs(){
 
-//    QDomNodeList elvars = m_elConfig.elementsByTagName("Variables");
+    QDomNodeList elCoordPairs = ModelEngine::GetConfig()->elementsByTagName("HSCCoordinatePairs");
 
-//    for(int n= 0; n < elvars.length(); n++){
-//        QDomNode elvar = elvars.at(n);
-//        int nvarID = elvar.firstChildElement("VariableID").text().toInt();
-//        QString sname = elvar.firstChildElement("VariableName").text();
-//        int ncatid = elvar.firstChildElement("CategoryID").text().toInt();
-//        int ndimensionid = elvar.firstChildElement("DimensionID").text().toInt();
+    for(int n= 0; n < elCoordPairs.length(); n++){
+        QDomElement elCoordinatePair = elCoordPairs.at(n).toElement();
+        int nCoordinatePairID = elCoordinatePair.firstChildElement("CoordinatePairID").text().toInt();
+        m_coordinate_pairs.insert(nCoordinatePairID, new HSCCoordinatePair(&elCoordinatePair));
+    }
 
-//        m_hmvariable_store.insert(nvarID, new HMVariable(sname.toStdString().c_str(), nvarID, m_lookup_table.value(ndimensionid), m_lookup_table.value(ncatid)));
-//    }
-
-//    m_coordinate_pairs.insert();
 }
 
 }

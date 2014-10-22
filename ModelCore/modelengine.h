@@ -21,6 +21,7 @@ public:
     void LoadLookupTable();
     void LoadUnits();
     void LoadHSCs();
+    void LoadHSCCoordinatePairs();
 
     static QDomElement *GetConfig();
     static NamedObjectWithID * GetLookupTableItem(int nid);
@@ -43,7 +44,6 @@ public:
 
     static HSC * GetHSC(int nid);
     static HSC * GetHSC(QDomElement *elItem, QString sHSCName);
-
 
 private:
     static QHash<int, HMVariable *> m_hmvariable_store;

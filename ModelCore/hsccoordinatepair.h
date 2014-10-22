@@ -1,16 +1,18 @@
 #ifndef HSCCOORDINATEPAIR_H
 #define HSCCOORDINATEPAIR_H
 
+#include "hsc.h"
+
 namespace HabitatModel{
 
 class HSCCoordinatePair
 {
 public:
-    HSCCoordinatePair();
+    HSCCoordinatePair(QDomElement *elCoordinatePair);
 private:
-    int nHSCID;
-    int nXVal;
-    int HSVal;
+    HSC * m_HSC;
+    int m_nXVal;
+    int m_nHSVal;
 };
 
 }
