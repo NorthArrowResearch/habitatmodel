@@ -20,6 +20,7 @@ public:
      * @param elConfig the entire configuration file root dom node
      */
     HSI(QDomElement *elHSI);
+    void LoadCurves();
 private:
     QHash<int, HSICurve *> m_curves;
     NamedObjectWithID * m_lifestage;

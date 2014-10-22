@@ -38,9 +38,15 @@ Unit * ModelEngine::GetUnit(int nid)
     return m_unit_store.value(nid);
 }
 
-NamedObjectWithID * ModelEngine::GetLookupTable(int nlistid)
+NamedObjectWithID * ModelEngine::GetLookupTableItem(int nlistid)
 {
     return m_lookup_table.value(nlistid);
+}
+
+NamedObjectWithID *ModelEngine::GetLookupTableItem(QDomElement * elItem, QString sValIDName)
+{
+    int nValID = elItem->firstChildElement(sValIDName).text().toInt();
+    return GetLookupTableItem(nValID);
 }
 
 

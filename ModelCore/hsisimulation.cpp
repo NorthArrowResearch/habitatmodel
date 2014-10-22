@@ -13,11 +13,7 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 
     // Now Create our HSI object if there is one.
     QDomElement elHSI = ModelEngine::GetConfig()->firstChildElement("HSI");
-    if (!elHSI.isNull() && elHSI.firstChildElement("HSIID").text().toInt() == this->GetID()){
-        m_hsiRef = new HSI(&elHSI);
-    }
-
-    //QString stupid = HabitatModel::ModelEngine::GetVariable(myInt)->GetName();
+    m_hsiRef = new HSI(&elHSI);
 
 }
 
