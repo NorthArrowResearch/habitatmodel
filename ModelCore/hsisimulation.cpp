@@ -2,7 +2,7 @@
 
 #include <QDomElement>
 #include "hsi.h"
-#include "modelengine.h"
+#include "project.h"
 #include "projectinput.h"
 
 namespace HabitatModel{
@@ -13,7 +13,7 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 {
 
     // Now Create our HSI object if there is one.
-    QDomElement elHSI = ModelEngine::GetConfig()->firstChildElement("HSI");
+    QDomElement elHSI = Project::GetConfig()->firstChildElement("HSI");
     m_hsiRef = new HSI(&elHSI);
 
     LoadHSCInputs();
@@ -27,7 +27,7 @@ void HSISimulation::LoadHSCInputs(){
     //    <SimulationID>5</SimulationID>
     //  </SimulationHSCInputs>
 
-    QDomNodeList elHSCInputs = ModelEngine::GetConfig()->elementsByTagName("SimulationHSCInputs");
+    QDomNodeList elHSCInputs = Project::GetConfig()->elementsByTagName("SimulationHSCInputs");
 
     for(int n= 0; n < elHSCInputs.length(); n++){
         QDomElement elHSCInput = elHSCInputs.at(n).toElement();

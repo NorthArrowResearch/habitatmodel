@@ -5,7 +5,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "modelengine.h"
+#include "project.h"
 
 
 
@@ -44,7 +44,7 @@ void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
         QString sXMLOutput = GetFile(argc, argv, 2, false);
         QString sXMLLogFile = GetFile(argc, argv, 3, false);
 
-        HabitatModel::ModelEngine theSimulation(sXMLConfig, sXMLOutput, sXMLLogFile);
+        HabitatModel::Project theSimulation(sXMLConfig, sXMLOutput, sXMLLogFile);
 
         std::cout << "\nProcess completed successfully.\n";
     }

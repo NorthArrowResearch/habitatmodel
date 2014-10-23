@@ -1,5 +1,5 @@
 #include "unit.h"
-#include "modelengine.h"
+#include "project.h"
 
 namespace HabitatModel{
 
@@ -10,7 +10,7 @@ Unit::Unit(const char * sName, int nID, QString sAbbrev, NamedObjectWithID * p_d
 Unit::Unit(QDomElement * elUnit) : NamedObjectWithID(elUnit, "Title", "UnitID")
 {
     s_abbreviation = elUnit->firstChildElement("Abbreviation").text();
-    m_dimension = ModelEngine::GetLookupTableItem(elUnit,"DimensionID");
+    m_dimension = Project::GetLookupTableItem(elUnit,"DimensionID");
 }
 
 QString Unit::getAbbreviation()

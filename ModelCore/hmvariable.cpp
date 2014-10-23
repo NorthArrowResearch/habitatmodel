@@ -1,5 +1,5 @@
 #include "hmvariable.h"
-#include "modelengine.h"
+#include "project.h"
 
 namespace HabitatModel{
 
@@ -9,8 +9,8 @@ HMVariable::HMVariable(const char * sName, int nID) : NamedObjectWithID(sName, n
 
 HMVariable::HMVariable(QDomElement * elHSC) : NamedObjectWithID(elHSC, "VariableName", "VariableID")
 {
-    m_dimension = ModelEngine::GetLookupTableItem(elHSC,"DimensionID");
-    m_category = ModelEngine::GetLookupTableItem(elHSC,"DimensionID");
+    m_dimension = Project::GetLookupTableItem(elHSC,"DimensionID");
+    m_category = Project::GetLookupTableItem(elHSC,"DimensionID");
 }
 
 NamedObjectWithID * HMVariable::getDimentsion()

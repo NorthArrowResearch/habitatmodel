@@ -1,5 +1,5 @@
 #include "simulationhscinput.h"
-#include "modelengine.h"
+#include "project.h"
 #include "hsicurve.h"
 #include "projectinput.h"
 

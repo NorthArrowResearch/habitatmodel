@@ -1,5 +1,5 @@
 #include "hsc.h"
-#include "modelengine.h"
+#include "project.h"
 #include "hsccoordinatepair.h"
 
 #include <QDomElement>
@@ -30,12 +30,12 @@ HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "Title", "HSCID")
     m_location = elHSC->firstChildElement("VariableName").text();
     m_figure = elHSC->firstChildElement("CategoryID").text().toInt();
 
-    m_source = ModelEngine::GetLookupTableItem(elHSC, "SourceID");
-    m_lifestage = ModelEngine::GetLookupTableItem(elHSC, "LifestageID");
-    m_species = ModelEngine::GetLookupTableItem(elHSC, "SpeciesID");
+    m_source = Project::GetLookupTableItem(elHSC, "SourceID");
+    m_lifestage = Project::GetLookupTableItem(elHSC, "LifestageID");
+    m_species = Project::GetLookupTableItem(elHSC, "SpeciesID");
 
-    m_variable = ModelEngine::GetVariable(elHSC, "HSCVariableID");
-    m_unit = ModelEngine::GetUnit(elHSC, "HSCVariableID");
+    m_variable = Project::GetVariable(elHSC, "HSCVariableID");
+    m_unit = Project::GetUnit(elHSC, "HSCVariableID");
 
     LoadCategories();
     LoadCoordinatePairs();
@@ -45,7 +45,7 @@ void HSC::LoadCategories(){
 
 //    TODO: I don't have an example for the structure of this
 
-//    QDomNodeList elCategory = ModelEngine::GetConfig()->elementsByTagName("HSCCategories");
+//    QDomNodeList elCategory = Project::GetConfig()->elementsByTagName("HSCCategories");
 
 //    for(int n= 0; n < elCategory.length(); n++){
 //        QDomElement elCategory = elCoordPairs.at(n).toElement();
@@ -56,7 +56,7 @@ void HSC::LoadCategories(){
 }
 void HSC::LoadCoordinatePairs(){
 
-    QDomNodeList elCoordPairs = ModelEngine::GetConfig()->elementsByTagName("HSCCoordinatePairs");
+    QDomNodeList elCoordPairs = Project::GetConfig()->elementsByTagName("HSCCoordinatePairs");
 
     for(int n= 0; n < elCoordPairs.length(); n++){
         QDomElement elCoordinatePair = elCoordPairs.at(n).toElement();

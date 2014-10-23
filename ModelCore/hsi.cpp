@@ -2,7 +2,7 @@
 
 #include "hsi.h"
 #include "hsicurve.h"
-#include "modelengine.h"
+#include "project.h"
 
 namespace HabitatModel{
 
@@ -18,16 +18,16 @@ HSI::HSI(QDomElement * elHSI) : NamedObjectWithID(elHSI, "Title", "HSIID")
     //    <HSIMethodID>46</HSIMethodID>
     //    </HSI>
 
-    m_species = ModelEngine::GetLookupTableItem(elHSI, "SpeciesID");
-    m_lifestage = ModelEngine::GetLookupTableItem(elHSI, "LifestageID");
-    m_method = ModelEngine::GetLookupTableItem(elHSI, "HSIMethodID");
+    m_species = Project::GetLookupTableItem(elHSI, "SpeciesID");
+    m_lifestage = Project::GetLookupTableItem(elHSI, "LifestageID");
+    m_method = Project::GetLookupTableItem(elHSI, "HSIMethodID");
 
     LoadCurves();
 }
 
 void HSI::LoadCurves(){
 
-    QDomNodeList elHSICurves = ModelEngine::GetConfig()->elementsByTagName("HSICurves");
+    QDomNodeList elHSICurves = Project::GetConfig()->elementsByTagName("HSICurves");
 
     for(int n= 0; n < elHSICurves.length(); n++){
         QDomElement elCurve = elHSICurves.at(n).toElement();
