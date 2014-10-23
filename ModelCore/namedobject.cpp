@@ -37,6 +37,11 @@ QString NamedObject::GetName() const
     return m_sName;
 }
 
+void NamedObject::SetName(const char *sName)
+{
+    m_sName = sName;
+}
+
 /*************************************************************
 
             NAMED OBJECT WTIH ID: same as above. Now with id
@@ -58,6 +63,11 @@ NamedObjectWithID::NamedObjectWithID(QDomElement * elObject, QString sTitleName,
 int NamedObjectWithID::GetID() const
 {
     return m_id;
+}
+
+void NamedObjectWithID::SetID(int nID)
+{
+    m_id = nID;
 }
 
 

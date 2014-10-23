@@ -50,7 +50,7 @@ public:
      * @brief getSourcePath
      * @return
      */
-    QString getSourcePath();
+    QString getSourceFilePath();
 
     /**
      * @brief getVariable
@@ -71,7 +71,7 @@ private:
     NamedObjectWithID * m_source_type;
 
     QString m_screated_on;
-    QString m_sourcepath;
+    QString m_sourcefilepath;
 
     HMVariable * m_variable;
     Unit * m_unit;

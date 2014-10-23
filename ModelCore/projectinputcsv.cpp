@@ -20,12 +20,16 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
 //      <VariableID>9</VariableID>
 //    </ProjectInputs>
 
-//    m_sXField = QString(psXField);
-//    m_sYField = QString(psYField);
-//    m_FieldName = QString(psValueField);
+    m_sXField  = elProjectInput->firstChildElement("xField").text().toInt();
+    m_sYField  = elProjectInput->firstChildElement("yField").text().toInt();
+    m_FieldName  = elProjectInput->firstChildElement("FieldName").text().toInt();
 
 }
 
+
+void ProjectInputCSV::CreateRasterFromCSV(){
+
+}
 
 QString ProjectInputCSV::getXField()
 {

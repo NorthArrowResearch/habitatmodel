@@ -35,7 +35,7 @@ QDomElement Project::m_elConfig;
 
 
 Project::Project(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile)
-    :NamedObjectWithID("TEMP",-1)
+    :NamedObjectWithID("TEMP", -1)
 {
     QString temp = sXMLOutput;
     temp = sXMLLogFile;
@@ -50,25 +50,29 @@ Project::~Project(){
         i.next();
         delete i.value();
     }
+
     // Empty the survey store
     QHashIterator<int, Unit *> j(m_unit_store);
     while (j.hasNext()) {
         j.next();
         delete j.value();
     }
+
     // Empty the survey store
     QHashIterator<int, HSC *> k(m_HSC_store);
     while (k.hasNext()) {
         k.next();
         delete k.value();
     }
+
     // Empty the survey store
     QHashIterator<int, NamedObjectWithID *> l(m_lookup_table);
     while (l.hasNext()) {
         l.next();
         delete l.value();
     }
-//    // Empty the survey store
+
+    // Empty the survey store
     QHashIterator<int, ProjectInput *> m(m_project_inputs_store);
     while (m.hasNext()) {
         m.next();
@@ -85,6 +89,11 @@ void Project::Load(QString sXMLConfig)
     m_elConfig = xConfig.Document()->documentElement();
 
     QDomElement elSimulation =  m_elConfig.firstChildElement("Simulations");
+
+    // This is not ideal way to do this but we do it since it is the top level element
+    SetName(elSimulation.firstChildElement("Title").text().toStdString().c_str());
+    SetID(elSimulation.firstChildElement("ProjectID").text().toInt());
+
     if (elSimulation.isNull())
         throw "The main Simulation node is missing from the Configuration XML file.";
     else

@@ -24,7 +24,7 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
     //</ProjectInputs>
 
     m_screated_on = elProjectInput->firstChildElement("CreatedOn").text();
-    m_sourcepath = elProjectInput->firstChildElement("SourcePath").text();
+    m_sourcefilepath = elProjectInput->firstChildElement("SourcePath").text();
 
     m_variable = Project::GetVariable(elProjectInput, "VariableID");
     m_source_type = Project::GetLookupTableItem(elProjectInput, "SourceTypeID");
@@ -48,9 +48,9 @@ QString ProjectInput::getCreatedOn()
     return m_screated_on;
 }
 
-QString ProjectInput::getSourcePath()
+QString ProjectInput::getSourceFilePath()
 {
-    return m_sourcepath;
+    return m_sourcefilepath;
 }
 
 HMVariable * ProjectInput::getVariable()
