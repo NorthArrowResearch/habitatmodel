@@ -141,15 +141,26 @@ void ModelEngine::Load(QString sXMLConfig)
         LoadUnits();
         LoadHSCs();
 
-        int nHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
-        int nFISID = elSimulation.firstChildElement("FISID").text().toInt();
+        int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
+        int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
 
-        if (nHSIID == m_elConfig.firstChildElement("HSI").firstChildElement("HSIID").text().toInt()){
-             p_simulation = new HSISimulation (&elSimulation);
+        bool bHSIID, bFISID;
+
+        QDomNodeList elConfigHSIs = m_elConfig.elementsByTagName("HSI");
+
+        for(int n= 0; n < elConfigHSIs.length(); n++){
+            QDomElement elHSI = elConfigHSIs.at(n).toElement();
+            int nTestHSIID = elHSI.firstChildElement("HSIID").text().toInt();
+            if (nSimulationHSIID == nTestHSIID)
+                bHSIID = true;
         }
-        else if(nFISID == m_elConfig.firstChildElement("HSI").firstChildElement("HSIID").text().toInt()){
-//             p_simulation = FISSimulation (&elSimulation);
+
+        if (bHSIID){
+            p_simulation = new HSISimulation (&elSimulation);
         }
+//        else if(bFISID){
+//            //             p_simulation = FISSimulation (&elSimulation);
+//        }
         else{
             throw "No valid HSI or FIS nodes found in the config file.";
         }
