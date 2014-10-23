@@ -6,10 +6,6 @@
 
 namespace HabitatModel{
 
-Simulation::Simulation(const char * sName, int nID) : NamedObjectWithID(sName, nID)
-{
-}
-
 Simulation::Simulation(QDomElement * elSimulation)
     : NamedObjectWithID(elSimulation, "Title", "SimulationID")
 {

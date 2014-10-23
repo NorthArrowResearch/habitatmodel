@@ -8,8 +8,8 @@ class ProjectInput;
 
 class SimulationHSCInput
 {
-public:    
-    SimulationHSCInput(HSICurve *p_HSICurve, ProjectInput *p_ProjectInput);
+public:
+    SimulationHSCInput(HSICurve * p_HSICurve, ProjectInput * p_ProjectInput);
     HSICurve * GetHSICurve();
     ProjectInput * GetProjectInput();
 private:

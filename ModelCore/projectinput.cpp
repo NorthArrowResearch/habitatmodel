@@ -1,40 +1,66 @@
 #include "projectinput.h"
-
+#include "project.h"
 
 namespace HabitatModel{
 
-ProjectInput::ProjectInput(const char * sName, int nID) : NamedObjectWithID(sName, nID)
+ProjectInput::ProjectInput(const char *sName, int nID)
+    : NamedObjectWithID(sName, nID)
 {
+
 }
 
-Project ProjectInput::getProject()
+ProjectInput::ProjectInput(QDomElement * elProjectInput)
+    : NamedObjectWithID(elProjectInput, "Title", "InputID")
 {
-    return * m_project;
+    //<ProjectInputs>
+    //<InputID>1</InputID<name />
+    //<ProjectID>1</ProjectID>
+    //<Title>MyPh</Title>
+    //<SourceTypeID>60</SourceTypeID>
+    //<CreatedOn>2014-10-17T13:43:59.18-06:00</CreatedOn>
+    //<SourcePath>C:\Users\A01674762\Desktop\ScratchWorkspace\SetNullTest_DomainPath.tif</SourcePath>
+    //<UnitID>6</UnitID>
+    //<VariableID>1</VariableID>
+    //</ProjectInputs>
+
+    m_screated_on = elProjectInput->firstChildElement("CreatedOn").text();
+    m_sourcepath = elProjectInput->firstChildElement("SourcePath").text();
+
+    m_variable = Project::GetVariable(elProjectInput, "VariableID");
+    m_source_type = Project::GetLookupTableItem(elProjectInput, "SourceTypeID");
+
+    m_unit = Project::GetUnit(elProjectInput, "UnitID");
+
 }
 
-NamedObjectWithID ProjectInput::getSourceType()
+//Project * ProjectInput::getProject()
+//{
+////    return m_project;
+//}
+
+NamedObjectWithID * ProjectInput::getSourceType()
 {
-    return * m_source_type;
+    return m_source_type;
 }
 
 QString ProjectInput::getCreatedOn()
 {
-    return qd_created_on;
+    return m_screated_on;
 }
 
 QString ProjectInput::getSourcePath()
 {
-    return s_sourcepath;
+    return m_sourcepath;
 }
 
-HMVariable ProjectInput::getVariable()
+HMVariable * ProjectInput::getVariable()
 {
-    return * m_variable;
+    return m_variable;
 }
 
-Unit ProjectInput::getUnit()
+Unit * ProjectInput::getUnit()
 {
-    return * m_unit;
+    return m_unit;
 }
 
 }

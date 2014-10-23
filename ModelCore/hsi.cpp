@@ -8,7 +8,6 @@ namespace HabitatModel{
 
 HSI::HSI(QDomElement * elHSI) : NamedObjectWithID(elHSI, "Title", "HSIID")
 {
-
     //    Example Node:
     //    <HSI>
     //    <HSIID>2</HSIID>
@@ -23,6 +22,16 @@ HSI::HSI(QDomElement * elHSI) : NamedObjectWithID(elHSI, "Title", "HSIID")
     m_method = Project::GetLookupTableItem(elHSI, "HSIMethodID");
 
     LoadCurves();
+}
+
+HSI::~HSI(){
+
+    // Empty the HSI curve store
+    QHashIterator<int, HSICurve *> i(m_curves);
+    while (i.hasNext()) {
+        i.next();
+        delete i.value();
+    }
 }
 
 void HSI::LoadCurves(){

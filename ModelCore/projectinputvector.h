@@ -6,11 +6,29 @@
 
 namespace HabitatModel {
 
-class ProjectInputVector : ProjectInput
+class ProjectInputVector : public ProjectInput
 {
 public:
+    /**
+     * @brief ProjectInputVector
+     * @param sName
+     * @param nID
+     * @param psValueField
+     */
     ProjectInputVector(const char *sName, int nID, const char * psValueField);
+
+    /**
+     * @brief ProjectInputCSV
+     * @param elProjectInput
+     */
+    ProjectInputVector(QDomElement *elProjectInput);
+
+    /**
+     * @brief getValueField
+     * @return
+     */
     QString getValueField();
+
 
 private:
     QString m_sValueField;

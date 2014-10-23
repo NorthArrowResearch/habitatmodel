@@ -6,18 +6,39 @@
 
 namespace HabitatModel{
 
-class ProjectInputCSV : ProjectInput
+class ProjectInputCSV : public ProjectInput
 {
 public:
-    ProjectInputCSV(const char *sName, int nID, const char *psXField, const char *psYField, const char *psValueField);
+
+    /**
+     * @brief ProjectInputCSV
+     * @param elProjectInput
+     */
+    ProjectInputCSV(QDomElement *elProjectInput);
+
+    /**
+     * @brief getXField
+     * @return
+     */
     QString getXField();
+
+    /**
+     * @brief getYField
+     * @return
+     */
     QString getYField();
+
+    /**
+     * @brief getValueField
+     * @return
+     */
     QString getValueField();
 
 private:
+
     QString m_sXField;
     QString m_sYField;
-    QString m_sValueField;
+    QString m_FieldName;
 
 };
 

@@ -21,6 +21,8 @@ public:
      */
     HSI(QDomElement *elHSI);
 
+    ~HSI();
+
     /**
      * @brief LoadCurves load all related
      * HSI Curves using the original XML config file
@@ -33,6 +35,7 @@ public:
      * @return
      */
     HSICurve *GetCurve(int nHSICurveID);
+
 
 private:
 

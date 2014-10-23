@@ -2,6 +2,7 @@
 #define HSISIMULATION_H
 
 #include "simulation.h"
+#include "hsi.h"
 
 namespace HabitatModel{
 
@@ -30,6 +31,8 @@ private:
 
 };
 
-#endif // HSISIMULATION_H
 
 }
+
+#endif // HSISIMULATION_H
+

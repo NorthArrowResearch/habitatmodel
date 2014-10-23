@@ -11,19 +11,28 @@
 
 namespace HabitatModel{
 
-class HSI;
+//class HSI;
 class SimulationHSCInput;
 
 class Simulation : public NamedObjectWithID
 {
 public:
-    Simulation(const char * sName, int nID);
 
+    /**
+     * @brief Simulation
+     * @param elSimulation
+     */
+    Simulation(QDomElement *elSimulation);
+
+    /**
+     * @brief run
+     */
     void run();
 
+    /**
+     * @brief clean
+     */
     void clean();
-
-    Simulation(QDomElement *elSimulation);
 
 private:
 

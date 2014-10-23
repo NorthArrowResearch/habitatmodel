@@ -8,6 +8,16 @@ ProjectInputVector::ProjectInputVector(const char *sName, int nID, const char * 
     m_sValueField = QString(psValueField);
 }
 
+ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
+    : ProjectInput(elProjectInput)
+{
+
+//    m_sXField = QString(psXField);
+//    m_sYField = QString(psYField);
+//    m_sValueField = QString(psValueField);
+
+}
+
 QString ProjectInputVector::getValueField()
 {
     return m_sValueField;

@@ -4,30 +4,74 @@
 #include "unit.h"
 #include "hmvariable.h"
 #include "namedobject.h"
-#include "project.h"
 
 namespace HabitatModel{
+
+class ProjectInputVector;
+class ProjectInputRaser;
+class ProjectInputCSV;
 
 class ProjectInput : public NamedObjectWithID
 {
 public:
 
+    /**
+     * @brief ProjectInput
+     * @param sName
+     * @param nID
+     */
     ProjectInput(const char *sName, int nID);
-    Project getProject();
-    NamedObjectWithID getSourceType();
+
+    /**
+     * @brief ProjectInput
+     * @param elProjectInput
+     */
+    ProjectInput(QDomElement *elProjectInput);
+
+    /**
+     * @brief getProject
+     * @return
+     */
+    //Project * getProject();
+
+    /**
+     * @brief getSourceType
+     * @return
+     */
+    NamedObjectWithID * getSourceType();
+
+    /**
+     * @brief getCreatedOn
+     * @return
+     */
     QString getCreatedOn();
+
+    /**
+     * @brief getSourcePath
+     * @return
+     */
     QString getSourcePath();
-    HMVariable getVariable();
-    Unit getUnit();
+
+    /**
+     * @brief getVariable
+     * @return
+     */
+    HMVariable * getVariable();
+
+    /**
+     * @brief getUnit
+     * @return
+     */
+    Unit * getUnit();
+
 
 
 private:
 
-    Project * m_project;
     NamedObjectWithID * m_source_type;
 
-    QString qd_created_on;
-    QString s_sourcepath;
+    QString m_screated_on;
+    QString m_sourcepath;
 
     HMVariable * m_variable;
     Unit * m_unit;
