@@ -1,5 +1,7 @@
 #include "projectinputcsv.h"
 #include "projectinput.h"
+#include "project.h"
+#include "raster.h"
 
 namespace HabitatModel{
 
@@ -24,10 +26,20 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
     m_sYField  = elProjectInput->firstChildElement("yField").text().toInt();
     m_FieldName  = elProjectInput->firstChildElement("FieldName").text().toInt();
 
+    CreateRasterFromCSV(getSourceFilePath());
+
 }
 
 
-void ProjectInputCSV::CreateRasterFromCSV(){
+void ProjectInputCSV::CreateRasterFromCSV(QString sCSVFilePath){
+
+//    Project::GetConfigPath();
+//    sCSVFilePath;
+
+    // Define a raster
+    float fNoDataValue = (float) std::numeric_limits<float>::min();
+
+    RasterManager::Raster rOutput();
 
 }
 

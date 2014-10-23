@@ -34,7 +34,11 @@ public:
      */
     QString getValueField();
 
-    void CreateRasterFromCSV();
+    /**
+     * @brief CreateRasterFromCSV
+     * @param sCSVFilePath
+     */
+    void CreateRasterFromCSV(QString sCSVFilePath);
 private:
 
     QString m_sXField;

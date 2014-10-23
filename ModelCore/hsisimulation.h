@@ -22,7 +22,14 @@ public:
      */
     void LoadHSCInputs();
 
+    void RunSimulation();
+
 private:
+
+    void PrepareVectorRasters();
+    void PrepareCSVRasters();
+    void PrepareRasters();
+
 
     HSI * m_hsiRef;
 

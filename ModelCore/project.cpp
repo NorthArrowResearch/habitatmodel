@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QXmlStreamWriter>
 #include <QHash>
+#include <QDir>
 
 #include "xmlfilehander.h"
 #include "simulation.h"
@@ -27,9 +28,10 @@ QHash<int, HMVariable *> Project::m_hmvariable_store;
 QHash<int, Unit *> Project::m_unit_store;
 QHash<int, NamedObjectWithID *> Project::m_lookup_table;
 QHash<int, ProjectInput *> Project::m_project_inputs_store;
-
 QHash<int, HSC *> Project::m_HSC_store;
+
 QDomElement Project::m_elConfig;
+QDir * Project::m_ConfigPath;
 
 /* --------------------------------------------------------------- */
 
@@ -83,6 +85,9 @@ Project::~Project(){
 void Project::Load(QString sXMLConfig)
 {
     GCD::Project::XMLFileHander xConfig;
+
+    QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
+    m_ConfigPath = &sXMLConfigDir;
 
     xConfig.Load(sXMLConfig);
 
@@ -272,6 +277,11 @@ HSC * Project::GetHSC(QDomElement *elItem, QString sHSCName){
 QDomElement * Project::GetConfig()
 {
     return &m_elConfig;
+}
+
+QDir * Project::GetConfigPath()
+{
+    return m_ConfigPath;
 }
 
 

@@ -3,6 +3,7 @@
 
 #include <QHash>
 #include <QDomElement>
+#include <QDir>
 
 #include "modelcore_global.h"
 #include "hmvariable.h"
@@ -52,8 +53,25 @@ public:
     void LoadHSCCoordinatePairs();
     void LoadProjectInputs();
 
-    static QDomElement *GetConfig();
+    /**
+     * @brief GetConfig
+     * @return
+     */
+    static QDomElement * GetConfig();
+
+    /**
+     * @brief GetConfigPath
+     * @return
+     */
+    static QDir * GetConfigPath();
+
+    /**
+     * @brief GetLookupTableItem
+     * @param nid
+     * @return
+     */
     static NamedObjectWithID * GetLookupTableItem(int nid);
+
     /**
      * @brief GetLookupTableItem -- convenience function to get a lookup table value from
      *        a dom element and a string containing the name of the id element
@@ -135,6 +153,8 @@ private:
     NamedObjectWithID * m_CHaMP_watershed;
     QString s_description;
 
+    // The path to that config file
+    static QDir * m_ConfigPath;
     // The entire config file dom
     static QDomElement m_elConfig;
 

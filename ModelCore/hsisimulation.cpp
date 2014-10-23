@@ -19,6 +19,19 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     LoadHSCInputs();
 }
 
+void HSISimulation::RunSimulation(){
+
+    /*
+     *  loop over the input store
+     *       if raster then builf union extent
+     *
+     * Loop over input store
+     *     call input.prepare()
+     *
+     */
+}
+
+
 void HSISimulation::LoadHSCInputs(){
 
     //    <SimulationHSCInputs>
