@@ -6,10 +6,6 @@
 
 namespace HabitatModel{
 
-HSC::HSC(const char * sName, int nID) : NamedObjectWithID(sName, nID)
-{
-}
-
 HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "Title", "HSCID")
 {
 

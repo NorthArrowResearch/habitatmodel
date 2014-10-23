@@ -6,6 +6,11 @@
 
 namespace HabitatModel {
 
+/*************************************************************
+
+            NAMED OBJECT: A generalized and highly useful object
+
+*************************************************************/
 
 NamedObject::NamedObject(const char * sName)
 {
@@ -31,6 +36,12 @@ QString NamedObject::GetName() const
 {
     return m_sName;
 }
+
+/*************************************************************
+
+            NAMED OBJECT WTIH ID: same as above. Now with id
+
+*************************************************************/
 
 
 NamedObjectWithID::NamedObjectWithID(const char * sName, int nID) : NamedObject(sName)

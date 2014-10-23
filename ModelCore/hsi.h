@@ -13,20 +13,36 @@ class HSI : public NamedObjectWithID
 {
 
 public:
-    HSI(const char *sName);
+
     /**
      * @brief HSI
      * @param elSimulation the Dom node containing the HSI element
      * @param elConfig the entire configuration file root dom node
      */
     HSI(QDomElement *elHSI);
+
+    /**
+     * @brief LoadCurves load all related
+     * HSI Curves using the original XML config file
+     */
     void LoadCurves();
+
+    /**
+     * @brief GetCurve
+     * @param nHSICurveID
+     * @return
+     */
     HSICurve *GetCurve(int nHSICurveID);
+
 private:
-    QHash<int, HSICurve *> m_curves;
+
     NamedObjectWithID * m_lifestage;
     NamedObjectWithID * m_species;
     NamedObjectWithID * m_method;
+
+    // Store of related HSI Curves
+    QHash<int, HSICurve *> m_curves;
+
 };
 
 }

@@ -8,9 +8,23 @@ namespace HabitatModel{
 class HMVariable : NamedObjectWithID
 {
 public:
-    HMVariable(const char *sName, int nID);
+
+    /**
+     * @brief HMVariable constructor takes a dom element
+     * @param elHSC dom element
+     */
     HMVariable(QDomElement *elHSC);
+
+    /**
+     * @brief getDimentsion
+     * @return the dimension named object
+     */
     NamedObjectWithID * getDimentsion();
+
+    /**
+     * @brief getCategory
+     * @return the category named object
+     */
     NamedObjectWithID * getCategory();
 
 private:

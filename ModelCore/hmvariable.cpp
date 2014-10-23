@@ -3,15 +3,21 @@
 
 namespace HabitatModel{
 
-HMVariable::HMVariable(const char * sName, int nID) : NamedObjectWithID(sName, nID)
-{
-}
 
 HMVariable::HMVariable(QDomElement * elHSC) : NamedObjectWithID(elHSC, "VariableName", "VariableID")
 {
+    //Sample Input
+    //<Variables>
+    //  <VariableID>1</VariableID>
+    //  <VariableName>Average ph</VariableName>
+    //  <CategoryID>35</CategoryID>
+    //  <DimensionID>8</DimensionID>
+    //</Variables>
+
     m_dimension = Project::GetLookupTableItem(elHSC,"DimensionID");
     m_category = Project::GetLookupTableItem(elHSC,"DimensionID");
 }
+
 
 NamedObjectWithID * HMVariable::getDimentsion()
 {

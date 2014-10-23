@@ -7,15 +7,14 @@
 namespace HabitatModel {
 
 /**
- * @brief
- *
+ * @brief The NamedObject class
  */
 class NamedObject
 {
 public:
+
     /**
-     * @brief
-     *
+     * @brief NamedObject
      * @param sName
      */
     NamedObject(const char * sName);
@@ -27,31 +26,26 @@ public:
      */
     NamedObject(QDomElement * elObject, QString sTitleName);
 
-    // Copy Constructor
     /**
-     * @brief
-     *
+     * @brief NamedObject (Copy Constructor)
      * @param obj
      */
     NamedObject(const NamedObject &obj);
 
-    // Assignment Operator
     /**
-     * @brief
-     *
+     * @brief operator =  (Assignment Operator)
      * @param obj
      */
     void operator=(const NamedObject &obj);
 
     /**
-     * @brief
-     *
-     * @return std::string
+     * @brief GetName
+     * @return
      */
     QString GetName() const;
+
     /**
-     * @brief
-     *
+     * @brief SetName
      * @param sName
      */
     void SetName(const char * sName);
@@ -62,51 +56,48 @@ private:
 };
 
 /**
- * @brief
- *
+ * @brief The NamedObjectWithID class
  */
 class NamedObjectWithID : public NamedObject
 {
 public:
+
     /**
-     * @brief
-     *
+     * @brief NamedObjectWithID
      * @param sName
+     * @param nID
      */
     NamedObjectWithID(const char * sName, int nID);
+
     /**
-     * @brief NamedObject
+     * @brief NamedObjectWithID
      * @param elObject a domelement containing the object's properties
      * @param sTitleName the name of the element containing the name of the object
      * @param sIDName the name of the element containing the id of the object
      */
     NamedObjectWithID(QDomElement * elObject, QString sTitleName, QString sIDName);
-    // Copy Constructor
+
     /**
-     * @brief
-     *
+     * @brief NamedObjectWithID (Copy Constructor)
      * @param obj
      */
     NamedObjectWithID(const NamedObject &obj);
 
-    // Assignment Operator
     /**
-     * @brief
-     *
+     * @brief operator = (Assignment Operator)
      * @param obj
      */
     void operator=(const NamedObject &obj);
 
     /**
-     * @brief
-     *
-     * @return std::string
+     * @brief GetID
+     * @return
      */
     int GetID() const;
+
     /**
-     * @brief
-     *
-     * @param sName
+     * @brief SetID
+     * @param nID
      */
     void SetID(int nID);
 
