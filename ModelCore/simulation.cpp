@@ -8,8 +8,6 @@ namespace HabitatModel{
 
 Simulation::Simulation(const char * sName, int nID) : NamedObjectWithID(sName, nID)
 {
-
-
 }
 
 Simulation::Simulation(QDomElement * elSimulation)
@@ -28,7 +26,6 @@ Simulation::Simulation(QDomElement * elSimulation)
     //    <Folder>C:\Users\A01674762\Desktop\ScratchWorkspace\HabitatSuitabilityModeling\JohnStockton\Simulations\ChinookSpawner</Folder>
     //    <AddIndividualOutput>true</AddIndividualOutput>
     //    </Simulations>
-
 
     // First set all the member variables according to what's in the XML
     m_sfolder = elSimulation->firstChildElement("Folder").text();
@@ -50,7 +47,6 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_screated_by = elSimulation->firstChildElement("CreatedBy").text();
 
 }
-
 
 
 

@@ -24,12 +24,11 @@ public:
     void clean();
 
     Simulation(QDomElement *elSimulation);
+
 private:
 
     QString m_sfolder;
     QString m_screated_by;
-
-    QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
 
     QString m_screated_on;
     QString m_shsi_source_path;

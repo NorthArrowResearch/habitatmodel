@@ -11,9 +11,10 @@ public:
 
     HSISimulation(QDomElement *elSimulation);
 
+    void LoadHSCInputs();
 private:
     HSI * m_hsiRef;
-
+    QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
 };
 
 #endif // HSISIMULATION_H

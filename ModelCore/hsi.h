@@ -9,7 +9,7 @@
 
 namespace HabitatModel{
 
-class HSI : public NamedObject
+class HSI : public NamedObjectWithID
 {
 
 public:
@@ -21,6 +21,7 @@ public:
      */
     HSI(QDomElement *elHSI);
     void LoadCurves();
+    HSICurve *GetCurve(int nHSICurveID);
 private:
     QHash<int, HSICurve *> m_curves;
     NamedObjectWithID * m_lifestage;

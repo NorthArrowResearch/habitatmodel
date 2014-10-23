@@ -6,7 +6,7 @@
 
 namespace HabitatModel{
 
-HSI::HSI(QDomElement * elHSI) : NamedObject(elHSI, "Title")
+HSI::HSI(QDomElement * elHSI) : NamedObjectWithID(elHSI, "Title", "HSIID")
 {
 
     //    Example Node:
@@ -31,11 +31,20 @@ void HSI::LoadCurves(){
 
     for(int n= 0; n < elHSICurves.length(); n++){
         QDomElement elCurve = elHSICurves.at(n).toElement();
-        int nCurveID = elCurve.firstChildElement("HSICurveID").text().toInt();
-        m_curves.insert(nCurveID, new HSICurve(&elCurve));
+
+        // Only add a curve if it belongs to THIS HSI.
+        int nHSIID = elCurve.firstChildElement("HSIID").text().toInt();
+        if (nHSIID == this->GetID()){
+            int nCurveID = elCurve.firstChildElement("HSICurveID").text().toInt();
+            m_curves.insert(nCurveID, new HSICurve(&elCurve));
+        }
     }
 
 }
 
+
+HSICurve * HSI::GetCurve(int nHSICurveID){
+    return m_curves.value(nHSICurveID);
+}
 
 }
