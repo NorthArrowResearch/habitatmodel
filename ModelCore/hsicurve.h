@@ -18,10 +18,12 @@ public:
      */
     HSICurve(QDomElement *elHSICurve);
 
+    inline double GetWeight() { return m_fWeight;}
+
 private:
 
     HSC * m_hsc;
-    double m_weight;
+    double m_fWeight;
 
 };
 

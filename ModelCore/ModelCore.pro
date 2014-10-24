@@ -37,7 +37,9 @@ SOURCES += model.cpp \
     projectinputcsv.cpp \
     projectinputraster.cpp \
     projectinputvector.cpp \
-    hsisimulation.cpp
+    hsisimulation.cpp \
+    hsccategorical.cpp \
+    hscinflection.cpp
 
 HEADERS += model.h\
         modelcore_global.h \
@@ -60,7 +62,9 @@ HEADERS += model.h\
     projectinputcsv.h \
     projectinputraster.h \
     projectinputvector.h \
-    hsisimulation.h
+    hsisimulation.h \
+    hsccategorical.h \
+    hscinflection.h
 
 unix {
     target.path = /usr/lib

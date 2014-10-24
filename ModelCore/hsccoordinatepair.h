@@ -9,10 +9,14 @@ class HSCCoordinatePair
 {
 public:
     HSCCoordinatePair(QDomElement *elCoordinatePair);
+
+    inline double XValue() { return m_fXVal;}
+    inline double HSValue() { return m_fHSVal;}
+
 private:
     HSC * m_HSC;
-    int m_nXVal;
-    int m_nHSVal;
+    double m_fXVal;
+    double m_fHSVal;
 };
 
 }

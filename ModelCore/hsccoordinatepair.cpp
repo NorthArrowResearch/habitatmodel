@@ -14,10 +14,9 @@ HSCCoordinatePair::HSCCoordinatePair(QDomElement * elCoordinatePair)
     //</HSCCoordinatePairs>
 
     m_HSC = Project::GetHSC(elCoordinatePair, "HSCID");
-    m_nXVal = elCoordinatePair->firstChildElement("XValue").text().toInt();
-    m_nHSVal = elCoordinatePair->firstChildElement("HSValue").text().toInt();
+    m_fXVal = elCoordinatePair->firstChildElement("XValue").text().toDouble();
+    m_fHSVal = elCoordinatePair->firstChildElement("HSValue").text().toDouble();
 }
-
 
 
 }
