@@ -3,6 +3,7 @@
 
 #include <QString>
 
+namespace HabitatModelEngine {
 
 class HabitatModelEngine
 {
@@ -13,5 +14,7 @@ public:
 private:
     void RunHabitatModel(int argc, char * argv[]);
 };
+
+} // Habitat Model Engine
 
 #endif // HABITATMODELENGINE_H

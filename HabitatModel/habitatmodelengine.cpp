@@ -7,7 +7,7 @@
 
 #include "project.h"
 
-
+namespace HabitatModelEngine {
 
 HabitatModelEngine::HabitatModelEngine(int argc, char *argv[])
 {
@@ -82,3 +82,5 @@ QString HabitatModelEngine::GetFile(int argc, char * argv[], int nIndex, bool bM
 
     return sFile;
 }
+
+} //HabitatModelEngine
