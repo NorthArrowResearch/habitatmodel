@@ -1,9 +1,12 @@
 #include "hsisimulation.h"
 
 #include <QDomElement>
+#include <QHash>
 #include "hsi.h"
 #include "project.h"
 #include "projectinput.h"
+
+#include "extentrectangle.h"
 
 namespace HabitatModel{
 
@@ -20,6 +23,23 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 }
 
 void HSISimulation::RunSimulation(){
+
+    // Loop over the input store and do the union of all input rasters
+    QHashIterator<int, ProjectInput *> i(Project::GetProjectInputIterator());
+    while (i.hasNext()) {
+        i.next();
+        if (dynamic_cast<ProjectInputRaster*>(i.value())){
+            // this is where the extent builder stuff will live.
+//            RasterManager::ExtentRectangle
+        }
+    }
+
+    // Loop over the input store again and clal prepare on each input
+    QHashIterator<int, ProjectInput *> j(Project::GetProjectInputIterator());
+    while (j.hasNext()) {
+        j.next();
+        j.value()->Prepare();
+    }
 
     /*
      *  loop over the input store

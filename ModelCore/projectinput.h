@@ -64,7 +64,7 @@ public:
      */
     Unit * getUnit();
 
-
+    virtual void Prepare() = 0;
 
 private:
 

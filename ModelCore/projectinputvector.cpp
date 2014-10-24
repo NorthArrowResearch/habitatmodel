@@ -18,6 +18,10 @@ ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
 
 }
 
+void ProjectInputVector::Prepare(){
+
+}
+
 QString ProjectInputVector::getValueField()
 {
     return m_sValueField;

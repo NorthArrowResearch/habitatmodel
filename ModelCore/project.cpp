@@ -273,6 +273,12 @@ HSC * Project::GetHSC(QDomElement *elItem, QString sHSCName){
     return GetHSC(nVarID);
 }
 
+QHashIterator<int, ProjectInput *> Project::GetProjectInputIterator()
+{
+    QHashIterator<int, ProjectInput *> i(m_project_inputs_store);
+    return i;
+}
+
 
 QDomElement * Project::GetConfig()
 {

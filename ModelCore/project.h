@@ -135,12 +135,15 @@ public:
      */
     static HSC * GetHSC(QDomElement *elItem, QString sHSCName);
 
+    static QHashIterator<int, ProjectInput *> GetProjectInputIterator();
+
     /**
      * @brief GetProjectType
      * @param sInputFilePath QString to filepath
      * @return int enum ProjectInputTypeCodes
      */
     ProjectInputTypeCodes GetProjectType(QString sInputFilePath);
+
 
 
 private:

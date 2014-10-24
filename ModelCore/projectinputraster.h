@@ -24,6 +24,7 @@ public:
      */
     ProjectInputRaster(QDomElement *elProjectInput);
 
+    void Prepare();
 };
 
 }

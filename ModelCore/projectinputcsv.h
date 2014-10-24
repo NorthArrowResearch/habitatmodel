@@ -39,6 +39,7 @@ public:
      * @param sCSVFilePath
      */
     void CreateRasterFromCSV(QString sCSVFilePath);
+    void Prepare();
 private:
 
     QString m_sXField;

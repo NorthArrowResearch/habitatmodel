@@ -1,7 +1,6 @@
 #include "projectinputcsv.h"
 #include "projectinput.h"
 #include "project.h"
-#include "raster.h"
 
 namespace HabitatModel{
 
@@ -39,7 +38,10 @@ void ProjectInputCSV::CreateRasterFromCSV(QString sCSVFilePath){
     // Define a raster
     float fNoDataValue = (float) std::numeric_limits<float>::min();
 
-    RasterManager::Raster rOutput();
+
+}
+
+void ProjectInputCSV::Prepare(){
 
 }
 

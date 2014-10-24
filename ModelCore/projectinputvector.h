@@ -30,6 +30,8 @@ public:
     QString getValueField();
 
 
+    void Prepare();
+
 private:
     QString m_sValueField;
 };
