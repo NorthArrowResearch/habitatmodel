@@ -72,6 +72,9 @@ unix {
 }
 
 win32 {
+
+
+
     CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lRasterManager
     else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lRasterManager
 

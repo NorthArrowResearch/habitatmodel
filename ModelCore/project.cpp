@@ -89,6 +89,15 @@ void Project::Load(QString sXMLConfig)
     QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
     m_ConfigPath = &sXMLConfigDir;
 
+    // Make a temporary folder for this simulation
+    if (m_ConfigPath->mkdir("tmp")){
+        QDir tmpPath = QDir(sXMLConfig + "tmp");
+        m_TmpPath = &tmpPath;
+    }
+    else {
+        throw "Could not create temporary folder. Does it already exist?";
+    }
+
     xConfig.Load(sXMLConfig);
 
     m_elConfig = xConfig.Document()->documentElement();
@@ -290,5 +299,9 @@ QDir * Project::GetConfigPath()
     return m_ConfigPath;
 }
 
+QDir * Project::GetTmpPath()
+{
+    return m_TmpPath;
+}
 
 }

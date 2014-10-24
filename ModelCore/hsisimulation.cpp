@@ -5,8 +5,8 @@
 #include "hsi.h"
 #include "project.h"
 #include "projectinput.h"
+#include "rastermeta.h"
 
-#include "extentrectangle.h"
 
 namespace HabitatModel{
 
@@ -26,33 +26,36 @@ void HSISimulation::RunSimulation(){
 
     // Loop over the input store and do the union of all input rasters
     QHashIterator<int, ProjectInput *> i(Project::GetProjectInputIterator());
+    bool bFirst = true;
     while (i.hasNext()) {
         i.next();
         if (dynamic_cast<ProjectInputRaster*>(i.value())){
-            // this is where the extent builder stuff will live.
-//            RasterManager::ExtentRectangle
+            // Load the raster.
+            RasterManager::RasterMeta erRasterInput (i.value()->getSourceFilePath().toStdString().c_str());
+            // First time round set the bounds to the first raster we give it.
+            if (bFirst){
+                RasterManager::RasterMeta startingRect (&erRasterInput);
+                m_RasterTemplateMeta = &startingRect;
+                bFirst = false;
+            }
+            else {
+                m_RasterTemplateMeta->Union(&erRasterInput);
+            }
         }
     }
 
-    // Loop over the input store again and clal prepare on each input
+    // Loop over the input store again and call "prepare" on each input
     QHashIterator<int, ProjectInput *> j(Project::GetProjectInputIterator());
     while (j.hasNext()) {
         j.next();
         j.value()->Prepare();
     }
 
-    /*
-     *  loop over the input store
-     *       if raster then builf union extent
-     *
-     * Loop over input store
-     *     call input.prepare()
-     *
-     */
-
-
 }
 
+RasterManager::ExtentRectangle * HSISimulation::GetRasterExtents(){
+    return m_RasterExtents;
+}
 
 void HSISimulation::LoadHSCInputs(){
 

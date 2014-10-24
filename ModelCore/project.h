@@ -66,6 +66,12 @@ public:
     static QDir * GetConfigPath();
 
     /**
+     * @brief GetTmpPath
+     * @return
+     */
+    static QDir *GetTmpPath();
+
+    /**
      * @brief GetLookupTableItem
      * @param nid
      * @return
@@ -146,6 +152,7 @@ public:
 
 
 
+
 private:
     // Project Attributes
     QString qd_date_created;
@@ -158,6 +165,7 @@ private:
 
     // The path to that config file
     static QDir * m_ConfigPath;
+    static QDir * m_TmpPath;
     // The entire config file dom
     static QDomElement m_elConfig;
 
