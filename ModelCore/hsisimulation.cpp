@@ -54,7 +54,7 @@ void HSISimulation::RunSimulation(){
 }
 
 RasterManager::ExtentRectangle * HSISimulation::GetRasterExtents(){
-    return m_RasterExtents;
+    return m_RasterTemplateMeta;
 }
 
 void HSISimulation::LoadHSCInputs(){

@@ -8,19 +8,20 @@ namespace HabitatModel{
 ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
     : ProjectInput(elProjectInput)
 {
-//    <ProjectInputs>
-//      <InputID>2</InputID>
-//      <ProjectID>1</ProjectID>
-//      <Title>MinD0</Title>
-//      <SourceTypeID>61</SourceTypeID>
-//      <CreatedOn>2014-10-17T14:01:38.219-06:00</CreatedOn>
-//      <SourcePath>C:\Users\A01674762\Desktop\TrafficSchoolInfo.csv</SourcePath>
-//      <FieldName>depth</FieldName>
-//      <xField>x</xField>
-//      <yField>y</yField>
-//      <UnitID>15</UnitID>
-//      <VariableID>9</VariableID>
-//    </ProjectInputs>
+
+    //    <ProjectInputs>
+    //      <InputID>2</InputID>
+    //      <ProjectID>1</ProjectID>
+    //      <Title>MinD0</Title>
+    //      <SourceTypeID>61</SourceTypeID>
+    //      <CreatedOn>2014-10-17T14:01:38.219-06:00</CreatedOn>
+    //      <SourcePath>C:\Users\A01674762\Desktop\TrafficSchoolInfo.csv</SourcePath>
+    //      <FieldName>depth</FieldName>
+    //      <xField>x</xField>
+    //      <yField>y</yField>
+    //      <UnitID>15</UnitID>
+    //      <VariableID>9</VariableID>
+    //    </ProjectInputs>
 
     m_sXField  = elProjectInput->firstChildElement("xField").text().toInt();
     m_sYField  = elProjectInput->firstChildElement("yField").text().toInt();
@@ -28,13 +29,15 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
 
 }
 
-void ProjectInputCSV::Prepare(){
+void ProjectInputCSV::Prepare(RasterManager::RasterMeta * csvRasterMeta){
 
+    // TODO: build safe filename from csv input
+    // simulationname-hsisimulation-inputid-fname.tif
     QString sNewRasterPath = Project::GetTmpPath()->absolutePath().append("somename.tif");
 
     RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
                                sNewRasterPath.toStdString().c_str(),
-                               GetRasterExtents(),
+                               csvRasterMeta,
                                m_sXField, m_sYField, m_FieldName);
 }
 

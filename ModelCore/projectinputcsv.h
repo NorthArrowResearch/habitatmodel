@@ -4,7 +4,10 @@
 #include <QString>
 #include "projectinput.h"
 
+
 namespace HabitatModel{
+
+class RasterMeta;
 
 class ProjectInputCSV : public ProjectInput
 {
@@ -14,7 +17,7 @@ public:
      * @brief ProjectInputCSV
      * @param elProjectInput
      */
-    ProjectInputCSV(QDomElement *elProjectInput);
+    ProjectInputCSV(QDomElement * elProjectInput);
 
     /**
      * @brief getXField
@@ -39,7 +42,7 @@ public:
      * @param sCSVFilePath
      */
     void CreateRasterFromCSV(QString sCSVFilePath);
-    void Prepare();
+    void Prepare(RasterMeta *csvRasterMeta);
 private:
 
     QString m_sXField;
