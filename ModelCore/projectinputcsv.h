@@ -3,11 +3,10 @@
 
 #include <QString>
 #include "projectinput.h"
+#include "raster.h"
 
 
 namespace HabitatModel{
-
-class RasterMeta;
 
 class ProjectInputCSV : public ProjectInput
 {
@@ -42,12 +41,18 @@ public:
      * @param sCSVFilePath
      */
     void CreateRasterFromCSV(QString sCSVFilePath);
-    void Prepare(RasterMeta *csvRasterMeta);
+
+    /**
+     * @brief Prepare
+     * @param csvRasterMeta
+     */
+    void Prepare(RasterManager::RasterMeta * csvRasterMeta);
+
 private:
 
-    QString m_sXField;
-    QString m_sYField;
-    QString m_FieldName;
+    QString m_sXFieldName;
+    QString m_sYFieldName;
+    QString m_sFieldName;
 
 };
 

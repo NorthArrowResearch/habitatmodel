@@ -73,27 +73,58 @@ unix {
 
 win32 {
 
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/RasterManager/release/ -lRasterManager
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/RasterManager/debug/ -lRasterManager
+    ## Windows common build here
+    !contains(QMAKE_TARGET.arch, x86_64) {
+        message("x86 build")
 
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Release/GCDCore/release/ -lGCDCore
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-GCDCPP-Desktop_Qt_5_3_0_MSVC2010_OpenGL_32bit-Debug/GCDCore/debug/ -lGCDCore
+        # Compile to a central location
+        CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release32
+        else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug32
+
+        LIBS += -L$$PWD/../Libraries/gdalwin32-1.10.1/lib/ -lgdal_i
+        INCLUDEPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
+        DEPENDPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
+
+        CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release32 -lRasterManager
+        else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug32 -lRasterManager
+
+        CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release32 -lGCDCore
+        else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug32 -lGCDCore
+
+    } else {
+        message("x86_64 build")
+
+        # Locate GDAL
+        LIBS += -L$$PWD/../Libraries/gdalwin64-1.10.1/lib/ -lgdal_i
+        INCLUDEPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
+        DEPENDPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
+
+        CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release64 -lRasterManager
+        else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug64 -lRasterManager
+
+        CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release64 -lGCDCore
+        else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug64 -lGCDCore
+    }
 }
 unix{
+
+    # Compile to a central location
+    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
+    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
 
     LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
     INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
     DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
 
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/GCDCore/ -lGCDCore
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Debug/GCDCore/ -lGCDCore
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release -lRasterManager
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug -lRasterManager
 
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Release/RasterManager/ -lRasterManager
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../GCD/build-gcd-console-Desktop_Qt_5_3_clang_64bit-Debug/RasterManager/ -lRasterManager
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release -lGCDCore
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug -lGCDCore
 }
 
 INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
 DEPENDPATH += $$PWD/../../../GCD/gcd-console/GCDCore
 
-INCLUDEPATH += $$PWD/../../../GCD/gcd-console/RasterManager
-DEPENDPATH += $$PWD/../../../GCD/gcd-console/RasterManager
+INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager

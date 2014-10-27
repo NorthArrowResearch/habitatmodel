@@ -34,7 +34,7 @@ void HSISimulation::RunSimulation(){
             RasterManager::RasterMeta erRasterInput (i.value()->getSourceFilePath().toStdString().c_str());
             // First time round set the bounds to the first raster we give it.
             if (bFirst){
-                RasterManager::RasterMeta startingRect (&erRasterInput);
+                RasterManager::RasterMeta startingRect (erRasterInput);
                 m_RasterTemplateMeta = &startingRect;
                 bFirst = false;
             }

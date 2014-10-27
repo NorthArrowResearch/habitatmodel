@@ -166,6 +166,7 @@ private:
     // The path to that config file
     static QDir * m_ConfigPath;
     static QDir * m_TmpPath;
+
     // The entire config file dom
     static QDomElement m_elConfig;
 

@@ -23,9 +23,9 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
     //      <VariableID>9</VariableID>
     //    </ProjectInputs>
 
-    m_sXField  = elProjectInput->firstChildElement("xField").text().toInt();
-    m_sYField  = elProjectInput->firstChildElement("yField").text().toInt();
-    m_FieldName  = elProjectInput->firstChildElement("FieldName").text().toInt();
+    m_sXFieldName  = elProjectInput->firstChildElement("xField").text();
+    m_sYFieldName  = elProjectInput->firstChildElement("yField").text();
+    m_sFieldName  = elProjectInput->firstChildElement("FieldName").text();
 
 }
 
@@ -36,24 +36,26 @@ void ProjectInputCSV::Prepare(RasterManager::RasterMeta * csvRasterMeta){
     QString sNewRasterPath = Project::GetTmpPath()->absolutePath().append("somename.tif");
 
     RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
-                               sNewRasterPath.toStdString().c_str(),
-                               csvRasterMeta,
-                               m_sXField, m_sYField, m_FieldName);
+                                       sNewRasterPath.toStdString().c_str(),
+                                       m_sXFieldName.toStdString().c_str(),
+                                       m_sYFieldName.toStdString().c_str(),
+                                       m_sFieldName.toStdString().c_str(),
+                                       csvRasterMeta);
 }
 
 QString ProjectInputCSV::getXField()
 {
-    return m_sXField;
+    return m_sXFieldName;
 }
 
 QString ProjectInputCSV::getYField()
 {
-    return m_sYField;
+    return m_sYFieldName;
 }
 
 QString ProjectInputCSV::getValueField()
 {
-    return m_FieldName;
+    return m_sFieldName;
 }
 
 }

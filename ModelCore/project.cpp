@@ -32,6 +32,7 @@ QHash<int, HSC *> Project::m_HSC_store;
 
 QDomElement Project::m_elConfig;
 QDir * Project::m_ConfigPath;
+QDir * Project::m_TmpPath;
 
 /* --------------------------------------------------------------- */
 
@@ -171,8 +172,8 @@ void Project::LoadProjectInputs(){
             m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_CSV :
-            p_projectinput = new ProjectInputCSV(&elProjectInput);
-            m_project_inputs_store.insert(n, p_projectinput);
+            //p_projectinput = new ProjectInputCSV(&elProjectInput);
+            //m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
             throw "No valid file detected";
