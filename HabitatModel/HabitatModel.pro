@@ -41,6 +41,9 @@ win32 {
         INCLUDEPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
         DEPENDPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
 
+        CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release32 -lModelCore
+        else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug32 -lModelCore
+
     } else {
         message("x86_64 build")
 
@@ -48,6 +51,10 @@ win32 {
         LIBS += -L$$PWD/../Libraries/gdalwin64-1.10.1/lib/ -lgdal_i
         INCLUDEPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
         DEPENDPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
+
+        CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release64 -lModelCore
+        else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug64 -lModelCore
+
     }
 }
 
