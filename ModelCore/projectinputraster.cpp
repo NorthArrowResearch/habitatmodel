@@ -12,6 +12,7 @@ ProjectInputRaster::ProjectInputRaster(const char *sName, int nID) :
 
 void ProjectInputRaster::Prepare(){
 
+
 }
 
 ProjectInputRaster::ProjectInputRaster(QDomElement * elProjectInput)

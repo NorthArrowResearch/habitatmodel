@@ -4,11 +4,13 @@
 #include "unit.h"
 #include "hmvariable.h"
 #include "namedobject.h"
+#include "rastermeta.h"
+#include <QDir>
 
 namespace HabitatModel{
 
 class ProjectInputVector;
-class ProjectInputRaser;
+class ProjectInputRaster;
 class ProjectInputCSV;
 
 class ProjectInput : public NamedObjectWithID
@@ -29,42 +31,45 @@ public:
     ProjectInput(QDomElement *elProjectInput);
 
     /**
-     * @brief getProject
-     * @return
-     */
-    //Project * getProject();
-
-    /**
      * @brief getSourceType
      * @return
      */
-    NamedObjectWithID * getSourceType();
+    inline NamedObjectWithID * getSourceType() { return m_source_type;  }
 
     /**
      * @brief getCreatedOn
      * @return
      */
-    QString getCreatedOn();
+    inline QString getCreatedOn() { return m_screated_on; }
 
     /**
      * @brief getSourcePath
      * @return
      */
-    QString getSourceFilePath();
+    inline QString getSourceFilePath() { return m_sourcefilepath; }
 
     /**
      * @brief getVariable
      * @return
      */
-    HMVariable * getVariable();
+    inline HMVariable * getVariable() { return m_variable; }
 
     /**
      * @brief getUnit
      * @return
      */
-    Unit * getUnit();
+    inline Unit * getUnit() { return m_unit; }
+
+    /**
+     * @brief getFileName
+     * @return
+     */
+    inline QString getFileName(){
+        return QFileInfo(m_sourcefilepath).fileName();
+    }
 
     virtual void Prepare() = 0;
+
 
 private:
 

@@ -23,16 +23,12 @@ public:
      */
     void LoadHSCInputs();
 
-    void RunSimulation();
-
-    RasterManager::ExtentRectangle *GetRasterExtents();
 private:
 
     void PrepareVectorRasters();
     void PrepareCSVRasters();
     void PrepareRasters();
 
-    RasterManager::RasterMeta * m_RasterTemplateMeta;
 
     HSI * m_hsiRef;
 

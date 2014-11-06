@@ -57,26 +57,27 @@ public:
      * @brief GetConfig
      * @return
      */
-    static QDomElement * GetConfig();
+    inline static QDomElement * GetConfig() { return &m_elConfig; }
 
     /**
      * @brief GetConfigPath
      * @return
      */
-    static QDir * GetConfigPath();
+    inline static QDir * GetConfigPath() { return m_ConfigPath; }
 
     /**
      * @brief GetTmpPath
      * @return
      */
-    static QDir *GetTmpPath();
+    inline static QDir * GetTmpPath() { return m_TmpPath; }
+
 
     /**
      * @brief GetLookupTableItem
      * @param nid
      * @return
      */
-    static NamedObjectWithID * GetLookupTableItem(int nid);
+    inline static NamedObjectWithID * GetLookupTableItem(int nlistid) { return m_lookup_table.value(nlistid); }
 
     /**
      * @brief GetLookupTableItem -- convenience function to get a lookup table value from
@@ -86,7 +87,11 @@ public:
      * @param sValIDName
      * @return
      */
-    static NamedObjectWithID * GetLookupTableItem(QDomElement *elItem, QString sValIDName);
+    inline static NamedObjectWithID * GetLookupTableItem(QDomElement *elItem, QString sValIDName)
+    {
+        int nValID = elItem->firstChildElement(sValIDName).text().toInt();
+        return GetLookupTableItem(nValID);
+    }
 
     /**
      * @brief GetLookupTableItem
@@ -94,14 +99,18 @@ public:
      * @param sValIDName
      * @return
      */
-    static NamedObjectWithID * GetLookupTableItem(QDomNode *elItem, QString sValIDName);
+    inline static NamedObjectWithID * GetLookupTableItem(QDomNode *elItem, QString sValIDName)
+    {
+        int nValID = elItem->firstChildElement(sValIDName).text().toInt();
+        return GetLookupTableItem(nValID);
+    }
 
     /**
      * @brief GetVariable
      * @param nid
      * @return
      */
-    static HMVariable * GetVariable(int nid);
+    inline static HMVariable * GetVariable(int nid){ return m_hmvariable_store.value(nid); }
 
     /**
      * @brief GetVariable
@@ -109,14 +118,17 @@ public:
      * @param sValIDName
      * @return
      */
-    static HMVariable * GetVariable(QDomElement *elItem, QString sValIDName);
+    inline static HMVariable * GetVariable(QDomElement *elItem, QString sValIDName){
+        int nVarID = elItem->firstChildElement(sValIDName).text().toInt();
+        return GetVariable(nVarID);
+    }
 
     /**
      * @brief GetUnit
      * @param nid
      * @return
      */
-    static Unit * GetUnit(int nid);
+    inline static Unit * GetUnit(int nid){ return m_unit_store.value(nid); }
 
     /**
      * @brief GetUnit
@@ -124,14 +136,17 @@ public:
      * @param sUnitName
      * @return
      */
-    static Unit * GetUnit(QDomElement *elItem, QString sUnitName);
+    inline static Unit * GetUnit(QDomElement *elItem, QString sUnitName){
+        int nVarID = elItem->firstChildElement(sUnitName).text().toInt();
+        return GetUnit(nVarID);
+    }
 
     /**
      * @brief GetHSC
      * @param nid
      * @return
      */
-    static HSC * GetHSC(int nid);
+    inline static HSC * GetHSC(int nid){ return m_HSC_store.value(nid); }
 
     /**
      * @brief GetHSC
@@ -139,9 +154,19 @@ public:
      * @param sHSCName
      * @return
      */
-    static HSC * GetHSC(QDomElement *elItem, QString sHSCName);
+    inline static HSC * GetHSC(QDomElement *elItem, QString sHSCName){
+        int nVarID = elItem->firstChildElement(sHSCName).text().toInt();
+        return GetHSC(nVarID);
+    }
 
-    static QHashIterator<int, ProjectInput *> GetProjectInputIterator();
+    /**
+     * @brief Project::GetProjectInputIterator
+     * @return
+     */
+    inline static QHashIterator<int, ProjectInput *> GetProjectInputIterator() {
+        QHashIterator<int, ProjectInput *> i(m_project_inputs_store);
+        return i;
+    }
 
     /**
      * @brief GetProjectType
@@ -150,8 +175,18 @@ public:
      */
     ProjectInputTypeCodes GetInputType(QString sInputFilePath);
 
+    /**
+     * @brief PrepareProjectInputs
+     */
+    void PrepareProjectInputs();
 
-
+    /**
+     * @brief GetRasterExtentMeta
+     * @return
+     */
+    inline static RasterManager::RasterMeta * GetRasterExtentMeta(){
+        return m_RasterTemplateMeta;
+    }
 
 private:
     // Project Attributes
@@ -179,6 +214,7 @@ private:
 
     static QHash<int, NamedObjectWithID *> m_lookup_table;
     static QHash<int, ProjectInput *> m_project_inputs_store;
+    static RasterManager::RasterMeta * m_RasterTemplateMeta;
 
 };
 

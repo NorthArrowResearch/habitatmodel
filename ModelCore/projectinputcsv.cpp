@@ -29,18 +29,18 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
 
 }
 
-void ProjectInputCSV::Prepare(RasterManager::RasterMeta * csvRasterMeta){
+void ProjectInputCSV::Prepare(){
 
     // TODO: build safe filename from csv input
     // simulationname-hsisimulation-inputid-fname.tif
-    QString sNewRasterPath = Project::GetTmpPath()->absolutePath().append("somename.tif");
+    QString sNewRasterPath = Project::GetTmpPath()->absolutePath().append("INPUT-" + getFileName() );
 
     RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
                                        sNewRasterPath.toStdString().c_str(),
                                        m_sXFieldName.toStdString().c_str(),
                                        m_sYFieldName.toStdString().c_str(),
                                        m_sFieldName.toStdString().c_str(),
-                                       csvRasterMeta);
+                                       Project::GetRasterExtentMeta() );
 }
 
 QString ProjectInputCSV::getXField()

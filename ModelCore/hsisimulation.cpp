@@ -22,40 +22,6 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     LoadHSCInputs();
 }
 
-void HSISimulation::RunSimulation(){
-
-    // Loop over the input store and do the union of all input rasters
-    QHashIterator<int, ProjectInput *> i(Project::GetProjectInputIterator());
-    bool bFirst = true;
-    while (i.hasNext()) {
-        i.next();
-        if (dynamic_cast<ProjectInputRaster*>(i.value())){
-            // Load the raster.
-            RasterManager::RasterMeta erRasterInput (i.value()->getSourceFilePath().toStdString().c_str());
-            // First time round set the bounds to the first raster we give it.
-            if (bFirst){
-                RasterManager::RasterMeta startingRect (erRasterInput);
-                m_RasterTemplateMeta = &startingRect;
-                bFirst = false;
-            }
-            else {
-                m_RasterTemplateMeta->Union(&erRasterInput);
-            }
-        }
-    }
-
-    // Loop over the input store again and call "prepare" on each input
-    QHashIterator<int, ProjectInput *> j(Project::GetProjectInputIterator());
-    while (j.hasNext()) {
-        j.next();
-        j.value()->Prepare();
-    }
-
-}
-
-RasterManager::ExtentRectangle * HSISimulation::GetRasterExtents(){
-    return m_RasterTemplateMeta;
-}
 
 void HSISimulation::LoadHSCInputs(){
 

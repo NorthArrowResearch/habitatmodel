@@ -45,7 +45,7 @@ public:
      * @brief Prepare
      * @param csvRasterMeta
      */
-    void Prepare(RasterManager::RasterMeta * csvRasterMeta);
+    void Prepare();
 
 private:
 

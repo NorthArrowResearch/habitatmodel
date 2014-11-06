@@ -33,34 +33,6 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
 
 }
 
-//Project * ProjectInput::getProject()
-//{
-////    return m_project;
-//}
 
-NamedObjectWithID * ProjectInput::getSourceType()
-{
-    return m_source_type;
-}
-
-QString ProjectInput::getCreatedOn()
-{
-    return m_screated_on;
-}
-
-QString ProjectInput::getSourceFilePath()
-{
-    return m_sourcefilepath;
-}
-
-HMVariable * ProjectInput::getVariable()
-{
-    return m_variable;
-}
-
-Unit * ProjectInput::getUnit()
-{
-    return m_unit;
-}
 
 }

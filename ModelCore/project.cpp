@@ -33,6 +33,7 @@ QHash<int, HSC *> Project::m_HSC_store;
 QDomElement Project::m_elConfig;
 QDir * Project::m_ConfigPath;
 QDir * Project::m_TmpPath;
+RasterManager::RasterMeta * Project::m_RasterTemplateMeta;
 
 /* --------------------------------------------------------------- */
 
@@ -123,6 +124,9 @@ void Project::Load(QString sXMLConfig)
 
         LoadProjectInputs();
 
+        // Calculate the raster union and make rasters from CSV
+        PrepareProjectInputs();
+
         int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
         int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
 
@@ -152,6 +156,7 @@ void Project::Load(QString sXMLConfig)
 }
 
 void Project::LoadProjectInputs(){
+
     QDomNodeList elProjectInputs = m_elConfig.elementsByTagName("ProjectInputs");
 
     for(int n= 0; n < elProjectInputs.length(); n++){
@@ -159,32 +164,65 @@ void Project::LoadProjectInputs(){
 
         QDomElement elProjectInput = elProjectInputs.at(n).toElement();
         QString sInputFilepath = elProjectInput.firstChildElement("SourcePath").text();
+
         int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
         int nproject_type = GetInputType(sInputFilepath);
 
         switch(nproject_type) {
+
         case PROJECT_INPUT_RASTER :
             p_projectinput = new ProjectInputRaster(&elProjectInput);
-            m_project_inputs_store.insert(nProjectInputID, p_projectinput);
+            m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_VECTOR :
             p_projectinput = new ProjectInputVector(&elProjectInput);
             m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_CSV :
-//            p_projectinput = new ProjectInputCSV(&elProjectInput);
-//            m_project_inputs_store.insert(n, p_projectinput);
+            p_projectinput = new ProjectInputCSV(&elProjectInput);
+            m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
             throw "No valid file detected";
             break;
+
         }
+    }
+}
+
+void Project::PrepareProjectInputs(){
+
+    // First do the Rasters to find the union intersection
+    // RasterMeta
+    QHashIterator<int, ProjectInput *> rInputs(m_project_inputs_store);
+    bool bFirst = true;
+    while (rInputs.hasNext()) {
+        rInputs.next();
+        if (dynamic_cast<ProjectInputRaster*>(rInputs.value())){
+            // Load the raster.
+            RasterManager::RasterMeta erRasterInput (rInputs.value()->getSourceFilePath().toStdString().c_str());
+            // First time round set the bounds to the first raster we give it.
+            if (bFirst){
+                RasterManager::RasterMeta startingRect (erRasterInput);
+                m_RasterTemplateMeta = &startingRect;
+                bFirst = false;
+            }
+            else {
+                m_RasterTemplateMeta->Union(&erRasterInput);
+            }
+        }
+    }
+    rInputs.toFront();
+    // Next Call Prepare on Each Raster
+    while (rInputs.hasNext()) {
+        rInputs.next();
+        rInputs.value()->Prepare();
     }
 }
 
 HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath){
 
-    if(sInputFilePath.endsWith(".tif")) {
+    if(sInputFilePath.endsWith(".tif") || sInputFilePath.endsWith(".tiff")) {
         return PROJECT_INPUT_RASTER;
     }
     else if(sInputFilePath.endsWith(".shp")){
@@ -239,70 +277,5 @@ void Project::LoadHSCs(){
     }
 }
 
-
-NamedObjectWithID * Project::GetLookupTableItem(int nlistid)
-{
-    return m_lookup_table.value(nlistid);
-}
-
-NamedObjectWithID * Project::GetLookupTableItem(QDomNode *elItem, QString sValIDName)
-{
-    int nValID = elItem->firstChildElement(sValIDName).text().toInt();
-    return GetLookupTableItem(nValID);
-}
-NamedObjectWithID * Project::GetLookupTableItem(QDomElement *elItem, QString sValIDName)
-{
-    int nValID = elItem->firstChildElement(sValIDName).text().toInt();
-    return GetLookupTableItem(nValID);
-}
-
-HMVariable * Project::GetVariable(int nid){
-    return m_hmvariable_store.value(nid);
-}
-
-HMVariable * Project::GetVariable(QDomElement *elItem, QString sValIDName){
-    int nVarID = elItem->firstChildElement(sValIDName).text().toInt();
-    return GetVariable(nVarID);
-}
-
-Unit * Project::GetUnit(int nid){
-    return m_unit_store.value(nid);
-}
-
-Unit * Project::GetUnit(QDomElement *elItem, QString sUnitName){
-    int nVarID = elItem->firstChildElement(sUnitName).text().toInt();
-    return GetUnit(nVarID);
-}
-
-HSC * Project::GetHSC(int nid){
-    return m_HSC_store.value(nid);
-}
-
-HSC * Project::GetHSC(QDomElement *elItem, QString sHSCName){
-    int nVarID = elItem->firstChildElement(sHSCName).text().toInt();
-    return GetHSC(nVarID);
-}
-
-QHashIterator<int, ProjectInput *> Project::GetProjectInputIterator()
-{
-    QHashIterator<int, ProjectInput *> i(m_project_inputs_store);
-    return i;
-}
-
-
-QDomElement * Project::GetConfig()
-{
-    return &m_elConfig;
-}
-
-QDir * Project::GetConfigPath()
-{
-    return m_ConfigPath;
-}
-
-QDir * Project::GetTmpPath()
-{
-    return m_TmpPath;
-}
 
 }
