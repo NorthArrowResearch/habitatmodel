@@ -148,7 +148,7 @@ public:
      * @param sInputFilePath QString to filepath
      * @return int enum ProjectInputTypeCodes
      */
-    ProjectInputTypeCodes GetProjectType(QString sInputFilePath);
+    ProjectInputTypeCodes GetInputType(QString sInputFilePath);
 
 
 

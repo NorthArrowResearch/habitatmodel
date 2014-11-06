@@ -158,9 +158,9 @@ void Project::LoadProjectInputs(){
         ProjectInput * p_projectinput;
 
         QDomElement elProjectInput = elProjectInputs.at(n).toElement();
-        QString sinputfilepath = elProjectInput.firstChildElement("SourcePath").text();
+        QString sInputFilepath = elProjectInput.firstChildElement("SourcePath").text();
         int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
-        int nproject_type = GetProjectType(sinputfilepath);
+        int nproject_type = GetInputType(sInputFilepath);
 
         switch(nproject_type) {
         case PROJECT_INPUT_RASTER :
@@ -172,8 +172,8 @@ void Project::LoadProjectInputs(){
             m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_CSV :
-            //p_projectinput = new ProjectInputCSV(&elProjectInput);
-            //m_project_inputs_store.insert(n, p_projectinput);
+//            p_projectinput = new ProjectInputCSV(&elProjectInput);
+//            m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
             throw "No valid file detected";
@@ -182,7 +182,7 @@ void Project::LoadProjectInputs(){
     }
 }
 
-HabitatModel::ProjectInputTypeCodes Project::GetProjectType(QString sInputFilePath){
+HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath){
 
     if(sInputFilePath.endsWith(".tif")) {
         return PROJECT_INPUT_RASTER;

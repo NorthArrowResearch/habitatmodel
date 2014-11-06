@@ -10,8 +10,7 @@ namespace HabitatModel{
 
 class ProjectInputCSV : public ProjectInput
 {
-public:
-
+public:    
     /**
      * @brief ProjectInputCSV
      * @param elProjectInput
