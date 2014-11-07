@@ -11,7 +11,7 @@ namespace HabitatModel{
 
 class HSICurve
 {
-public:    
+public:
     /**
      * @brief HSICurve
      * @param elHSICurve the Dom node containing the HSI Curve
@@ -19,6 +19,7 @@ public:
     HSICurve(QDomElement *elHSICurve);
 
     inline double GetWeight() { return m_fWeight;}
+    inline HSC * GetHSC(){ return m_hsc; }
 
 private:
 

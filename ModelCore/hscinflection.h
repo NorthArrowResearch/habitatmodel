@@ -7,23 +7,27 @@
 
 namespace HabitatModel {
 
-class HSCInflection : HSC
+class HSCInflection : public HSC
 {
 public:
     HSCInflection(QDomElement * elHSC);
     ~HSCInflection();
 
-    // Gets the habitat utilization value for the specified input variable value
+    /**
+     * @brief AddCoordinatePair
+     * @param nHSCID
+     * @param pHSCCoordPair
+     */
+    inline void AddCoordinatePair(int nHSCID, HSCCoordinatePair * pHSCCoordPair){ m_coordinate_pairs.insert(nHSCID, pHSCCoordPair);  }
+
+    /**
+     * @brief GetHSValue: Gets the habitat utilization value for the specified input variable value
+     * @param fInputValue
+     * @return
+     */
     double GetHSValue(double fInputValue);
 
 private:
-    /**
-     * @brief LoadCoordinatePairs load all related
-     * coordinate pairs using the XML config
-     * file
-     */
-    void LoadCoordinatePairs();
-
 
     // We have some stores of objects related to this
     // HSC that we need to look up

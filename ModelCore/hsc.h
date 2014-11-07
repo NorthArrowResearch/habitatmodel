@@ -19,6 +19,7 @@ public:
      */
     HSC(QDomElement *elHSC);
 
+
 private:
     NamedObjectWithID * m_source;
     NamedObjectWithID * m_lifestage;

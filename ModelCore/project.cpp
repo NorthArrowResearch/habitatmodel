@@ -12,6 +12,8 @@
 #include "hmvariable.h"
 #include "unit.h"
 #include "hsc.h"
+#include "hsccategorical.h"
+#include "hscinflection.h"
 #include "hmvariable.h"
 #include "projectinput.h"
 #include "projectinputcsv.h"
@@ -30,6 +32,8 @@ QHash<int, NamedObjectWithID *> Project::m_lookup_table;
 QHash<int, ProjectInput *> Project::m_project_inputs_store;
 QHash<int, HSC *> Project::m_HSC_store;
 
+ Simulation * Project::m_simulation;
+
 QDomElement Project::m_elConfig;
 QDir * Project::m_ConfigPath;
 QDir * Project::m_TmpPath;
@@ -43,7 +47,14 @@ Project::Project(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile)
 {
     QString temp = sXMLOutput;
     temp = sXMLLogFile;
+
+    // Load the object model into memory:
+    // Also do all the in between steps
     Load(sXMLConfig);
+
+    // Run the actual simulations. This is a polymorhic virtual function.
+    m_simulation->Run();
+
 }
 
 Project::~Project(){
@@ -82,6 +93,8 @@ Project::~Project(){
         m.next();
         delete m.value();
     }
+
+    delete m_simulation;
 }
 
 void Project::Load(QString sXMLConfig)
@@ -114,8 +127,6 @@ void Project::Load(QString sXMLConfig)
         throw "The main Simulation node is missing from the Configuration XML file.";
     else
     {
-        Simulation * p_simulation;
-
         // Populate our lookup table hashes
         LoadLookupTable();
         LoadHMVariables();
@@ -127,8 +138,11 @@ void Project::Load(QString sXMLConfig)
         // Calculate the raster union and make rasters from CSV
         PrepareProjectInputs();
 
+        int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
+
         int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
         int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
+
 
         bool bHSIID, bFISID;
 
@@ -142,11 +156,11 @@ void Project::Load(QString sXMLConfig)
         }
 
         if (bHSIID){
-            p_simulation = new HSISimulation (&elSimulation);
+            m_simulation = new HSISimulation(&elSimulation);
         }
-        //        else if(bFISID){
-        //            //             p_simulation = FISSimulation (&elSimulation);
-        //        }
+        else if(bFISID){
+//             m_simulation = new FISSimulation (&elSimulation);
+        }
         else{
             throw "No valid HSI or FIS nodes found in the config file.";
         }
@@ -250,6 +264,7 @@ void Project::LoadLookupTable(){
 void Project::LoadUnits(){
     QDomNodeList elUnits = m_elConfig.elementsByTagName("Units");
 
+    // Loop over all Unit elements in the XML file.
     for(int n= 0; n < elUnits.length(); n++){
         QDomElement elUnit = elUnits.at(n).toElement();
         int nListItemID = elUnit.firstChildElement("UnitID").text().toInt();
@@ -260,6 +275,7 @@ void Project::LoadUnits(){
 void Project::LoadHMVariables(){
     QDomNodeList elvars = m_elConfig.elementsByTagName("Variables");
 
+    // Loop over all HMVariable elements in the XML file
     for(int n= 0; n < elvars.length(); n++){
         QDomElement elvar = elvars.at(n).toElement();
         int nvarID = elvar.firstChildElement("VariableID").text().toInt();
@@ -267,14 +283,61 @@ void Project::LoadHMVariables(){
     }
 }
 
-void Project::LoadHSCs(){
-    QDomNodeList elHSCs = m_elConfig.elementsByTagName("HSC");
+HSC * Project::LoadHSC(int nNewHSCID, int nType){
 
-    for(int n= 0; n < elHSCs.length(); n++){
-        QDomElement elHSC = elHSCs.at(n).toElement();
-        int HSCID = elHSC.firstChildElement("VariableID").text().toInt();
-        m_HSC_store.insert(HSCID, new HSC(&elHSC));
+    // Create one if it doesn't exist.
+    if ( !GetHSC(nNewHSCID) ){
+
+        QDomNodeList elHSCs = m_elConfig.elementsByTagName("HSC");
+
+        for(int nc= 0; nc < elHSCs.length(); nc++){
+            QDomElement elHSC = elHSCs.at(nc).toElement();
+            int nHSCID = elHSC.firstChildElement("HSCID").text().toInt();
+            if (nNewHSCID == nHSCID){
+                HSC * p_newHSC;
+                switch (nType) {
+                case HSC_CATEGORICAL:
+                    p_newHSC = new HSCInflection(&elHSC);
+                    m_HSC_store.insert(nHSCID, p_newHSC);
+                    break;
+                case HSC_INFLECTION:
+                    p_newHSC = new HSCCategorical(&elHSC);
+                    m_HSC_store.insert(nHSCID, p_newHSC);
+                    break;
+                }
+            }
+        }
     }
+    // Return the one we want.
+    return m_HSC_store.value(nNewHSCID);
+}
+
+void Project::LoadHSCs(){
+
+    // Load first the coordinate pairs and then the HSC categories. If the parent
+    // HSC doesn't exist it is created.
+    QDomNodeList elHSCCoordPairs = m_elConfig.elementsByTagName("HSCCoordinatePairs");
+
+    for(int ncp= 0; ncp < elHSCCoordPairs.length(); ncp++){
+        QDomElement elCoordinatePair = elHSCCoordPairs.at(ncp).toElement();
+        int nCoordinatePairID = elCoordinatePair.firstChildElement("CoordinatePairID").text().toInt();
+        int nHSCID = elCoordinatePair.firstChildElement("HSCID").text().toInt();
+
+        HSCInflection * pHSCInflection = (HSCInflection*) LoadHSC(nHSCID, HSC_INFLECTION);
+        pHSCInflection->AddCoordinatePair(nCoordinatePairID, new HSCCoordinatePair(&elCoordinatePair));
+    }
+
+    QDomNodeList elHSCCategories = m_elConfig.elementsByTagName("HSCCategories");
+
+    for(int ncat= 0; ncat < elHSCCategories.length(); ncat++){
+        QDomElement elCategory = elHSCCategories.at(ncat).toElement();
+        int nCatID = elCategory.firstChildElement("CategoryID").text().toInt();
+        int nHSCID = elCategory.firstChildElement("HSCID").text().toInt();
+
+        HSCCategorical * pHSCCategorical = (HSCCategorical*) LoadHSC(nHSCID, HSC_CATEGORICAL);
+        pHSCCategorical->AddCategory(nCatID, new HSCCategory(&elCategory));
+    }
+
 }
 
 

@@ -47,6 +47,8 @@ public:
      */
     void Prepare();
 
+
+
 private:
 
     QString m_sXFieldName;

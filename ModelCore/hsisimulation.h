@@ -23,12 +23,14 @@ public:
      */
     void LoadHSCInputs();
 
+    void Run();
+    void Clean();
+
 private:
 
     void PrepareVectorRasters();
     void PrepareCSVRasters();
     void PrepareRasters();
-
 
     HSI * m_hsiRef;
 

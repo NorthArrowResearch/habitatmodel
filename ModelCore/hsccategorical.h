@@ -9,21 +9,27 @@ class HSCCategory;
 
 namespace HabitatModel {
 
-class HSCCategorical : HSC
+class HSCCategorical : public HSC
 {
 public:
     HSCCategorical(QDomElement * elHSC);
     ~HSCCategorical();
 
-    // Get the habitat suitability value for the specified category
+    /**
+     * @brief GetHSValue: Get the habitat suitability value for the specified category
+     * @param nCategory
+     * @return
+     */
     double GetHSValue(int nCategory);
 
-private:
     /**
-     * @brief LoadCategories load all related
-     * Categories using the XML config file
+     * @brief AddCategory
+     * @param nHSCID
+     * @param pHSCCategory
      */
-    void LoadCategories();
+    inline void AddCategory(int nHSCID, HSCCategory * pHSCCategory){ m_categories.insert(nHSCID, pHSCCategory);  }
+
+private:
 
     QHash<int, HSCCategory *> m_categories;
 

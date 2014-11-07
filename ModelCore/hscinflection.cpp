@@ -9,9 +9,7 @@ namespace HabitatModel {
 
 HSCInflection::HSCInflection(QDomElement * elHSC)
     : HSC(elHSC)
-{
-    LoadCoordinatePairs();
-}
+{ }
 
 HSCInflection::~HSCInflection()
 {
@@ -20,19 +18,6 @@ HSCInflection::~HSCInflection()
     while (m.hasNext()) {
         m.next();
         delete m.value();
-    }
-}
-
-void HSCInflection::LoadCoordinatePairs(){
-
-    QDomNodeList elCoordPairs = Project::GetConfig()->elementsByTagName("HSCCoordinatePairs");
-
-    for(int n= 0; n < elCoordPairs.length(); n++){
-        QDomElement elCoordinatePair = elCoordPairs.at(n).toElement();
-        int nCoordinatePairID = elCoordinatePair.firstChildElement("CoordinatePairID").text().toInt();
-
-        HSCCoordinatePair * pCoordPair = new HSCCoordinatePair(&elCoordinatePair);
-        m_coordinate_pairs.insert(nCoordinatePairID, pCoordPair);
     }
 }
 

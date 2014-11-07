@@ -13,6 +13,7 @@
 #include "projectinputraster.h"
 #include "projectinputvector.h"
 #include "projectinput.h"
+#include "simulation.h"
 
 #include "namedobject.h"
 
@@ -25,6 +26,10 @@ enum ProjectInputTypeCodes {
     PROJECT_INPUT_CSV = 3
 };
 
+enum HSCTypes {
+    HSC_CATEGORICAL = 0,
+    HSC_INFLECTION = 1
+};
 
 class MODELCORESHARED_EXPORT Project : public NamedObjectWithID
 {
@@ -52,6 +57,7 @@ public:
     void LoadHSCs();
     void LoadHSCCoordinatePairs();
     void LoadProjectInputs();
+    HSC *LoadHSC(int nNewHSCID, int nType);
 
     /**
      * @brief GetConfig
@@ -183,9 +189,9 @@ public:
      * @brief GetRasterExtentMeta
      * @return
      */
-    inline static RasterManager::RasterMeta * GetRasterExtentMeta(){
-        return m_RasterTemplateMeta;
-    }
+    inline static RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
+
+
 
 private:
     // Project Attributes
@@ -213,6 +219,8 @@ private:
 
     static QHash<int, NamedObjectWithID *> m_lookup_table;
     static QHash<int, ProjectInput *> m_project_inputs_store;
+    static Simulation * m_simulation;
+
     static RasterManager::RasterMeta * m_RasterTemplateMeta;
 
 };

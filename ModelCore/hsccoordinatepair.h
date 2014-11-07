@@ -14,7 +14,6 @@ public:
     inline double HSValue() { return m_fHSVal;}
 
 private:
-    HSC * m_HSC;
     double m_fXVal;
     double m_fHSVal;
 };

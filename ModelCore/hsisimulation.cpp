@@ -22,10 +22,34 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     LoadHSCInputs();
 }
 
+void HSISimulation::Run(){
+
+    // For each HSC associated with this simulation
+    // Find HSCs and inputs related to them
+    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+
+    while (i.hasNext()) {
+        i.next();
+        HSC * pHSICurve = i.value()->GetHSICurve()->GetHSC();
+        QString pProjectInput = i.value()->GetProjectInput()->getRasterFileName();
+
+        // Create utilization raster
+
+    }
+
+
+    // Combine Output Rasters using HSIMethodID in HSI
+
+
+}
+
+void HSISimulation::Clean(){
+
+}
 
 void HSISimulation::LoadHSCInputs(){
 
-    //    <SimulationHSCInputs>
+    //  <SimulationHSCInputs>
     //    <ProjectInputID>2</ProjectInputID>
     //    <HSICurveID>3</HSICurveID>
     //    <SimulationID>5</SimulationID>

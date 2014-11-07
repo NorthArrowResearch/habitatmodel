@@ -27,12 +27,12 @@ public:
     /**
      * @brief run
      */
-    void run();
+    virtual void Run() = 0;
 
     /**
      * @brief clean
      */
-    void clean();
+    virtual void Clean() = 0;
 
 private:
 

@@ -1,5 +1,5 @@
 #include "hsccoordinatepair.h"
-#include "project.h"
+#include <QDomElement>
 
 namespace HabitatModel{
 
@@ -13,7 +13,6 @@ HSCCoordinatePair::HSCCoordinatePair(QDomElement * elCoordinatePair)
     // <HSValue>1</HSValue>
     // </HSCCoordinatePairs>
 
-    m_HSC = Project::GetHSC(elCoordinatePair, "HSCID");
     m_fXVal = elCoordinatePair->firstChildElement("XValue").text().toDouble();
     m_fHSVal = elCoordinatePair->firstChildElement("HSValue").text().toDouble();
 }
