@@ -33,7 +33,6 @@ SOURCES += model.cpp \
     projectinput.cpp \
     simulationhscinput.cpp \
     unit.cpp \
-    hsccategory.cpp \
     hsccoordinatepair.cpp \
     hmvariable.cpp \
     projectinputcsv.cpp \
@@ -58,7 +57,6 @@ HEADERS += model.h\
     projectinput.h \
     simulationhscinput.h \
     unit.h \
-    hsccategory.h \
     hsccoordinatepair.h \
     hmvariable.h \
     projectinputcsv.h \

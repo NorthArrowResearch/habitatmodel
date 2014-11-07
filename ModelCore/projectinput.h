@@ -6,6 +6,7 @@
 #include "namedobject.h"
 #include "rastermeta.h"
 #include <QDir>
+#include <QString>
 
 namespace HabitatModel{
 
@@ -67,6 +68,11 @@ public:
     inline QString getFileName(){
         return QFileInfo(m_sourcefilepath).fileName();
     }
+    /**
+     * @brief getRasterFileName
+     * @return
+     */
+    inline QString getRasterFileName() { return m_sRasterfileName; }
 
     virtual void Prepare() = 0;
 
@@ -77,10 +83,10 @@ private:
 
     QString m_screated_on;
     QString m_sourcefilepath;
+    QString m_sRasterfileName;
 
     HMVariable * m_variable;
     Unit * m_unit;
-
 
 };
 

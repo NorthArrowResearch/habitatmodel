@@ -21,19 +21,19 @@ public:
      * @brief getXField
      * @return
      */
-    QString getXField();
+    inline QString getXField() { return m_sXFieldName; }
 
     /**
      * @brief getYField
      * @return
      */
-    QString getYField();
+    inline QString getYField() { return m_sYFieldName; }
 
     /**
      * @brief getValueField
      * @return
      */
-    QString getValueField();
+    inline QString getValueField() { return m_sFieldName; }
 
     /**
      * @brief CreateRasterFromCSV

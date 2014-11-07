@@ -11,8 +11,7 @@ ProjectInputRaster::ProjectInputRaster(const char *sName, int nID) :
 }
 
 void ProjectInputRaster::Prepare(){
-
-
+    m_sRasterfileName = m_sourcefilepath;
 }
 
 ProjectInputRaster::ProjectInputRaster(QDomElement * elProjectInput)

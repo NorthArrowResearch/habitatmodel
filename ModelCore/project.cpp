@@ -93,8 +93,8 @@ void Project::Load(QString sXMLConfig)
 
     // Make a temporary folder for this simulation
     if (m_ConfigPath->mkdir("tmp")){
-        QDir tmpPath = QDir(sXMLConfig + "tmp");
-        m_TmpPath = &tmpPath;
+        QDir tmpPath = QDir(m_ConfigPath->absolutePath() + QDir::separator() + "tmp");
+        m_TmpPath = new QDir(tmpPath);
     }
     else {
         throw "Could not create temporary folder. Does it already exist?";

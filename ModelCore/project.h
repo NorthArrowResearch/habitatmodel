@@ -71,7 +71,6 @@ public:
      */
     inline static QDir * GetTmpPath() { return m_TmpPath; }
 
-
     /**
      * @brief GetLookupTableItem
      * @param nid
