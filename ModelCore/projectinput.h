@@ -76,6 +76,9 @@ public:
 
     virtual void Prepare() = 0;
 
+protected:
+
+    QString m_sRasterfileName;
 
 private:
 
@@ -83,7 +86,7 @@ private:
 
     QString m_screated_on;
     QString m_sourcefilepath;
-    QString m_sRasterfileName;
+
 
     HMVariable * m_variable;
     Unit * m_unit;

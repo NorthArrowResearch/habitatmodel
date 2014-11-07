@@ -20,11 +20,8 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2
 
 DEFINES += MODELCORE_LIBRARY
 
-SOURCES += model.cpp \
+SOURCES += \
     simulation.cpp \
-    fileinput.cpp \
-    rasterinput.cpp \
-    vectorinput.cpp \
     hsi.cpp \
     hsicurve.cpp \
     hsc.cpp \
@@ -40,14 +37,12 @@ SOURCES += model.cpp \
     projectinputvector.cpp \
     hsisimulation.cpp \
     hsccategorical.cpp \
-    hscinflection.cpp
+    hscinflection.cpp \
+    hsccategory.cpp
 
-HEADERS += model.h\
+HEADERS +=\
         modelcore_global.h \
     simulation.h \
-    fileinput.h \
-    rasterinput.h \
-    vectorinput.h \
     hsi.h \
     hsicurve.h \
     hsc.h \
@@ -64,7 +59,8 @@ HEADERS += model.h\
     projectinputvector.h \
     hsisimulation.h \
     hsccategorical.h \
-    hscinflection.h
+    hscinflection.h \
+    hsccategory.h
 
 unix {
     target.path = /usr/lib

@@ -1,5 +1,4 @@
 #include "hsccategorical.h"
-
 #include "hsccategory.h"
 #include "project.h"
 #include <QDomElement>
