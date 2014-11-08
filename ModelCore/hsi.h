@@ -34,8 +34,11 @@ public:
      * @param nHSICurveID
      * @return
      */
-    HSICurve *GetCurve(int nHSICurveID);
+    inline HSICurve * GetCurve(int nHSICurveID){ return m_curves.value(nHSICurveID); }
 
+    inline NamedObjectWithID * GetLifeStage() { return m_lifestage; }
+    inline NamedObjectWithID * GetSpecies() { return m_species; }
+    inline NamedObjectWithID * GetMethod() { return m_method; }
 
 private:
 

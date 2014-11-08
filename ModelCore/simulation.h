@@ -34,6 +34,10 @@ public:
      */
     virtual void Clean() = 0;
 
+protected:
+
+    QString m_OutputRasterFileName;
+
 private:
 
     QString m_sfolder;
@@ -44,6 +48,8 @@ private:
 
     bool m_bqueued;
     bool m_badd_individual_output;
+
+
 
 };
 

@@ -33,12 +33,12 @@ void ProjectInputCSV::Prepare(){
 
     // TODO: build safe filename from csv input
     // simulationname-hsisimulation-inputid-fname.tif
-    QString sNewFileName = "InputCSV-" + getFileName() + ".tif";
+    QString sNewFileName = "InputCSV-" + getInputFileName() + ".tif";
 
-    m_sRasterfileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
+    m_sRasterInputFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
 
     RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
-                                       m_sRasterfileName.toStdString().c_str(),
+                                       m_sRasterInputFileName.toStdString().c_str(),
                                        m_sXFieldName.toStdString().c_str(),
                                        m_sYFieldName.toStdString().c_str(),
                                        m_sFieldName.toStdString().c_str(),

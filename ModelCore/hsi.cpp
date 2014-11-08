@@ -51,9 +51,4 @@ void HSI::LoadCurves(){
 
 }
 
-
-HSICurve * HSI::GetCurve(int nHSICurveID){
-    return m_curves.value(nHSICurveID);
-}
-
 }

@@ -65,20 +65,33 @@ public:
      * @brief getFileName
      * @return
      */
-    inline QString getFileName(){
+    inline QString getInputFileName(){
         return QFileInfo(m_sourcefilepath).fileName();
     }
     /**
      * @brief getRasterFileName
      * @return
      */
-    inline QString getRasterFileName() { return m_sRasterfileName; }
+    inline QString getInputRasterFileName() { return m_sRasterInputFileName; }
+
+    /**
+     * @brief getRasterInputFileName
+     * @return
+     */
+    inline QString getUtilizationRasterFileName(){ return m_sUtilizationFileName; }
+
+    /**
+     * @brief SetRasterOutPutFileName
+     * @param sOutputFile
+     * @return
+     */
+    inline void SetRasterOutPutFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
 
     virtual void Prepare() = 0;
 
 protected:
 
-    QString m_sRasterfileName;
+    QString m_sRasterInputFileName;
 
 private:
 
@@ -87,6 +100,7 @@ private:
     QString m_screated_on;
     QString m_sourcefilepath;
 
+    QString m_sUtilizationFileName;
 
     HMVariable * m_variable;
     Unit * m_unit;

@@ -7,6 +7,14 @@
 
 namespace HabitatModel{
 
+enum HSIMethods {
+    HSI_PRODUCT = 0,
+    HSI_ARITHMETIC_MEAN = 1,
+    HSI_GEOMETRIC_MEAN = 2,
+    HSI_MINIMUM = 3,
+    HSI_WEIGHTED_MEAN = 4,
+};
+
 class HSISimulation : public Simulation
 {
 public:
@@ -26,6 +34,12 @@ public:
     void Run();
     void Clean();
 
+    /**
+     * @brief DetermineMethod
+     * @param sMEthod
+     * @return
+     */
+    int DetermineMethod();
 private:
 
     void PrepareVectorRasters();
