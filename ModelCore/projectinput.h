@@ -85,7 +85,7 @@ public:
      * @param sOutputFile
      * @return
      */
-    inline void SetRasterOutPutFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
+    inline void setUtilizationRasterFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
 
     virtual void Prepare() = 0;
 

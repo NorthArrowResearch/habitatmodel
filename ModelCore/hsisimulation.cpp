@@ -24,18 +24,32 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 
 void HSISimulation::Run(){
 
+    //Method of combination
+    int nMethod = DetermineMethod();
+
+    // Our final output Raster file name and path:
+    QString sNewFileName = "OUTPUT-" + GetName() + ".tif";
+    m_OutputRasterFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
+
     // Get and loop over all the simulationHSCInputs
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
 
     while (i.hasNext()) {
         i.next();
         // Here is the curve we want
+        SimulationHSCInput * testa = i.value();
+        HSICurve * testb = testa->GetHSICurve();
         HSC * pHSC = i.value()->GetHSICurve()->GetHSC();
+
         // Here is the corresponding input raster
         ProjectInput * pInput = i.value()->GetProjectInput();
 
         QString pProjectInputFile = pInput->getInputRasterFileName();
-        QString pProjectUtilizationFile = pInput->getUtilizationRasterFileName();
+
+        QString sNewUtilizationFileName = "UT-" + pInput->getInputRasterFileName();
+        pInput->setUtilizationRasterFileName( Project::GetTmpPath()->absoluteFilePath(sNewUtilizationFileName) );
+
+        // Use: Project::GetRasterExtentMeta() for size.
 
         //We don't know what kind of HSC it is so we need to type-check the value that gets spit back
 
@@ -50,14 +64,20 @@ void HSISimulation::Run(){
         // gdal writeio (GDT_float64 blah blah blah)
     }
 
-
     // Combine Output Rasters using HSIMethodID in HSI
-    int nMethod = DetermineMethod();
 
-    QString sNewFileName = "OUTPUT-" + GetName() + ".tif";
+    // This might be done by opening a QHash of buffers, each responsible for a line of the
+    // Utilization raster. Then pass all the buffers into a function and let that functions
+    // Sort it out.
 
-    m_OutputRasterFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
+        // Use: Project::GetRasterExtentMeta() for size.f
 
+    // Reset the iterator to the begginning and run it again, this time working on outputs
+    i.toFront();
+    while (i.hasNext()) {
+        i.next();
+
+    }
 
 }
 
@@ -70,7 +90,7 @@ int HSISimulation::DetermineMethod(){
     else if ( sMethod.compare("Minimum") == 0 ){ return HSI_MINIMUM; }
     else if ( sMethod.compare("Weighted Mean") == 0 ){ return HSI_WEIGHTED_MEAN; }
     else {
-        throw "ERROR:  Could not determine Method for Raster combination in HSI Simulation";
+        throw std::runtime_error("ERROR:  Could not determine Method for Raster combination in HSI Simulation");
     }
 }
 

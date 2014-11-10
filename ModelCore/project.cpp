@@ -110,7 +110,7 @@ void Project::Load(QString sXMLConfig)
         m_TmpPath = new QDir(tmpPath);
     }
     else {
-        throw "Could not create temporary folder. Does it already exist?";
+        throw std::runtime_error("Could not create temporary folder. Does it already exist?" + m_TmpPath->absolutePath().toStdString() );
     }
 
     xConfig.Load(sXMLConfig);
@@ -124,7 +124,7 @@ void Project::Load(QString sXMLConfig)
     SetID(elSimulation.firstChildElement("ProjectID").text().toInt());
 
     if (elSimulation.isNull())
-        throw "The main Simulation node is missing from the Configuration XML file.";
+        throw std::runtime_error("The <Simulations> node is missing from the Configuration XML file.");
     else
     {
         // Populate our lookup table hashes
@@ -162,7 +162,7 @@ void Project::Load(QString sXMLConfig)
 //             m_simulation = new FISSimulation (&elSimulation);
         }
         else{
-            throw "No valid HSI or FIS nodes found in the config file.";
+            throw std::runtime_error("No valid <HSI> or <FIS> nodes found in the config file.");
         }
 
     }
@@ -197,7 +197,7 @@ void Project::LoadProjectInputs(){
             m_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
-            throw "No valid file detected";
+            throw std::runtime_error(std::string("ERROR: No valid input file detected ") + sInputFilepath.toStdString());
             break;
 
         }
