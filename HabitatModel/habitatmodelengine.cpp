@@ -40,11 +40,11 @@ void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     try
     {
-        QString sXMLConfig = GetFile(argc, argv, 1, true);
-        QString sXMLOutput = GetFile(argc, argv, 2, false);
-        QString sXMLLogFile = GetFile(argc, argv, 3, false);
+        CheckFile(argc, argv, 1, true); //sXMLConfig
+        CheckFile(argc, argv, 2, false); //sXMLOutput
+        CheckFile(argc, argv, 3, false); //sXMLLogFile
 
-        HabitatModel::Project theSimulation(sXMLConfig, sXMLOutput, sXMLLogFile);
+        HabitatModel::Project theSimulation(argv[1], argv[2], argv[3]);
 
         std::cout << "\nProcess completed successfully.\n";
     }
@@ -54,23 +54,31 @@ void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
     }
 }
 
-QString HabitatModelEngine::GetFile(int argc, char * argv[], int nIndex, bool bMustExist)
+void HabitatModelEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustExist)
 {
-    QString sFile;
+
     if (nIndex < argc)
     {
+        QString sFile = argv[nIndex];
+
+
         // Enough arguments
-        sFile = argv[nIndex];
         if (sFile.isNull() || sFile.isEmpty())
-            throw "Command line missing a file path.";
+            throw std::runtime_error("Command line missing a file path.");
         else
         {
+            // Check if the directory the file exists in is actually there
+            QDir sFilePath = QFileInfo(sFile).absoluteDir();
+            if (!sFilePath.exists()){
+                throw  std::runtime_error("The directory of the file you specified does not exist.");
+            }
+
             sFile = sFile.trimmed();
             sFile = sFile.replace("\"","");
             if (bMustExist)
             {
                 if (!QFile::exists(sFile))
-                    throw  "The specified input file does not exist.";
+                    throw  std::runtime_error("The specified input file does not exist.");
             }
             else
                 if (QFile::exists(sFile))
@@ -80,7 +88,7 @@ QString HabitatModelEngine::GetFile(int argc, char * argv[], int nIndex, bool bM
     else
         throw std::runtime_error("Insufficient command line arguments for operation.");
 
-    return sFile;
 }
+
 
 } //HabitatModelEngine

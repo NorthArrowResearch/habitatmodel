@@ -110,7 +110,7 @@ void Project::Load(QString sXMLConfig)
         m_TmpPath = new QDir(tmpPath);
     }
     else {
-        throw std::runtime_error("Could not create temporary folder. Does it already exist?" + m_TmpPath->absolutePath().toStdString() );
+        throw std::runtime_error(std::string("Could not create \"tmp\" temporary at: \"" + m_ConfigPath->absolutePath().toStdString() + "\". Does it already exist?"));
     }
 
     xConfig.Load(sXMLConfig);
@@ -121,7 +121,7 @@ void Project::Load(QString sXMLConfig)
 
     // This is not ideal way to do this but we do it since it is the top level element
     SetName(elSimulation.firstChildElement("Title").text().toStdString().c_str());
-    SetID(elSimulation.firstChildElement("ProjectID").text().toInt());
+    SetID(elSimulation.firstChildElement("SimulationID").text().toInt());
 
     if (elSimulation.isNull())
         throw std::runtime_error("The <Simulations> node is missing from the Configuration XML file.");

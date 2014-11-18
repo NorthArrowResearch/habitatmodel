@@ -10,7 +10,7 @@ class HabitatModelEngine
 public:
     HabitatModelEngine(int argc, char * argv[]);
 
-    QString GetFile(int argc, char *argv[], int nIndex, bool bMustExist);
+    void CheckFile(int argc, char *argv[], int nIndex, bool bMustExist);
 private:
     void RunHabitatModel(int argc, char * argv[]);
 };
