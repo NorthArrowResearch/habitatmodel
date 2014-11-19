@@ -67,8 +67,8 @@ unix {
     INSTALLS += target
 }
 
-CONFIG(release, debug|release): BUILD_TYPE = Release
-else:CONFIG(debug, debug|release): BUILD_TYPE = Debug
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 
 win32 {
@@ -100,6 +100,16 @@ macx{
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
+}
+unix:!macx {
+    message("Unix")
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
+    # GDAL is required
+    LIBS += -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
 }
 
 INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore

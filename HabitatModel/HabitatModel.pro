@@ -13,9 +13,7 @@ VERSION = 0.1.0
 TARGET = HabitatModel
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -stdlib=libc++
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2
+CONFIG += c++11
 
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -27,8 +25,8 @@ HEADERS += \
     habitatmodelengine.h
 
 
-CONFIG(release, debug|release): BUILD_TYPE = Release
-else:CONFIG(debug, debug|release): BUILD_TYPE = Debug
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 win32 {
     ## There's some trickiness in windows 32 vs 64-bits
@@ -49,6 +47,7 @@ win32 {
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
@@ -58,6 +57,17 @@ macx{
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
+
+}
+unix:!macx {
+    message("Unix")
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
+    # GDAL is required
+    LIBS += -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
 }
 
 INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
@@ -68,7 +78,5 @@ DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 
 INCLUDEPATH += $$PWD/../ModelCore
 DEPENDPATH += $$PWD/../ModelCore
-
-LIBS += -L$$DESTDIR/ -lModelCore
 
 message("Building to: $$DESTDIR")
