@@ -14,9 +14,7 @@ TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
-QMAKE_CXXFLAGS += -stdlib=libc++
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2
+CONFIG += c++11
 
 DEFINES += MODELCORE_LIBRARY
 
@@ -94,6 +92,7 @@ macx{
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
@@ -105,6 +104,7 @@ unix:!macx {
     message("Unix")
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
 
     # GDAL is required
     LIBS += -L/usr/lib -lgdal

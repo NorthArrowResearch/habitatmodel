@@ -43,7 +43,7 @@ RasterManager::RasterMeta * Project::m_RasterTemplateMeta;
 
 
 Project::Project(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile)
-    :NamedObjectWithID("TEMP", -1)
+    : NamedObjectWithID("TEMP", -1)
 {
     QString temp = sXMLOutput;
     temp = sXMLLogFile;

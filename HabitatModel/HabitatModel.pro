@@ -79,4 +79,8 @@ DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 INCLUDEPATH += $$PWD/../ModelCore
 DEPENDPATH += $$PWD/../ModelCore
 
+LIBS += -L$$DESTDIR -lModelCore
+LIBS += -L$$DESTDIR -lRasterManager
+LIBS += -L$$DESTDIR -lGCDCore
+
 message("Building to: $$DESTDIR")
