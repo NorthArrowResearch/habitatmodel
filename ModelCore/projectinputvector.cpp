@@ -18,7 +18,7 @@ ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
 
 }
 
-void ProjectInputVector::Prepare(){
+void ProjectInputVector::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){
 
 }
 

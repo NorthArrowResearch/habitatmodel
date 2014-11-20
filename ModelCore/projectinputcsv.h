@@ -45,7 +45,7 @@ public:
      * @brief Prepare
      * @param csvRasterMeta
      */
-    void Prepare();
+    void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath);
 
 
 

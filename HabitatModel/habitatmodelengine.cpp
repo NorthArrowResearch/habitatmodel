@@ -40,7 +40,7 @@ void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     try
     {
-        CheckFile(argc, argv, 1, true); //sXMLConfig
+        CheckFile(argc, argv, 1, true);  //sXMLConfig
         CheckFile(argc, argv, 2, false); //sXMLOutput
         CheckFile(argc, argv, 3, false); //sXMLLogFile
 
@@ -60,7 +60,6 @@ void HabitatModelEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMu
     if (nIndex < argc)
     {
         QString sFile = argv[nIndex];
-
 
         // Enough arguments
         if (sFile.isNull() || sFile.isEmpty())

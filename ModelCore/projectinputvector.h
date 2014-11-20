@@ -29,8 +29,11 @@ public:
      */
     QString getValueField();
 
-
-    void Prepare();
+    /**
+     * @brief Prepare
+     * @param TemplateRaster
+     */
+    void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath);
 
 private:
     QString m_sValueField;

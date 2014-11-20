@@ -8,6 +8,8 @@
 #include <QHash>
 #include <QDomDocument>
 #include "namedobject.h"
+#include "rastermeta.h"
+#include "projectinput.h"
 
 namespace HabitatModel{
 
@@ -34,13 +36,32 @@ public:
      */
     virtual void Clean() = 0;
 
+    /**
+     * @brief Init
+     */
+    void Init();
+
+    /**
+     * @brief GetRasterExtentMeta
+     * @return
+     */
+    inline RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
+
+    /**
+     * @brief PrepareProjectInputs create new project inputs from the global ones and put them in the stash
+     */
+    void PrepareProjectInputs();
+
+    bool InputBelongs(ProjectInput);
+
 protected:
 
     QString m_OutputRasterFileName;
 
 private:
 
-    QString m_sfolder;
+    QDir m_sfolder;
+
     QString m_screated_by;
 
     QString m_screated_on;
@@ -49,8 +70,9 @@ private:
     bool m_bqueued;
     bool m_badd_individual_output;
 
+    QHash<int, ProjectInput *> m_processed_inputs_store;
 
-
+    RasterManager::RasterMeta * m_RasterTemplateMeta;
 };
 
 }

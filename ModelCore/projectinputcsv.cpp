@@ -29,7 +29,7 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
 
 }
 
-void ProjectInputCSV::Prepare(){
+void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){
 
     // TODO: build safe filename from csv input
     // simulationname-hsisimulation-inputid-fname.tif
@@ -42,7 +42,7 @@ void ProjectInputCSV::Prepare(){
                                        m_sXFieldName.toStdString().c_str(),
                                        m_sYFieldName.toStdString().c_str(),
                                        m_sFieldName.toStdString().c_str(),
-                                       Project::GetRasterExtentMeta() );
+                                       TemplateRaster );
 }
 
 

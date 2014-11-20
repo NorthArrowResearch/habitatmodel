@@ -169,7 +169,7 @@ public:
      * @return
      */
     inline static QHashIterator<int, ProjectInput *> GetProjectInputIterator() {
-        QHashIterator<int, ProjectInput *> i(m_project_inputs_store);
+        QHashIterator<int, ProjectInput *> i(m_raw_project_inputs_store);
         return i;
     }
 
@@ -186,12 +186,10 @@ public:
     void PrepareProjectInputs();
 
     /**
-     * @brief GetRasterExtentMeta
+     * @brief GetRawProjectInputsStore
      * @return
      */
-    inline static RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
-
-
+    inline static QHash<int, ProjectInput *> GetRawProjectInputsStore(){ return m_raw_project_inputs_store; }
 
 private:
     // Project Attributes
@@ -205,6 +203,7 @@ private:
 
     // The path to that config file
     static QDir * m_ConfigPath;
+    static QDir * m_ProjectDir;
     static QDir * m_TmpPath;
 
     // The entire config file dom
@@ -218,10 +217,8 @@ private:
     static QHash<int, HSC *> m_HSC_store;
 
     static QHash<int, NamedObjectWithID *> m_lookup_table;
-    static QHash<int, ProjectInput *> m_project_inputs_store;
-    static Simulation * m_simulation;
-
-    static RasterManager::RasterMeta * m_RasterTemplateMeta;
+    static QHash<int, ProjectInput *> m_raw_project_inputs_store;
+    static QHash<int, Simulation *> m_simulation_store;
 
 };
 

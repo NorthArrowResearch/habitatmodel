@@ -87,7 +87,7 @@ public:
      */
     inline void setUtilizationRasterFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
 
-    virtual void Prepare() = 0;
+    virtual void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath) = 0;
 
 protected:
 

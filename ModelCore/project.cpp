@@ -29,15 +29,14 @@ namespace HabitatModel{
 QHash<int, HMVariable *> Project::m_hmvariable_store;
 QHash<int, Unit *> Project::m_unit_store;
 QHash<int, NamedObjectWithID *> Project::m_lookup_table;
-QHash<int, ProjectInput *> Project::m_project_inputs_store;
+QHash<int, ProjectInput *> Project::m_raw_project_inputs_store;
 QHash<int, HSC *> Project::m_HSC_store;
-
- Simulation * Project::m_simulation;
+QHash<int, Simulation *> Project::m_simulation_store;
 
 QDomElement Project::m_elConfig;
 QDir * Project::m_ConfigPath;
 QDir * Project::m_TmpPath;
-RasterManager::RasterMeta * Project::m_RasterTemplateMeta;
+QDir * Project::m_ProjectDir;
 
 /* --------------------------------------------------------------- */
 
@@ -53,8 +52,11 @@ Project::Project(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile)
     Load(sXMLConfig);
 
     // Run the actual simulations. This is a polymorhic virtual function.
-    m_simulation->Run();
-
+    QHashIterator<int, Simulation *> sim(m_simulation_store);
+    while (sim.hasNext()) {
+        sim.next();
+        sim.value()->Run();
+    }
 }
 
 Project::~Project(){
@@ -88,13 +90,19 @@ Project::~Project(){
     }
 
     // Empty the survey store
-    QHashIterator<int, ProjectInput *> m(m_project_inputs_store);
+    QHashIterator<int, ProjectInput *> m(m_raw_project_inputs_store);
     while (m.hasNext()) {
         m.next();
         delete m.value();
     }
 
-    delete m_simulation;
+    // Empty the Simulation store
+    QHashIterator<int, Simulation *> n(m_simulation_store);
+    while (n.hasNext()) {
+        n.next();
+        delete n.value();
+    }
+
 }
 
 void Project::Load(QString sXMLConfig)
@@ -103,6 +111,7 @@ void Project::Load(QString sXMLConfig)
 
     QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
     m_ConfigPath = &sXMLConfigDir;
+    m_ProjectDir = &sXMLConfigDir;
 
     // Make a temporary folder for this simulation
     if (m_ConfigPath->mkdir("tmp")){
@@ -117,32 +126,32 @@ void Project::Load(QString sXMLConfig)
 
     m_elConfig = xConfig.Document()->documentElement();
 
-    QDomElement elSimulation =  m_elConfig.firstChildElement("Simulations");
+    QDomNodeList elSimulations =  m_elConfig.elementsByTagName("Simulations");
 
-    // This is not ideal way to do this but we do it since it is the top level element
-    SetName(elSimulation.firstChildElement("Title").text().toStdString().c_str());
-    SetID(elSimulation.firstChildElement("SimulationID").text().toInt());
+    // Populate our lookup table hashes with things that are the same for every simulation
+    LoadLookupTable();
+    LoadUnits();
+    LoadHSCs();
+    LoadHMVariables();
+    LoadProjectInputs();
 
-    if (elSimulation.isNull())
-        throw std::runtime_error("The <Simulations> node is missing from the Configuration XML file.");
-    else
-    {
-        // Populate our lookup table hashes
-        LoadLookupTable();
-        LoadHMVariables();
-        LoadUnits();
-        LoadHSCs();
+    if (elSimulations.count() == 0) {
+        throw std::runtime_error("There are no <Simulations> in the configuration XML file.");
+    }
 
-        LoadProjectInputs();
+    // Loop over all Simulation elements in the XML file
+    // ----------------------------------------------------------------------
+    for(int n= 0; n < elSimulations.length(); n++){
+        QDomElement elSimulation = elSimulations.at(n).toElement();
 
-        // Calculate the raster union and make rasters from CSV
-        PrepareProjectInputs();
+        // This is not ideal way to do this but we do it since it is the top level element
+        SetName(elSimulation.firstChildElement("Title").text().toStdString().c_str());
+        SetID(elSimulation.firstChildElement("SimulationID").text().toInt());
 
         int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
 
         int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
         int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
-
 
         bool bHSIID, bFISID;
 
@@ -156,16 +165,17 @@ void Project::Load(QString sXMLConfig)
         }
 
         if (bHSIID){
-            m_simulation = new HSISimulation(&elSimulation);
+            m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
         }
         else if(bFISID){
-//             m_simulation = new FISSimulation (&elSimulation);
+            // m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
         }
         else{
             throw std::runtime_error("No valid <HSI> or <FIS> nodes found in the config file.");
         }
 
     }
+
 
 }
 
@@ -186,51 +196,21 @@ void Project::LoadProjectInputs(){
 
         case PROJECT_INPUT_RASTER :
             p_projectinput = new ProjectInputRaster(&elProjectInput);
-            m_project_inputs_store.insert(n, p_projectinput);
+            m_raw_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_VECTOR :
             p_projectinput = new ProjectInputVector(&elProjectInput);
-            m_project_inputs_store.insert(n, p_projectinput);
+            m_raw_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_CSV :
             p_projectinput = new ProjectInputCSV(&elProjectInput);
-            m_project_inputs_store.insert(n, p_projectinput);
+            m_raw_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
             throw std::runtime_error(std::string("ERROR: No valid input file detected ") + sInputFilepath.toStdString());
             break;
 
         }
-    }
-}
-
-void Project::PrepareProjectInputs(){
-
-    // First do the Rasters to find the union intersection
-    // RasterMeta
-    QHashIterator<int, ProjectInput *> rInputs(m_project_inputs_store);
-    bool bFirst = true;
-    while (rInputs.hasNext()) {
-        rInputs.next();
-        if (dynamic_cast<ProjectInputRaster*>(rInputs.value())){
-            // Load the raster.
-            RasterManager::RasterMeta erRasterInput (rInputs.value()->getSourceFilePath().toStdString().c_str());
-            // First time round set the bounds to the first raster we give it.
-            if (bFirst){
-                RasterManager::RasterMeta startingRect (erRasterInput);
-                m_RasterTemplateMeta = &startingRect;
-                bFirst = false;
-            }
-            else {
-                m_RasterTemplateMeta->Union(&erRasterInput);
-            }
-        }
-    }
-    rInputs.toFront();
-    // Next Call Prepare on Each Raster
-    while (rInputs.hasNext()) {
-        rInputs.next();
-        rInputs.value()->Prepare();
     }
 }
 
