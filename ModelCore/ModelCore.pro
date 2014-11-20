@@ -36,7 +36,8 @@ SOURCES += \
     hsisimulation.cpp \
     hsccategorical.cpp \
     hscinflection.cpp \
-    hsccategory.cpp
+    hsccategory.cpp \
+    xmllogger.cpp
 
 HEADERS +=\
         modelcore_global.h \
@@ -58,7 +59,8 @@ HEADERS +=\
     hsisimulation.h \
     hsccategorical.h \
     hscinflection.h \
-    hsccategory.h
+    hsccategory.h \
+    xmllogger.h
 
 unix {
     target.path = /usr/lib
