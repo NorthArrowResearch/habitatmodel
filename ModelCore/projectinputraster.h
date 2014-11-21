@@ -24,7 +24,7 @@ public:
      */
     ProjectInputRaster(QDomElement *elProjectInput);
 
-    void Prepare(RasterManager::RasterMeta *TemplateRaster);
+    void Prepare(RasterManager::RasterMeta *TemplateRaster, QString NewPath);
 };
 
 }

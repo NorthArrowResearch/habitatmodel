@@ -164,8 +164,11 @@ void Project::Load(QString sXMLConfig)
                 bHSIID = true;
         }
 
+        Simulation * newSim;
+
         if (bHSIID){
-            m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
+            newSim = new HSISimulation(&elSimulation);
+            m_simulation_store.insert(nSimulationID, newSim);
         }
         else if(bFISID){
             // m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
@@ -189,7 +192,7 @@ void Project::LoadProjectInputs(){
         QDomElement elProjectInput = elProjectInputs.at(n).toElement();
         QString sInputFilepath = elProjectInput.firstChildElement("SourcePath").text();
 
-        int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
+//        int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
         int nproject_type = GetInputType(sInputFilepath);
 
         switch(nproject_type) {
@@ -231,14 +234,17 @@ HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath
 }
 
 void Project::LoadLookupTable(){
+
     QDomNodeList elListItems = m_elConfig.elementsByTagName("LookupListItems");
 
+    //Loop through the LookipListItems nodes and load them into the hasj store
     for(int n= 0; n < elListItems.length(); n++){
         QDomNode elListItem = elListItems.at(n);
         int nListItemID = elListItem.firstChildElement("ItemID").text().toInt();
         QString sname = elListItem.firstChildElement("ItemName").text();
         m_lookup_table.insert(nListItemID, new NamedObjectWithID(sname.toStdString().c_str(), nListItemID));
     }
+
 }
 
 void Project::LoadUnits(){

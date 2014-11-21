@@ -46,62 +46,22 @@ Simulation::Simulation(QDomElement * elSimulation)
 
 }
 
+void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){
+    // First time round set the bounds to the first raster we give it.
+    if (m_RasterTemplateMeta == NULL){
+        m_RasterTemplateMeta = pMeta;
+    }
+    else {
+        m_RasterTemplateMeta->Union(pMeta);
+    }
+}
+
 void Simulation::Init(){
-
-    PrepareProjectInputs();
-
+    m_RasterTemplateMeta = NULL;
+    PrepareInputs();
 }
 
-bool Simulation::InputBelongs(ProjectInput){
 
-
-
-}
-
-void Simulation::PrepareProjectInputs(){
-    // This is a 3 step process:
-    // 1). Go and get the appropriate project inputs
-    // 2). Figure out the raster extents of these inputs
-    // 3). Prepare them based on this extent.
-    QHash<int, ProjectInput *> pRawInputStore = Project::GetRawProjectInputsStore();
-    // TODO: need to figure out how to have prepared inputs for each simulation
-    // Calculate the raster union and make rasters from CSV
-
-    // First do the Rasters to find the union intersection
-    // RasterMeta
-    QHashIterator<int, ProjectInput *> rInputs(pRawInputStore);
-    bool bFirst = true;
-    while (rInputs.hasNext()) {
-        rInputs.next();
-
-        if (InputBelongs(rInputs.value())){
-            // This input is part of our simulation. add it to the store.
-            m_processed_inputs_store.insert(rInputs.value()->GetID(), rInputs.value());
-
-            if (dynamic_cast<ProjectInputRaster*>(rInputs.value())){
-                // Load the raster.
-                RasterManager::RasterMeta erRasterInput (rInputs.value()->getSourceFilePath().toStdString().c_str());
-                // First time round set the bounds to the first raster we give it.
-                if (bFirst){
-                    RasterManager::RasterMeta startingRect (erRasterInput);
-                    m_RasterTemplateMeta = &startingRect;
-                    bFirst = false;
-                }
-                else {
-                    m_RasterTemplateMeta->Union(&erRasterInput);
-                }
-            }
-        }
-    }
-    rInputs.toFront();
-
-    // Next Call Prepare on Each Raster
-    while (rInputs.hasNext()) {
-        rInputs.next();
-        rInputs.value()->Prepare(m_RasterTemplateMeta, );
-    }
-
-}
 
 
 }

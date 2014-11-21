@@ -36,6 +36,8 @@ public:
      */
     virtual void Clean() = 0;
 
+    virtual void PrepareInputs() = 0;
+
     /**
      * @brief Init
      */
@@ -47,14 +49,12 @@ public:
      */
     inline RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
 
-    /**
-     * @brief PrepareProjectInputs create new project inputs from the global ones and put them in the stash
-     */
-    void PrepareProjectInputs();
-
-    bool InputBelongs(ProjectInput);
+    bool InputBelongs(ProjectInput *pInput);
 
 protected:
+
+    inline void InsertProcessedInput(int id, ProjectInput * pInput){ m_processed_inputs_store.insert(id, pInput);  }
+    void RasterUnion(RasterManager::RasterMeta *pMeta);
 
     QString m_OutputRasterFileName;
 

@@ -40,6 +40,8 @@ public:
      * @return
      */
     int DetermineMethod();
+    void PrepareInputs();
+    bool InputBelongs(ProjectInput *pInput);
 private:
 
     void PrepareVectorRasters();
