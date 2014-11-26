@@ -5,7 +5,7 @@
 #include <QDomElement>
 #include <QDir>
 
-#include "modelcore_global.h"
+#include "habitatmodel_global.h"
 #include "hmvariable.h"
 #include "unit.h"
 #include "hsc.h"
@@ -14,31 +14,15 @@
 #include "projectinputvector.h"
 #include "projectinput.h"
 #include "simulation.h"
+#include "habitat_interface.h"
 
 #include "namedobject.h"
 
 namespace HabitatModel{
 
-enum ProjectInputTypeCodes {
-    PROJECT_INPUT_UNDEFINED = 0,
-    PROJECT_INPUT_RASTER = 1,
-    PROJECT_INPUT_VECTOR = 2,
-    PROJECT_INPUT_CSV = 3
-};
-
-enum ProjectErrorCodes {
-    PROCESS_OK = 0,
-    DEBUG = -1
-};
-
-enum HSCTypes {
-    HSC_CATEGORICAL = 0,
-    HSC_INFLECTION = 1
-};
-
 const char *GetReturnCodeAsString(int eErrorCode);
 
-class MODELCORESHARED_EXPORT Project : public NamedObjectWithID
+class Project : public NamedObjectWithID
 {
 public:
 

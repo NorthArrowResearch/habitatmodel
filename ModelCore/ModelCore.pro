@@ -37,10 +37,10 @@ SOURCES += \
     hsccategorical.cpp \
     hscinflection.cpp \
     hsccategory.cpp \
-    xmllogger.cpp
+    xmllogger.cpp \
+    habitat_interface.cpp
 
 HEADERS +=\
-        modelcore_global.h \
     simulation.h \
     hsi.h \
     hsicurve.h \
@@ -60,7 +60,8 @@ HEADERS +=\
     hsccategorical.h \
     hscinflection.h \
     hsccategory.h \
-    xmllogger.h
+    xmllogger.h \
+    habitat_interface.h
 
 unix {
     target.path = /usr/lib

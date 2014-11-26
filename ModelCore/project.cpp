@@ -44,8 +44,8 @@ QDir * Project::m_ProjectDir;
 Project::Project(QString sXMLConfig)
     : NamedObjectWithID("TEMP", -1)
 {
-//    QString temp = sXMLOutput;
-//    temp = sXMLLogFile;
+    //TODO: Need to fet the output file from the XML
+    //    QString temp = sXMLOutput;
 
     // Load the object model into memory:
     // Also do all the in between steps
@@ -112,6 +112,9 @@ void Project::Load(QString sXMLConfig)
     QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
     m_ConfigPath = &sXMLConfigDir;
     m_ProjectDir = &sXMLConfigDir;
+
+    // TODO:: Set up folders:
+    // 1. Read the output log file from the simulation node and
 
     // Make a temporary folder for this simulation
     if (m_ConfigPath->mkdir("tmp")){
