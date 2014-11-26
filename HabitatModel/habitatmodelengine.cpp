@@ -14,9 +14,9 @@ HabitatModelEngine::HabitatModelEngine(){ }
 int HabitatModelEngine::Run(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
-    if (argc == 4)
+    if (argc == 2)
     {
-        RunHabitatModel(argc, argv);
+        eResult = RunHabitatModel(argc, argv);
         return eResult;
     }
     else{
@@ -25,8 +25,6 @@ int HabitatModelEngine::Run(int argc, char *argv[])
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    xml_config_file_path: Absolute full path to existing xml config file.";
-        std::cout << "\n    xml_output_file_path: Absolute full path to desired xml output file.";
-        std::cout << "\n    xml_error_file_path: Absolute full path to desired xml log file.";
 
         std::cout << "\n";
         return eResult;

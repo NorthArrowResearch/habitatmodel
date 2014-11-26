@@ -28,7 +28,7 @@ enum ProjectInputTypeCodes {
 
 enum ProjectErrorCodes {
     PROCESS_OK = 0,
-    DEBUG = 42
+    DEBUG = -1
 };
 
 enum HSCTypes {
