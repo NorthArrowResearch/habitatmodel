@@ -17,6 +17,8 @@ public:
      */
     ProjectInputCSV(QDomElement * elProjectInput);
 
+    inline ~ProjectInputCSV(){}
+
     /**
      * @brief getXField
      * @return

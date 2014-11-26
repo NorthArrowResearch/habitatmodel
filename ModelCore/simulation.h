@@ -26,6 +26,8 @@ public:
      */
     Simulation(QDomElement *elSimulation);
 
+    virtual inline ~Simulation(){  }
+
     /**
      * @brief run
      */
@@ -50,6 +52,7 @@ public:
     inline RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
 
     bool InputBelongs(ProjectInput *pInput);
+
 
 protected:
 

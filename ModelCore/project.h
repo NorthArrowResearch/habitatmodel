@@ -26,10 +26,17 @@ enum ProjectInputTypeCodes {
     PROJECT_INPUT_CSV = 3
 };
 
+enum ProjectErrorCodes {
+    PROCESS_OK = 0,
+    DEBUG = 42
+};
+
 enum HSCTypes {
     HSC_CATEGORICAL = 0,
     HSC_INFLECTION = 1
 };
+
+const char *GetReturnCodeAsString(int eErrorCode);
 
 class MODELCORESHARED_EXPORT Project : public NamedObjectWithID
 {
@@ -41,7 +48,7 @@ public:
      * @param sXMLOutput
      * @param sXMLLogFile
      */
-    Project(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile);
+    Project(QString sXMLConfig);
 
     ~Project();
 
@@ -190,6 +197,7 @@ public:
      * @return
      */
     inline static QHash<int, ProjectInput *> GetRawProjectInputsStore(){ return m_raw_project_inputs_store; }
+
 
 private:
     // Project Attributes

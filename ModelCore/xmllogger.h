@@ -44,13 +44,13 @@ public:
      * @param sTagName
      * @param sTagValue
      */
-    void Meta(QString sTagName, QString sTagValue);
+    void AddMeta(QString sTagName, QString sTagValue);
 
     /**
      * @brief ReadLog
      * @return
      */
-    void ReadLogFile(QDomDocument *document);
+    QDomDocument ReadLogFile();
 
     /**
      * @brief WriteLogFile
@@ -63,6 +63,7 @@ public:
      * @param sMsg
      */
     void qXMLDebug(QString sMsg);
+
 
 private:
     QFile * m_xmlFile;

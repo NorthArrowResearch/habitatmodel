@@ -22,6 +22,7 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     LoadHSCInputs();
 }
 
+
 void HSISimulation::Run(){
 
     //Method of combination

@@ -26,6 +26,8 @@ public:
      */
     HSISimulation(QDomElement *elSimulation);
 
+    inline ~HSISimulation(){  }
+
     /**
      * @brief LoadHSCInputs
      */

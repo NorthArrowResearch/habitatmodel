@@ -41,11 +41,11 @@ QDir * Project::m_ProjectDir;
 /* --------------------------------------------------------------- */
 
 
-Project::Project(QString sXMLConfig, QString sXMLOutput, QString sXMLLogFile)
+Project::Project(QString sXMLConfig)
     : NamedObjectWithID("TEMP", -1)
 {
-    QString temp = sXMLOutput;
-    temp = sXMLLogFile;
+//    QString temp = sXMLOutput;
+//    temp = sXMLLogFile;
 
     // Load the object model into memory:
     // Also do all the in between steps
@@ -68,28 +68,28 @@ Project::~Project(){
         delete i.value();
     }
 
-    // Empty the survey store
+    // Empty the unit store
     QHashIterator<int, Unit *> j(m_unit_store);
     while (j.hasNext()) {
         j.next();
         delete j.value();
     }
 
-    // Empty the survey store
+    // Empty the HSC store
     QHashIterator<int, HSC *> k(m_HSC_store);
     while (k.hasNext()) {
         k.next();
         delete k.value();
     }
 
-    // Empty the survey store
+    // Empty the lookup table store
     QHashIterator<int, NamedObjectWithID *> l(m_lookup_table);
     while (l.hasNext()) {
         l.next();
         delete l.value();
     }
 
-    // Empty the survey store
+    // Empty the project input store store
     QHashIterator<int, ProjectInput *> m(m_raw_project_inputs_store);
     while (m.hasNext()) {
         m.next();
@@ -153,7 +153,7 @@ void Project::Load(QString sXMLConfig)
         int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
         int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
 
-        bool bHSIID, bFISID;
+        bool bHSIID=false, bFISID=false;
 
         QDomNodeList elConfigHSIs = m_elConfig.elementsByTagName("HSI");
 
@@ -325,6 +325,24 @@ void Project::LoadHSCs(){
     }
 
 }
+
+
+const char * HabitatModel::GetReturnCodeAsString(int eErrorCode)
+{
+    switch (eErrorCode)
+    {
+    case PROCESS_OK:
+        return "process completed successfully.";
+
+    case DEBUG:
+        return "Input has flooped the output. Did you yurtify it before vorticating your quiznozzles?";
+
+    default:
+        return "Unhandled Raster Manager return code.";
+    }
+
+}
+
 
 
 }

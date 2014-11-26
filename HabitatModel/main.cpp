@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include "habitatmodelengine.h"
+#include "project.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,11 +13,23 @@ int main(int argc, char *argv[])
 
     try
     {
-        HabitatModelEngine::HabitatModelEngine habitatmodel(argc, argv);
+        HabitatModelEngine::HabitatModelEngine * habmodel = new HabitatModelEngine::HabitatModelEngine();
+        int eResult = habmodel->Run(argc, argv);
+        if (eResult <= 0) {
+            std::cout << std::endl << HabitatModel::GetReturnCodeAsString(eResult) << std::endl;
+        }
+        else {
+            std::cerr << std::endl <<  HabitatModel::GetReturnCodeAsString(eResult) << std::endl;
+            exit (EXIT_FAILURE);
+        }
+
+        exit (EXIT_SUCCESS);
     }
+
     catch (std::exception& e)
     {
-        std::cout << e.what();
+        std::cerr <<"Error: " << e.what() << std::endl;
+        exit (EXIT_FAILURE);
     }
 
     qApp->quit();

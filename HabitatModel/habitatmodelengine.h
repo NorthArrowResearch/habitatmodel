@@ -8,11 +8,13 @@ namespace HabitatModelEngine {
 class HabitatModelEngine
 {
 public:
-    HabitatModelEngine(int argc, char * argv[]);
+    HabitatModelEngine();
+    int Run(int argc, char * argv[]);
 
     void CheckFile(int argc, char *argv[], int nIndex, bool bMustExist);
+
 private:
-    void RunHabitatModel(int argc, char * argv[]);
+    int RunHabitatModel(int argc, char * argv[]);
 };
 
 } // Habitat Model Engine

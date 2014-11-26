@@ -18,6 +18,8 @@ public:
      */
     ProjectInputRaster(const char *sName, int nID);
 
+    inline ~ProjectInputRaster(){}
+
     /**
      * @brief ProjectInputCSV
      * @param elProjectInput

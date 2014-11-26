@@ -9,21 +9,19 @@
 
 namespace HabitatModelEngine {
 
-HabitatModelEngine::HabitatModelEngine(int argc, char *argv[])
-{
-    bool bRecognizedCommand = false;
+HabitatModelEngine::HabitatModelEngine(){ }
 
+int HabitatModelEngine::Run(int argc, char *argv[])
+{
+    int eResult = HabitatModel::PROCESS_OK;
     if (argc == 4)
     {
-        bRecognizedCommand = true;
         RunHabitatModel(argc, argv);
-
+        return eResult;
     }
-
-    if (!bRecognizedCommand)
-    {
+    else{
         std::cout << "\n Habitat Model Command Line";
-        std::cout << "\n    usage: habitatmodel <xml_config_file_path> <xml_output_file_path> <xml_log_file_path>";
+        std::cout << "\n    usage: habitatmodel <xml_config_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    xml_config_file_path: Absolute full path to existing xml config file.";
@@ -31,27 +29,19 @@ HabitatModelEngine::HabitatModelEngine(int argc, char *argv[])
         std::cout << "\n    xml_error_file_path: Absolute full path to desired xml log file.";
 
         std::cout << "\n";
-        return;
+        return eResult;
     }
-
 }
 
-void HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
+int HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
-    try
-    {
-        CheckFile(argc, argv, 1, true);  //sXMLConfig
-        CheckFile(argc, argv, 2, false); //sXMLOutput
-        CheckFile(argc, argv, 3, false); //sXMLLogFile
+    int eResult = HabitatModel::PROCESS_OK;
 
-        HabitatModel::Project theSimulation(argv[1], argv[2], argv[3]);
+    CheckFile(argc, argv, 1, true);  //sXMLConfig
 
-        std::cout << "\nProcess completed successfully.\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cout <<"\nError: " << ex.what() << std::endl;
-    }
+    HabitatModel::Project theSimulation(argv[1]);
+
+    return eResult;
 }
 
 void HabitatModelEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustExist)
@@ -69,19 +59,24 @@ void HabitatModelEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMu
             // Check if the directory the file exists in is actually there
             QDir sFilePath = QFileInfo(sFile).absoluteDir();
             if (!sFilePath.exists()){
-                throw  std::runtime_error("The directory of the file you specified does not exist.");
+                QString sErr = "The directory of the file you specified does not exist: " + sFilePath.absolutePath();
+                throw  std::runtime_error(sErr.toStdString());
             }
 
             sFile = sFile.trimmed();
             sFile = sFile.replace("\"","");
             if (bMustExist)
             {
-                if (!QFile::exists(sFile))
-                    throw  std::runtime_error("The specified input file does not exist.");
+                if (!QFile::exists(sFile)){
+                    QString sErr = "The specified input file does not exist: " + sFile;
+                    throw  std::runtime_error(sErr.toStdString());
+                }
             }
             else
-                if (QFile::exists(sFile))
-                    throw std::runtime_error("The specified output file already exists.");
+                if (QFile::exists(sFile)){
+                    QString sErr = "The specified output file already exists." + sFile;
+                    throw  std::runtime_error(sErr.toStdString());
+                }
         }
     }
     else

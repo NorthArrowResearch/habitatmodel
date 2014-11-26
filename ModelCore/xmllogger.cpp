@@ -52,16 +52,15 @@ void XmlLogger::Init(){
     }
 }
 
-void XmlLogger::Meta(QString sTagName, QString sTagValue){
-    QDomDocument * document;
-    ReadLogFile(document);
+void XmlLogger::AddMeta(QString sTagName, QString sTagValue){
+    QDomDocument document = ReadLogFile();
     QDomElement meta_data, meta_data_tag;
-    QDomElement documentElement = document->documentElement();
+    QDomElement documentElement = document.documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
 
     if( elements.size() == 0 )
     {
-      meta_data = document->createElement( "meta_data" );
+      meta_data = document.createElement( "meta_data" );
       documentElement.insertBefore( meta_data, documentElement );
     }
     else if( elements.size() == 1 )
@@ -70,24 +69,23 @@ void XmlLogger::Meta(QString sTagName, QString sTagValue){
     }
 
     // Create the message itself
-    meta_data_tag = document->createElement( sTagName );
+    meta_data_tag = document.createElement( sTagName );
     meta_data_tag.setNodeValue(sTagValue);
     meta_data.appendChild( meta_data_tag );
 
-    WriteLogFile(document);
+    WriteLogFile(&document);
 }
 
 void XmlLogger::Log(QString sMsg, QString sException, int nSeverity, int indent)
 {
-    QDomDocument * document;
-    ReadLogFile(document);
+    QDomDocument document = ReadLogFile();
     QDomElement messages, message, exception, description;
-    QDomElement documentElement = document->documentElement();
+    QDomElement documentElement = document.documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "messages" );
 
     if( elements.size() == 0 )
     {
-      messages = document->createElement( "messages" );
+      messages = document.createElement( "messages" );
       documentElement.insertBefore( messages, documentElement );
     }
     else if( elements.size() == 1 )
@@ -96,33 +94,35 @@ void XmlLogger::Log(QString sMsg, QString sException, int nSeverity, int indent)
     }
 
     // Create the message itself
-    message = document->createElement( "message" );
+    message = document.createElement( "message" );
     message.setAttribute( "severity", nSeverity );
     message.setAttribute( "indent", indent );
 
     // Now create the description of the message
-    description = document->createElement( "description" );
+    description = document.createElement( "description" );
     description.setNodeValue(sMsg);
     message.appendChild( description );
 
     // Only create an exception if we need to.
     if (nSeverity != 0 && sException.compare("") != 0){
-        exception = document->createElement( "exception" );
+        exception = document.createElement( "exception" );
         exception.setNodeValue(sException);
         message.appendChild( exception );
     }
     messages.appendChild( message );
-    WriteLogFile(document);
+    WriteLogFile(&document);
 }
 
-void XmlLogger::ReadLogFile(QDomDocument * document){
-
-    if( !document->setContent( m_xmlFile ) )
+QDomDocument XmlLogger::ReadLogFile(){
+    QDomDocument document;
+    if( !document.setContent( m_xmlFile ) )
     {
         qXMLDebug("Failed to parse the log file into a DOM tree");
         m_xmlFile->close();
     }
     m_xmlFile->close();
+
+    return document;
 }
 
 void XmlLogger::WriteLogFile(QDomDocument * pElement){

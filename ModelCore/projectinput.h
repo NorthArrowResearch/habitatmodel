@@ -25,6 +25,8 @@ public:
      */
     ProjectInput(const char *sName, int nID);
 
+    virtual inline ~ProjectInput(){}
+
     /**
      * @brief ProjectInput
      * @param elProjectInput

@@ -17,11 +17,15 @@ public:
      */
     ProjectInputVector(const char *sName, int nID, const char * psValueField);
 
+    inline ~ProjectInputVector(){}
+
     /**
      * @brief ProjectInputCSV
      * @param elProjectInput
      */
     ProjectInputVector(QDomElement *elProjectInput);
+
+    // inline ~ProjectInputVector();
 
     /**
      * @brief getValueField
