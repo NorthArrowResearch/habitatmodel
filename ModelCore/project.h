@@ -6,6 +6,7 @@
 #include <QDir>
 
 #include "habitatmodel_global.h"
+#include "habitat_exception.h"
 #include "hmvariable.h"
 #include "unit.h"
 #include "hsc.h"
@@ -15,7 +16,7 @@
 #include "projectinput.h"
 #include "simulation.h"
 #include "habitat_interface.h"
-
+#include "xmlfile.h"
 #include "namedobject.h"
 
 namespace HabitatModel{
@@ -66,7 +67,13 @@ public:
      * @brief GetConfig
      * @return
      */
-    inline static QDomElement * GetConfig() { return &m_elConfig; }
+    inline static QDomDocument * GetConfigDom() { return m_elConfig; }
+
+    /**
+     * @brief GetOutputXML
+     * @return
+     */
+    inline static XMLFile * GetOutputXML(){ return m_XMLOutput; }
 
     /**
      * @brief GetConfigPath
@@ -203,8 +210,10 @@ private:
     // The path to that config file
     static QDir * m_ProjectRootDir;
 
-    // The entire config file dom
-    static QDomElement m_elConfig;
+    // Our input XML and OUTput log file
+    static XMLFile * m_XMLInput;
+    static XMLFile * m_XMLOutput;
+    static QDomDocument * m_elConfig;
 
     // Stores of objects related to projects that we will
     // need to be able to lookup

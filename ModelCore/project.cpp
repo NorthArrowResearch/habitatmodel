@@ -23,6 +23,7 @@
 #include "projectinputvector.h"
 #include "habitat_exception.h"
 
+
 namespace HabitatModel{
 
 /* --------------------------------------------------------------- */
@@ -36,7 +37,9 @@ QHash<int, ProjectInput *> Project::m_raw_project_inputs_store;
 QHash<int, HSC *> Project::m_HSC_store;
 QHash<int, Simulation *> Project::m_simulation_store;
 
-QDomElement Project::m_elConfig;
+XMLFile * Project::m_XMLInput;
+XMLFile * Project::m_XMLOutput;
+QDomDocument * Project::m_elConfig;
 QDir * Project::m_ProjectRootDir;
 
 /* --------------------------------------------------------------- */
@@ -47,23 +50,18 @@ Project::Project(const char * psProjectRoot,
                  const char * psXMLOutput)
 {
 
-    XMLFile xmlInput(psXMLInput, true);
-    XMLFile xmlOutput(psXMLOutput, false);
+    m_XMLInput = new XMLFile(psXMLInput, true);
+    m_XMLOutput = new XMLFile(psXMLOutput, false);
 
-    // Load the entire input dom into a member variable.
-    m_elConfig = xmlInput.Document()->documentElement();
+    // This is mostly a convenience: a pointer to the
+    // Entire input Configuration DOM
+    m_elConfig = m_XMLInput->Document();
 
     m_ProjectRootDir = new QDir(psProjectRoot);
     if (!m_ProjectRootDir->exists())
         throw HabitatException(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
 
-//    QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
-//    m_ConfigPath = &sXMLConfigDir;
-//    m_ProjectDir = &sXMLConfigDir;
-
-    // TODO:: Set up folders:
-    // 1. Read the output log file from the simulation node and
-
+    m_XMLOutput->Log("Starting Simulation Run...");
     // Make a temporary folder for this simulation
 //    if (m_ConfigPath->mkdir("tmp")){
 //        QDir tmpPath = QDir(m_ConfigPath->absolutePath() + QDir::separator() + "tmp");
@@ -76,6 +74,7 @@ Project::Project(const char * psProjectRoot,
 
     // Populate our lookup table hashes with values that every simulation
     // Will need access to.
+    m_XMLOutput->Log("Loading Objects...", 1);
 //    LoadLookupTable();
 //    LoadUnits();
 //    LoadHSCs();
@@ -92,13 +91,14 @@ Project::Project(const char * psProjectRoot,
 
 int Project::Run()
     {
-
+    m_XMLOutput->Log("Starting to run Simulations.");
     // Run the actual simulations. This is a polymorhic virtual function.
     QHashIterator<int, Simulation *> sim(m_simulation_store);
     while (sim.hasNext()) {
         sim.next();
         sim.value()->Run();
     }
+    m_XMLOutput->Log("Simulations Completed Successfully.");
 
     return PROCESS_OK;
 }
@@ -106,10 +106,10 @@ int Project::Run()
 
 void Project::LoadSimulations(){
 
-     QDomNodeList elSimulations =  m_elConfig.elementsByTagName("Simulations");
+     QDomNodeList elSimulations =  m_elConfig->elementsByTagName("Simulations");
 
     if (elSimulations.count() == 0)
-        throw std::runtime_error("There are no <Simulations> in the configuration XML file.");
+        throw HabitatException(DOM_NODE_MISSING, "There are no <Simulations> in the configuration XML file.");
 
     // Loop over all Simulation elements in the XML file
     // ----------------------------------------------------------------------
@@ -123,7 +123,7 @@ void Project::LoadSimulations(){
 
         bool bHSIID=false, bFISID=false;
 
-        QDomNodeList elConfigHSIs = m_elConfig.elementsByTagName("HSI");
+        QDomNodeList elConfigHSIs = m_elConfig->elementsByTagName("HSI");
 
         for(int n= 0; n < elConfigHSIs.length(); n++){
             QDomElement elHSI = elConfigHSIs.at(n).toElement();
@@ -142,7 +142,7 @@ void Project::LoadSimulations(){
             // m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
         }
         else{
-            throw std::runtime_error("No valid <HSI> or <FIS> nodes found in the config file.");
+            throw HabitatException(DOM_NODE_MISSING, "No valid <HSI> or <FIS> nodes found in the config file.");
         }
 
     }
@@ -151,7 +151,7 @@ void Project::LoadSimulations(){
 
 void Project::LoadProjectInputs(){
 
-    QDomNodeList elProjectInputs = m_elConfig.elementsByTagName("ProjectInputs");
+    QDomNodeList elProjectInputs = m_elConfig->elementsByTagName("ProjectInputs");
 
     for(int n= 0; n < elProjectInputs.length(); n++){
         ProjectInput * p_projectinput;
@@ -177,7 +177,7 @@ void Project::LoadProjectInputs(){
             m_raw_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
-            throw std::runtime_error(std::string("ERROR: No valid input file detected ") + sInputFilepath.toStdString());
+            throw HabitatException(FILE_NOT_FOUND, sInputFilepath);
             break;
 
         }
@@ -202,7 +202,7 @@ HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath
 
 void Project::LoadLookupTable(){
 
-    QDomNodeList elListItems = m_elConfig.elementsByTagName("LookupListItems");
+    QDomNodeList elListItems = m_elConfig->elementsByTagName("LookupListItems");
 
     //Loop through the LookipListItems nodes and load them into the hasj store
     for(int n= 0; n < elListItems.length(); n++){
@@ -215,7 +215,7 @@ void Project::LoadLookupTable(){
 }
 
 void Project::LoadUnits(){
-    QDomNodeList elUnits = m_elConfig.elementsByTagName("Units");
+    QDomNodeList elUnits = m_elConfig->elementsByTagName("Units");
 
     // Loop over all Unit elements in the XML file.
     for(int n= 0; n < elUnits.length(); n++){
@@ -226,7 +226,7 @@ void Project::LoadUnits(){
 }
 
 void Project::LoadHMVariables(){
-    QDomNodeList elvars = m_elConfig.elementsByTagName("Variables");
+    QDomNodeList elvars = m_elConfig->elementsByTagName("Variables");
 
     // Loop over all HMVariable elements in the XML file
     for(int n= 0; n < elvars.length(); n++){
@@ -241,7 +241,7 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
     // Create one if it doesn't exist.
     if ( !GetHSC(nNewHSCID) ){
 
-        QDomNodeList elHSCs = m_elConfig.elementsByTagName("HSC");
+        QDomNodeList elHSCs = m_elConfig->elementsByTagName("HSC");
 
         for(int nc= 0; nc < elHSCs.length(); nc++){
             QDomElement elHSC = elHSCs.at(nc).toElement();
@@ -269,7 +269,7 @@ void Project::LoadHSCs(){
 
     // Load first the coordinate pairs and then the HSC categories. If the parent
     // HSC doesn't exist it is created.
-    QDomNodeList elHSCCoordPairs = m_elConfig.elementsByTagName("HSCCoordinatePairs");
+    QDomNodeList elHSCCoordPairs = m_elConfig->elementsByTagName("HSCCoordinatePairs");
 
     for(int ncp= 0; ncp < elHSCCoordPairs.length(); ncp++){
         QDomElement elCoordinatePair = elHSCCoordPairs.at(ncp).toElement();
@@ -280,7 +280,7 @@ void Project::LoadHSCs(){
         pHSCInflection->AddCoordinatePair(nCoordinatePairID, new HSCCoordinatePair(&elCoordinatePair));
     }
 
-    QDomNodeList elHSCCategories = m_elConfig.elementsByTagName("HSCCategories");
+    QDomNodeList elHSCCategories = m_elConfig->elementsByTagName("HSCCategories");
 
     for(int ncat= 0; ncat < elHSCCategories.length(); ncat++){
         QDomElement elCategory = elHSCCategories.at(ncat).toElement();
@@ -295,8 +295,6 @@ void Project::LoadHSCs(){
 
 
 Project::~Project(){
-
-
 
     // Empty the survey store
     QHashIterator<int, HMVariable *> i(m_hmvariable_store);
@@ -341,6 +339,8 @@ Project::~Project(){
     }
 
     delete m_ProjectRootDir;
+    delete m_XMLInput;
+    delete m_XMLOutput;
 }
 
 

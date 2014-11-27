@@ -2,6 +2,7 @@
 #define HABITAT_EXCEPTION_H
 #include <QString>
 #include "exception"
+#include "project.h"
 
 namespace HabitatModel{
 
@@ -13,6 +14,7 @@ enum ProjectErrorCodes {
     DIRECTORY_PRESENT = 4,
     FILE_WRITE_ERROR = 5,
     FILE_READ_ONLY = 6,
+    DOM_NODE_MISSING = 7,
 
     DEBUG = -1,
     UNDEFINED_ERROR = 999
@@ -48,6 +50,8 @@ public:
             return "Failed to open file for writing";
         case FILE_READ_ONLY:
             return "File is Read Only";
+        case DOM_NODE_MISSING:
+            return "Missing Dom Node";
         case DEBUG:
             return "Input has flooped the output. Did you yurtify it before vorticating your quiznozzles?";
         default:
@@ -60,10 +64,12 @@ public:
      * @return
      */
     inline QString GetReturnMsgAsString(){
-        QString sOutput = GetReturnCodeOnlyAsString(m_nErrorCode);
+        QString sOutput = "";
+        QString sErrMsg = GetReturnCodeOnlyAsString(m_nErrorCode);
         if (m_sEvidence.length() > 0){
-            sOutput = sOutput + ": " + m_sEvidence;
+            sOutput = sErrMsg + ": " + m_sEvidence;
         }
+//        Project::GetOutputXML()->Log(sErrMsg,  m_sEvidence, SEVERITY_ERROR, 1);
         return sOutput;
     }
 

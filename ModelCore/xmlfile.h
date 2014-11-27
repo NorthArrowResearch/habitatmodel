@@ -64,7 +64,7 @@ public:
      * @brief Document
      * @return
      */
-    inline QDomDocument *Document(){ return m_pDoc; }
+    inline QDomDocument * Document(){ return m_pDoc; }
 
 private:
     QFile * m_xmlFile;

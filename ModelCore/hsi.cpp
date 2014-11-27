@@ -36,7 +36,7 @@ HSI::~HSI(){
 
 void HSI::LoadCurves(){
 
-    QDomNodeList elHSICurves = Project::GetConfig()->elementsByTagName("HSICurves");
+    QDomNodeList elHSICurves = Project::GetConfigDom()->elementsByTagName("HSICurves");
 
     for(int n= 0; n < elHSICurves.length(); n++){
         QDomElement elCurve = elHSICurves.at(n).toElement();
