@@ -41,7 +41,8 @@ QDir * Project::m_ProjectDir;
 /* --------------------------------------------------------------- */
 
 
-Project::Project(QString sXMLConfig)
+Project::Project(const char * psXMLInput,
+                 const char * psXMLOutput)
     : NamedObjectWithID("TEMP", -1)
 {
     //TODO: Need to fet the output file from the XML
@@ -49,6 +50,7 @@ Project::Project(QString sXMLConfig)
 
     // Load the object model into memory:
     // Also do all the in between steps
+    QString sXMLConfig = psXMLInput;
     Load(sXMLConfig);
 
     // Run the actual simulations. This is a polymorhic virtual function.

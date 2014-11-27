@@ -14,17 +14,18 @@ HabitatModelEngine::HabitatModelEngine(){ }
 int HabitatModelEngine::Run(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
-    if (argc == 2)
+    if (argc == 3)
     {
         eResult = RunHabitatModel(argc, argv);
         return eResult;
     }
     else{
         std::cout << "\n Habitat Model Command Line";
-        std::cout << "\n    usage: habitatmodel <xml_config_file_path>";
+        std::cout << "\n    usage: habitatmodel <xml_input_file_path> <xml_output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    xml_config_file_path: Absolute full path to existing xml config file.";
+        std::cout << "\n    xml_output_file_path: Absolute full path to desired xml output file.";
 
         std::cout << "\n";
         return eResult;
@@ -35,9 +36,10 @@ int HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
 
-    CheckFile(argc, argv, 1, true);  //sXMLConfig
+    CheckFile(argc, argv, 1, true);  //sXMLInput
+    CheckFile(argc, argv, 2, false);  //sXMLOutput
 
-    HabitatModel::Project theSimulation(argv[1]);
+    HabitatModel::Project theSimulation(argv[1], argv[2]);
 
     return eResult;
 }

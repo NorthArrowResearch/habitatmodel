@@ -28,11 +28,11 @@ public:
 
     /**
      * @brief Project
-     * @param sXMLConfig
-     * @param sXMLOutput
-     * @param sXMLLogFile
+     * @param psXMLInput
+     * @param psXMLOutput
      */
-    Project(QString sXMLConfig);
+    Project(const char * psXMLInput,
+            const char * psXMLOutput);
 
     ~Project();
 
