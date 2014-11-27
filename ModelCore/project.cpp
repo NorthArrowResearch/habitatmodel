@@ -8,7 +8,7 @@
 #include <QHash>
 #include <QDir>
 
-#include "xmlfilehander.h"
+#include "xmlfile.h"
 #include "simulation.h"
 #include "hsisimulation.h"
 #include "hmvariable.h"
@@ -21,6 +21,7 @@
 #include "projectinputcsv.h"
 #include "projectinputraster.h"
 #include "projectinputvector.h"
+#include "habitat_exception.h"
 
 namespace HabitatModel{
 
@@ -45,20 +46,48 @@ QDir * Project::m_ProjectDir;
 
 Project::Project(const char * psXMLInput,
                  const char * psXMLOutput)
-    : NamedObjectWithID("TEMP", -1)
-{}
+{
+
+    XMLFile xmlInput(psXMLInput, true);
+    XMLFile xmlOutput(psXMLOutput, false);
+
+//    QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
+//    m_ConfigPath = &sXMLConfigDir;
+//    m_ProjectDir = &sXMLConfigDir;
+
+    // TODO:: Set up folders:
+    // 1. Read the output log file from the simulation node and
+
+    // Make a temporary folder for this simulation
+//    if (m_ConfigPath->mkdir("tmp")){
+//        QDir tmpPath = QDir(m_ConfigPath->absolutePath() + QDir::separator() + "tmp");
+//        m_TmpPath = new QDir(tmpPath);
+//    }
+//    else {
+//        throw std::runtime_error(std::string("Could not create \"tmp\" temporary at: \"" + m_ConfigPath->absolutePath().toStdString() + "\". Does it already exist?"));
+//    }
+
+//    m_elConfig = xConfig.Document()->documentElement();
+
+
+    // Populate our lookup table hashes with values that every simulation
+    // Will need access to.
+//    LoadLookupTable();
+//    LoadUnits();
+//    LoadHSCs();
+//    LoadHMVariables();
+//    LoadProjectInputs();
+
+    // Now load the simulations. This instantiates new Simulation objects
+    // Based on the simulation type (HSI, FIS, etc) and each of those will
+    // Load the models necessary to that particular simulation: HSI Curves etc.
+//    LoadSimulations();
+
+}
 
 
 int Project::Run()
     {
-
-    // TODO: Need to fet the output file from the XML
-    // QString temp = sXMLOutput;
-
-    // Load the object model into memory:
-    // Also do all the in between steps
-//    QString sXMLConfig = psXMLInput;
-//    Load(sXMLConfig);
 
     // Run the actual simulations. This is a polymorhic virtual function.
     QHashIterator<int, Simulation *> sim(m_simulation_store);
@@ -116,51 +145,17 @@ Project::~Project(){
 
 }
 
-void Project::Load(QString sXMLConfig)
-{
-    GCD::Project::XMLFileHander xConfig;
+void Project::LoadSimulations(){
 
-    QDir sXMLConfigDir = QFileInfo(sXMLConfig).absoluteDir();
-    m_ConfigPath = &sXMLConfigDir;
-    m_ProjectDir = &sXMLConfigDir;
+     QDomNodeList elSimulations =  m_elConfig.elementsByTagName("Simulations");
 
-    // TODO:: Set up folders:
-    // 1. Read the output log file from the simulation node and
-
-    // Make a temporary folder for this simulation
-    if (m_ConfigPath->mkdir("tmp")){
-        QDir tmpPath = QDir(m_ConfigPath->absolutePath() + QDir::separator() + "tmp");
-        m_TmpPath = new QDir(tmpPath);
-    }
-    else {
-        throw std::runtime_error(std::string("Could not create \"tmp\" temporary at: \"" + m_ConfigPath->absolutePath().toStdString() + "\". Does it already exist?"));
-    }
-
-    xConfig.Load(sXMLConfig);
-
-    m_elConfig = xConfig.Document()->documentElement();
-
-    QDomNodeList elSimulations =  m_elConfig.elementsByTagName("Simulations");
-
-    // Populate our lookup table hashes with things that are the same for every simulation
-    LoadLookupTable();
-    LoadUnits();
-    LoadHSCs();
-    LoadHMVariables();
-    LoadProjectInputs();
-
-    if (elSimulations.count() == 0) {
+    if (elSimulations.count() == 0)
         throw std::runtime_error("There are no <Simulations> in the configuration XML file.");
-    }
 
     // Loop over all Simulation elements in the XML file
     // ----------------------------------------------------------------------
     for(int n= 0; n < elSimulations.length(); n++){
         QDomElement elSimulation = elSimulations.at(n).toElement();
-
-        // This is not ideal way to do this but we do it since it is the top level element
-        SetName(elSimulation.firstChildElement("Title").text().toStdString().c_str());
-        SetID(elSimulation.firstChildElement("SimulationID").text().toInt());
 
         int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
 
@@ -193,7 +188,6 @@ void Project::Load(QString sXMLConfig)
 
     }
 
-
 }
 
 void Project::LoadProjectInputs(){
@@ -206,7 +200,7 @@ void Project::LoadProjectInputs(){
         QDomElement elProjectInput = elProjectInputs.at(n).toElement();
         QString sInputFilepath = elProjectInput.firstChildElement("SourcePath").text();
 
-//        int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
+//      int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
         int nproject_type = GetInputType(sInputFilepath);
 
         switch(nproject_type) {

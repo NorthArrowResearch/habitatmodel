@@ -20,7 +20,7 @@
 
 namespace HabitatModel{
 
-class DLL_API Project : public NamedObjectWithID
+class DLL_API Project
 {
 public:
 
@@ -46,14 +46,20 @@ public:
      * @brief Load the xml file from a path string
      * @param sXMLConfig
      */
-    void Load(QString sXMLConfig);
-
     void LoadHMVariables();
     void LoadLookupTable();
     void LoadUnits();
     void LoadHSCs();
     void LoadHSCCoordinatePairs();
     void LoadProjectInputs();
+    void LoadSimulations();
+
+    /**
+     * @brief LoadHSC
+     * @param nNewHSCID
+     * @param nType
+     * @return
+     */
     HSC *LoadHSC(int nNewHSCID, int nType);
 
     /**
@@ -187,6 +193,7 @@ public:
      * @return
      */
     inline static QHash<int, ProjectInput *> GetRawProjectInputsStore(){ return m_raw_project_inputs_store; }
+
 
 
 private:

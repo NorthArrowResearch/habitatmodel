@@ -1,4 +1,5 @@
-#include "xmllogger.h"
+#include "xmlfile.h"
+#include "exception"
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
@@ -7,18 +8,59 @@
 
 namespace HabitatModel{
 
-XmlLogger::XmlLogger(QString sXmlFile)
+XMLFile::XMLFile(QString sXmlFile, bool bInput)
 {
-    m_xmlFile = new QFile(sXmlFile);
-    Init();
+    // Is it an input file or an output file
+    if (QFile(sXmlFile).exists()){
+        Load(sXmlFile);
+    }
+    else if (bInput && QFile(sXmlFile).exists()){
+        Init();
+    }
+    else if (bInput && QFile(sXmlFile).exists()){
+        QString sErr = "The specified output XML file already exists:" + sXmlFile;
+        throw  std::runtime_error(sErr.toStdString());
+    }
+    else {
+        QString sErr = "The specified input XML file is missing:" + sXmlFile;
+        throw  std::runtime_error(sErr.toStdString());
+    }
 }
 
-XmlLogger::~XmlLogger(){
-    delete m_xmlFile;
+XMLFile::~XMLFile(){
+
+    if (!m_xmlFile == NULL)
+    {
+        if (m_xmlFile->isOpen())
+            m_xmlFile->close();
+
+        delete m_xmlFile;
+    }
+
 }
+
+void XMLFile::Load(QString &sFilePath)
+{
+    if (sFilePath.isEmpty() || sFilePath.isNull())
+        throw "The file path is null or empty";
+    else
+        if (!QFile::exists(sFilePath))
+            throw "The GCD project file does not exist.";
+
+    m_pDoc = new QDomDocument;
+    m_xmlFile = new QFile(sFilePath);
+    if (!m_xmlFile->open(QIODevice::ReadOnly))
+        throw "Failed to open the GCD XML project file as read only.";
+
+    if (!m_pDoc->setContent(m_xmlFile->readAll())) {
+        m_xmlFile->close();
+        throw "Failed to load DOM from GCD XML project file.";
+    }
+}
+
 
 // Create the file with the base skeleton we need. Then close it.
-void XmlLogger::Init(){
+void XMLFile::Init(){
 
     /*open a file */
     if (!m_xmlFile->open(QIODevice::WriteOnly))
@@ -52,7 +94,7 @@ void XmlLogger::Init(){
     }
 }
 
-void XmlLogger::AddMeta(QString sTagName, QString sTagValue){
+void XMLFile::AddMeta(QString sTagName, QString sTagValue){
     QDomDocument document = ReadLogFile();
     QDomElement meta_data, meta_data_tag;
     QDomElement documentElement = document.documentElement();
@@ -76,7 +118,7 @@ void XmlLogger::AddMeta(QString sTagName, QString sTagValue){
     WriteLogFile(&document);
 }
 
-void XmlLogger::Log(QString sMsg, QString sException, int nSeverity, int indent)
+void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 {
     QDomDocument document = ReadLogFile();
     QDomElement messages, message, exception, description;
@@ -113,7 +155,7 @@ void XmlLogger::Log(QString sMsg, QString sException, int nSeverity, int indent)
     WriteLogFile(&document);
 }
 
-QDomDocument XmlLogger::ReadLogFile(){
+QDomDocument XMLFile::ReadLogFile(){
     QDomDocument document;
     if( !document.setContent( m_xmlFile ) )
     {
@@ -125,7 +167,7 @@ QDomDocument XmlLogger::ReadLogFile(){
     return document;
 }
 
-void XmlLogger::WriteLogFile(QDomDocument * pElement){
+void XMLFile::WriteLogFile(QDomDocument * pElement){
 
     // Great. Now Write the domelement to the file.
     if( !m_xmlFile->open( QIODevice::WriteOnly | QIODevice::Text ) )
@@ -137,7 +179,7 @@ void XmlLogger::WriteLogFile(QDomDocument * pElement){
     m_xmlFile->close();
 }
 
-void XmlLogger::qXMLDebug(QString sMsg){
+void XMLFile::qXMLDebug(QString sMsg){
     qDebug( "%s : %s", qPrintable(sMsg), qPrintable( m_xmlFile->fileName() ) );
 }
 

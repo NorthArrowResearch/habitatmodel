@@ -2,6 +2,7 @@
 #define HABITAT_INTERFACE_H
 
 #include "habitatmodel_global.h"
+#include "habitat_exception.h"
 
 namespace HabitatModel{
 
@@ -10,11 +11,6 @@ enum ProjectInputTypeCodes {
     PROJECT_INPUT_RASTER = 1,
     PROJECT_INPUT_VECTOR = 2,
     PROJECT_INPUT_CSV = 3
-};
-
-enum ProjectErrorCodes {
-    PROCESS_OK = 0,
-    DEBUG = -1
 };
 
 enum HSCTypes {
@@ -36,7 +32,10 @@ extern "C" DLL_API int RunSimulations(const char * psXMLInput,
  * @param eErrorCode
  * @return
  */
-extern "C" DLL_API const char *GetReturnCodeAsString(int eErrorCode);
+extern "C" DLL_API inline const char *GetReturnCodeAsString(int eErrorCode){
+    return HabitatException::GetReturnCodeAsString(eErrorCode);
+}
+
 
 }
 #endif // HABITAT_INTERFACE_H

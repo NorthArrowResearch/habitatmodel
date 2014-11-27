@@ -1,5 +1,5 @@
-#ifndef XMLLOGGER_H
-#define XMLLOGGER_H
+#ifndef XMLFILE_H
+#define XMLFILE_H
 #include <QFile>
 #include <QDomElement>
 
@@ -11,11 +11,11 @@ enum XML_LOG_SEVERITY {
     SEVERITY_ERROR = 2
 };
 
-class XmlLogger
+class XMLFile
 {
 public:
-    XmlLogger(QString sXmlFile);
-    ~XmlLogger();
+    XMLFile(QString sXmlFile, bool bInput);
+    ~XMLFile();
     void Init();
 
     /**
@@ -65,8 +65,11 @@ public:
     void qXMLDebug(QString sMsg);
 
 
+    void Load(QString &sFilePath);
+    inline QDomDocument *Document(){ return m_pDoc; }
 private:
     QFile * m_xmlFile;
+    QDomDocument * m_pDoc;
 };
 
 }

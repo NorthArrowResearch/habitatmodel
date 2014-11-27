@@ -37,8 +37,9 @@ SOURCES += \
     hsccategorical.cpp \
     hscinflection.cpp \
     hsccategory.cpp \
-    xmllogger.cpp \
-    habitat_interface.cpp
+    habitat_interface.cpp \
+    xmlfile.cpp \
+    habitat_exception.cpp
 
 HEADERS +=\
     simulation.h \
@@ -60,8 +61,9 @@ HEADERS +=\
     hsccategorical.h \
     hscinflection.h \
     hsccategory.h \
-    xmllogger.h \
-    habitat_interface.h
+    habitat_interface.h \
+    xmlfile.h \
+    habitat_exception.h
 
 unix {
     target.path = /usr/lib
@@ -117,13 +119,9 @@ unix:!macx {
     DEPENDPATH  += /usr/include/gdal
 }
 
-INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
-DEPENDPATH += $$PWD/../../../GCD/gcd-console/GCDCore
-
 INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 
 LIBS += -L$$DESTDIR -lRasterManager
-LIBS += -L$$DESTDIR -lGCDCore
 
 message("Building to: $$DESTDIR")
