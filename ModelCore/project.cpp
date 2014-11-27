@@ -69,24 +69,22 @@ Project::Project(const char * psProjectRoot,
 //        QDir tmpPath = QDir(m_ConfigPath->absolutePath() + QDir::separator() + "tmp");
 //        m_TmpPath = new QDir(tmpPath);
 //    }
-//    else {
-//        throw std::runtime_error(std::string("Could not create \"tmp\" temporary at: \"" + m_ConfigPath->absolutePath().toStdString() + "\". Does it already exist?"));
-//    }
+
 
 
     // Populate our lookup table hashes with values that every simulation
     // Will need access to.
     m_XMLOutput->Log("Loading Objects...", 1);
-//    LoadLookupTable();
-//    LoadUnits();
-//    LoadHSCs();
-//    LoadHMVariables();
-//    LoadProjectInputs();
+    LoadLookupTable();
+    LoadUnits();
+    LoadHSCs();
+    LoadHMVariables();
+    LoadProjectInputs();
 
     // Now load the simulations. This instantiates new Simulation objects
     // Based on the simulation type (HSI, FIS, etc) and each of those will
     // Load the models necessary to that particular simulation: HSI Curves etc.
-//    LoadSimulations();
+    LoadSimulations();
 
 }
 
@@ -108,10 +106,10 @@ int Project::Run()
 
 void Project::LoadSimulations(){
 
-     QDomNodeList elSimulations =  m_elConfig->elementsByTagName("Simulations");
+    QDomNodeList elSimulations =  m_elConfig->elementsByTagName("Simulations");
 
     if (elSimulations.count() == 0)
-        throw HabitatException(DOM_NODE_MISSING, "There are no <Simulations> in the configuration XML file.");
+        ProjectError(DOM_NODE_MISSING, "There are no <Simulations> in the configuration XML file.");
 
     // Loop over all Simulation elements in the XML file
     // ----------------------------------------------------------------------
@@ -144,7 +142,7 @@ void Project::LoadSimulations(){
             // m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
         }
         else{
-            throw HabitatException(DOM_NODE_MISSING, "No valid <HSI> or <FIS> nodes found in the config file.");
+            ProjectError(DOM_NODE_MISSING, "No valid <HSI> or <FIS> nodes found in the config file.");
         }
 
     }
@@ -179,7 +177,7 @@ void Project::LoadProjectInputs(){
             m_raw_project_inputs_store.insert(n, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
-            throw HabitatException(FILE_NOT_FOUND, sInputFilepath);
+            ProjectError(FILE_NOT_FOUND, sInputFilepath);
             break;
 
         }
@@ -203,7 +201,7 @@ HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath
 }
 
 void Project::LoadLookupTable(){
-
+    m_XMLOutput->Log("Loading Lookup Table", 2);
     QDomNodeList elListItems = m_elConfig->elementsByTagName("LookupListItems");
 
     //Loop through the LookipListItems nodes and load them into the hasj store
@@ -217,6 +215,7 @@ void Project::LoadLookupTable(){
 }
 
 void Project::LoadUnits(){
+    m_XMLOutput->Log("Loading Units", 2);
     QDomNodeList elUnits = m_elConfig->elementsByTagName("Units");
 
     // Loop over all Unit elements in the XML file.
@@ -228,6 +227,7 @@ void Project::LoadUnits(){
 }
 
 void Project::LoadHMVariables(){
+    m_XMLOutput->Log("Loading HMVariables", 2);
     QDomNodeList elvars = m_elConfig->elementsByTagName("Variables");
 
     // Loop over all HMVariable elements in the XML file
@@ -239,7 +239,6 @@ void Project::LoadHMVariables(){
 }
 
 HSC * Project::LoadHSC(int nNewHSCID, int nType){
-
     // Create one if it doesn't exist.
     if ( !GetHSC(nNewHSCID) ){
 
@@ -267,15 +266,8 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
     return m_HSC_store.value(nNewHSCID);
 }
 
-void Project::ProjectError(int nErrorCode){ ProjectError(nErrorCode, ""); }
-
-void Project::ProjectError(int nErrorCode, QString m_sEvidence){
-    GetOutputXML()->Log(HabitatException::GetReturnCodeOnlyAsString(nErrorCode),  m_sEvidence, SEVERITY_ERROR, 1);
-    throw HabitatException(nErrorCode, m_sEvidence);
-}
-
 void Project::LoadHSCs(){
-
+     m_XMLOutput->Log("Loading HSCs", 2);
     // Load first the coordinate pairs and then the HSC categories. If the parent
     // HSC doesn't exist it is created.
     QDomNodeList elHSCCoordPairs = m_elConfig->elementsByTagName("HSCCoordinatePairs");
@@ -300,6 +292,14 @@ void Project::LoadHSCs(){
         pHSCCategorical->AddCategory(nCatID, new HSCCategory(&elCategory));
     }
 
+}
+
+
+void Project::ProjectError(int nErrorCode){ ProjectError(nErrorCode, ""); }
+
+void Project::ProjectError(int nErrorCode, QString m_sEvidence){
+    GetOutputXML()->Log(HabitatException::GetReturnCodeOnlyAsString(nErrorCode),  m_sEvidence, SEVERITY_ERROR, 1);
+    throw HabitatException(nErrorCode, m_sEvidence);
 }
 
 

@@ -7,8 +7,9 @@ namespace HabitatModel{
 
 enum XML_LOG_SEVERITY {
     SEVERITY_SUCCESS = 0,
-    SEVERITY_WARNING = 1,
-    SEVERITY_ERROR = 2
+    SEVERITY_VERBOSE = 1,
+    SEVERITY_WARNING = 2,
+    SEVERITY_ERROR = 3
 };
 
 class XMLFile

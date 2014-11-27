@@ -11,17 +11,20 @@ Simulation::Simulation(QDomElement * elSimulation)
 {
 
     //    Example Node:
-    //    <Simulations>
-    //    <SimulationID>4</SimulationID>
-    //    <HSIID>3</HSIID>
-    //    <CreatedBy>James</CreatedBy>
-    //    <CreatedOn>2014-10-17T14:03:00.676-06:00</CreatedOn>
-    //    <IsQueuedToRun>true</IsQueuedToRun>
-    //    <HSISourcePath>HSI Source Path</HSISourcePath>
-    //    <Title>ChinookSpawner</Title>
-    //    <Folder>C:\Users\A01674762\Desktop\ScratchWorkspace\HabitatSuitabilityModeling\JohnStockton\Simulations\ChinookSpawner</Folder>
-    //    <AddIndividualOutput>true</AddIndividualOutput>
-    //    </Simulations>
+    /*
+    <Simulations>
+      <SimulationID>3</SimulationID>
+      <HSIID>3</HSIID>
+      <CreatedBy>SB</CreatedBy>
+      <CreatedOn>2014-07-10T00:00:00-07:00</CreatedOn>
+      <VisitID>1</VisitID>
+      <Discharge>0.5</Discharge>
+      <IsQueuedToRun>false</IsQueuedToRun>
+      <Title>Old2</Title>
+      <AddIndividualOutput>false</AddIndividualOutput>
+    </Simulations> */
+
+    Project::GetOutputXML()->Log("Loading simulation: " + GetName() , 2);
 
     // First set all the member variables according to what's in the XML
     m_sfolder = elSimulation->firstChildElement("Folder").text();

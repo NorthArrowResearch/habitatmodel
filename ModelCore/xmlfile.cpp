@@ -112,8 +112,8 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
     QDomElement documentElement = m_pDoc->documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "messages" );
 
-    QDomText sMsgTxt = m_pDoc->createTextNode(sMsg);
-    QDomText sExceptionTxt = m_pDoc->createTextNode(sException);
+    QDomText sMsgTxt = m_pDoc->createTextNode(sMsg.toHtmlEscaped());
+    QDomText sExceptionTxt = m_pDoc->createTextNode(sException.toHtmlEscaped());
 
     if( elements.size() == 0 )
     {
