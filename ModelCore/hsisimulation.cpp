@@ -30,7 +30,7 @@ void HSISimulation::Run(){
 
     // Our final output Raster file name and path:
     QString sNewFileName = "OUTPUT-" + GetName() + ".tif";
-    m_OutputRasterFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
+//    m_OutputRasterFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
 
     // Get and loop over all the simulationHSCInputs
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
@@ -43,12 +43,12 @@ void HSISimulation::Run(){
         HSC * pHSC = i.value()->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
-        ProjectInput * pInput = i.value()->GetProjectInput();
+//        ProjectInput * pInput = i.value()->GetProjectInput();
 
-        QString pProjectInputFile = pInput->getInputRasterFileName();
+//        QString pProjectInputFile = pInput->getInputRasterFileName();
 
-        QString sNewUtilizationFileName = "UT-" + pInput->getInputRasterFileName();
-        pInput->setUtilizationRasterFileName( Project::GetTmpPath()->absoluteFilePath(sNewUtilizationFileName) );
+//        QString sNewUtilizationFileName = "UT-" + pInput->getInputRasterFileName();
+//        pInput->setUtilizationRasterFileName( Project::GetTmpPath()->absoluteFilePath(sNewUtilizationFileName) );
 
         // Use: Project::GetRasterExtentMeta() for size.
 
@@ -162,7 +162,7 @@ void HSISimulation::PrepareInputs(){
     while (rInputs.hasNext()) {
         rInputs.next();
         // TODO: need something better than tmp path
-        rInputs.value()->Prepare(GetRasterExtentMeta(), Project::GetTmpPath()->absolutePath());
+//        rInputs.value()->Prepare(GetRasterExtentMeta(), Project::GetTmpPath()->absolutePath());
     }
 
 }

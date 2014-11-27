@@ -72,13 +72,7 @@ public:
      * @brief GetConfigPath
      * @return
      */
-    inline static QDir * GetConfigPath() { return m_ConfigPath; }
-
-    /**
-     * @brief GetTmpPath
-     * @return
-     */
-    inline static QDir * GetTmpPath() { return m_TmpPath; }
+    inline static QDir * GetProjectRootPath() { return m_ProjectRootDir; }
 
     /**
      * @brief GetLookupTableItem
@@ -207,9 +201,7 @@ private:
     QString s_description;
 
     // The path to that config file
-    static QDir * m_ConfigPath;
-    static QDir * m_ProjectDir;
-    static QDir * m_TmpPath;
+    static QDir * m_ProjectRootDir;
 
     // The entire config file dom
     static QDomElement m_elConfig;

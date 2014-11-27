@@ -35,14 +35,14 @@ void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRaster, QStrin
     // simulationname-hsisimulation-inputid-fname.tif
     QString sNewFileName = "InputCSV-" + getInputFileName() + ".tif";
 
-    m_sRasterInputFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
+//    m_sRasterInputFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
 
-    RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
-                                       m_sRasterInputFileName.toStdString().c_str(),
-                                       m_sXFieldName.toStdString().c_str(),
-                                       m_sYFieldName.toStdString().c_str(),
-                                       m_sFieldName.toStdString().c_str(),
-                                       TemplateRaster );
+//    RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
+//                                       m_sRasterInputFileName.toStdString().c_str(),
+//                                       m_sXFieldName.toStdString().c_str(),
+//                                       m_sYFieldName.toStdString().c_str(),
+//                                       m_sFieldName.toStdString().c_str(),
+//                                       TemplateRaster );
 }
 
 

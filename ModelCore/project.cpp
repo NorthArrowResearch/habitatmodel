@@ -37,9 +37,7 @@ QHash<int, HSC *> Project::m_HSC_store;
 QHash<int, Simulation *> Project::m_simulation_store;
 
 QDomElement Project::m_elConfig;
-QDir * Project::m_ConfigPath;
-QDir * Project::m_TmpPath;
-QDir * Project::m_ProjectDir;
+QDir * Project::m_ProjectRootDir;
 
 /* --------------------------------------------------------------- */
 

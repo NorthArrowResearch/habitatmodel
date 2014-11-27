@@ -38,8 +38,7 @@ SOURCES += \
     hscinflection.cpp \
     hsccategory.cpp \
     habitat_interface.cpp \
-    xmlfile.cpp \
-    habitat_exception.cpp
+    xmlfile.cpp
 
 HEADERS +=\
     simulation.h \
