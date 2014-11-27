@@ -31,6 +31,12 @@ enum HSCTypes {
 extern "C" DLL_API int RunSimulations(const char * psXMLInput,
                                       const char * psXMLOutput);
 
-}
+/**
+ * @brief GetReturnCodeAsString
+ * @param eErrorCode
+ * @return
+ */
+extern "C" DLL_API const char *GetReturnCodeAsString(int eErrorCode);
 
+}
 #endif // HABITAT_INTERFACE_H

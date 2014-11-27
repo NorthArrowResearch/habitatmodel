@@ -20,8 +20,6 @@
 
 namespace HabitatModel{
 
-const char *GetReturnCodeAsString(int eErrorCode);
-
 class Project : public NamedObjectWithID
 {
 public:
@@ -41,7 +39,7 @@ public:
      * @param psXMLInput
      * @param psXMLOutput
      */
-    int Run();;
+    int Run();
 
 
     /**
