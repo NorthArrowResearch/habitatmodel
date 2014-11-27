@@ -39,7 +39,8 @@ int HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
     CheckFile(argc, argv, 1, true);  //sXMLInput
     CheckFile(argc, argv, 2, false);  //sXMLOutput
 
-    HabitatModel::Project theSimulation(argv[1], argv[2]);
+    HabitatModel::Project theProject(argv[1], argv[2]);
+    eResult = theProject.Run();
 
     return eResult;
 }

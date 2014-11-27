@@ -9,7 +9,8 @@ extern "C" DLL_API int RunSimulations(const char * psXMLInput,
                                       const char * psXMLOutput)
 {
     int eResult = PROCESS_OK;
-    eResult = HabitatModel::Project theProject(psXMLInput, psXMLOutput);
+    HabitatModel::Project theProject(psXMLInput, psXMLOutput);
+    eResult = theProject.Run();
     return eResult;
 }
 

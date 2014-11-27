@@ -44,14 +44,19 @@ QDir * Project::m_ProjectDir;
 Project::Project(const char * psXMLInput,
                  const char * psXMLOutput)
     : NamedObjectWithID("TEMP", -1)
-{
-    //TODO: Need to fet the output file from the XML
-    //    QString temp = sXMLOutput;
+{}
+
+
+int Project::Run()
+    {
+
+    // TODO: Need to fet the output file from the XML
+    // QString temp = sXMLOutput;
 
     // Load the object model into memory:
     // Also do all the in between steps
-    QString sXMLConfig = psXMLInput;
-    Load(sXMLConfig);
+//    QString sXMLConfig = psXMLInput;
+//    Load(sXMLConfig);
 
     // Run the actual simulations. This is a polymorhic virtual function.
     QHashIterator<int, Simulation *> sim(m_simulation_store);

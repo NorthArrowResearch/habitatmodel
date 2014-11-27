@@ -37,6 +37,14 @@ public:
     ~Project();
 
     /**
+     * @brief Run: This is the main function that does all the work
+     * @param psXMLInput
+     * @param psXMLOutput
+     */
+    int Run();;
+
+
+    /**
      * @brief Load the xml file from a path string
      * @param sXMLConfig
      */
