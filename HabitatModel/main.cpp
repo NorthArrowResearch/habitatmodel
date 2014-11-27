@@ -5,7 +5,8 @@
 #include <QDebug>
 
 #include "habitatmodelengine.h"
-#include "project.h"
+#include "project.h"\
+#include "habitat_exception.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,7 +26,11 @@ int main(int argc, char *argv[])
 
         exit (EXIT_SUCCESS);
     }
-
+    catch (HabitatModel::HabitatException & e)
+    {
+        std::cerr <<"Error: " << e.GetReturnMsgAsString().toStdString() << std::endl;
+        exit (EXIT_FAILURE);
+    }
     catch (std::exception& e)
     {
         std::cerr <<"Error: " << e.what() << std::endl;

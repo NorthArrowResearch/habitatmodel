@@ -5,26 +5,21 @@
 #include <QTextStream>
 #include <QDomElement>
 #include <QXmlStreamWriter>
+#include "habitat_exception.h"
 
 namespace HabitatModel{
 
 XMLFile::XMLFile(QString sXmlFile, bool bInput)
 {
     // Is it an input file or an output file
-    if (QFile(sXmlFile).exists()){
+    if (QFile(sXmlFile).exists())
         Load(sXmlFile);
-    }
-    else if (bInput && QFile(sXmlFile).exists()){
+    else if (bInput && QFile(sXmlFile).exists())
         Init();
-    }
-    else if (bInput && QFile(sXmlFile).exists()){
-        QString sErr = "The specified output XML file already exists:" + sXmlFile;
-        throw  std::runtime_error(sErr.toStdString());
-    }
-    else {
-        QString sErr = "The specified input XML file is missing:" + sXmlFile;
-        throw  std::runtime_error(sErr.toStdString());
-    }
+    else if (bInput && QFile(sXmlFile).exists())
+        throw HabitatException(FILE_PRESENT, sXmlFile);
+    else
+        throw HabitatException(FILE_NOT_FOUND, sXmlFile);
 }
 
 XMLFile::~XMLFile(){

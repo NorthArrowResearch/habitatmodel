@@ -29,7 +29,7 @@ public:
      * @param psXMLInput
      * @param psXMLOutput
      */
-    Project(const char * psXMLInput,
+    Project(const char * psProjectRoot, const char *psXMLInput,
             const char * psXMLOutput);
 
     ~Project();

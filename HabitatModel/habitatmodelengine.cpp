@@ -14,7 +14,7 @@ HabitatModelEngine::HabitatModelEngine(){ }
 int HabitatModelEngine::Run(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
-    if (argc == 3)
+    if (argc == 4)
     {
         eResult = RunHabitatModel(argc, argv);
         return eResult;
@@ -36,54 +36,10 @@ int HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
 
-    CheckFile(argc, argv, 1, true);  //sXMLInput
-    CheckFile(argc, argv, 2, false);  //sXMLOutput
-
-    HabitatModel::Project theProject(argv[1], argv[2]);
+    HabitatModel::Project theProject(argv[1], argv[2], argv[3]);
     eResult = theProject.Run();
 
     return eResult;
 }
-
-void HabitatModelEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustExist)
-{
-
-    if (nIndex < argc)
-    {
-        QString sFile = argv[nIndex];
-
-        // Enough arguments
-        if (sFile.isNull() || sFile.isEmpty())
-            throw std::runtime_error("Command line missing a file path.");
-        else
-        {
-            // Check if the directory the file exists in is actually there
-            QDir sFilePath = QFileInfo(sFile).absoluteDir();
-            if (!sFilePath.exists()){
-                QString sErr = "The directory of the file you specified does not exist: " + sFilePath.absolutePath();
-                throw  std::runtime_error(sErr.toStdString());
-            }
-
-            sFile = sFile.trimmed();
-            sFile = sFile.replace("\"","");
-            if (bMustExist)
-            {
-                if (!QFile::exists(sFile)){
-                    QString sErr = "The specified input file does not exist: " + sFile;
-                    throw  std::runtime_error(sErr.toStdString());
-                }
-            }
-            else
-                if (QFile::exists(sFile)){
-                    QString sErr = "The specified output file already exists." + sFile;
-                    throw  std::runtime_error(sErr.toStdString());
-                }
-        }
-    }
-    else
-        throw std::runtime_error("Insufficient command line arguments for operation.");
-
-}
-
 
 } //HabitatModelEngine

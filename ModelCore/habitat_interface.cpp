@@ -6,13 +6,17 @@
 
 namespace HabitatModel{
 
-extern "C" DLL_API int RunSimulations(const char * psXMLInput,
+extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
+                                      const char * psXMLInput,
                                       const char * psXMLOutput)
 {
     int eResult = PROCESS_OK;
     try{
-        HabitatModel::Project theProject(psXMLInput, psXMLOutput);
+        HabitatModel::Project theProject(psProjectRoot, psXMLInput, psXMLOutput);
         eResult = theProject.Run();
+    }
+    catch (HabitatException& e){
+        return e.GetErrorCode();
     }
     catch (std::exception& e){
         eResult = UNDEFINED_ERROR;

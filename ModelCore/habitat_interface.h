@@ -24,7 +24,8 @@ enum HSCTypes {
  * @param psXMLOutput
  * @return
  */
-extern "C" DLL_API int RunSimulations(const char * psXMLInput,
+extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
+                                      const char *psXMLInput,
                                       const char * psXMLOutput);
 
 /**
@@ -33,7 +34,7 @@ extern "C" DLL_API int RunSimulations(const char * psXMLInput,
  * @return
  */
 extern "C" DLL_API inline const char *GetReturnCodeAsString(int eErrorCode){
-    return HabitatException::GetReturnCodeAsString(eErrorCode);
+    return HabitatException::GetReturnCodeOnlyAsString(eErrorCode);
 }
 
 
