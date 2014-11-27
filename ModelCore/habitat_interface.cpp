@@ -8,8 +8,9 @@ namespace HabitatModel{
 extern "C" DLL_API int RunSimulations(const char * psXMLInput,
                                       const char * psXMLOutput)
 {
-    HabitatModel::Project theSimulation(psXMLInput, psXMLOutput);
-    return PROCESS_OK;
+    int eResult = PROCESS_OK;
+    eResult = HabitatModel::Project theProject(psXMLInput, psXMLOutput);
+    return eResult;
 }
 
 
