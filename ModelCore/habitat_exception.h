@@ -2,7 +2,6 @@
 #define HABITAT_EXCEPTION_H
 #include <QString>
 #include "exception"
-#include "project.h"
 
 namespace HabitatModel{
 
@@ -14,7 +13,8 @@ enum ProjectErrorCodes {
     DIRECTORY_PRESENT = 4,
     FILE_WRITE_ERROR = 5,
     FILE_READ_ONLY = 6,
-    DOM_NODE_MISSING = 7,
+    DOM_LOAD_ERROR = 7,
+    DOM_NODE_MISSING = 8,
 
     DEBUG = -1,
     UNDEFINED_ERROR = 999
@@ -23,14 +23,19 @@ enum ProjectErrorCodes {
 class HabitatException :public std::exception
 {
 public:
-    inline HabitatException(ProjectErrorCodes nErrorCode){
-        m_nErrorCode = nErrorCode;
-        m_sEvidence = "";
-    }
-    inline HabitatException(ProjectErrorCodes nErrorCode, QString sMsg){
+    inline HabitatException(int nErrorCode){ Init(nErrorCode, "");}
+    inline HabitatException(int nErrorCode, QString sMsg){ Init(nErrorCode, sMsg); }
+    /**
+     * @brief init
+     */
+    inline void Init(int nErrorCode, QString sMsg){
         m_nErrorCode = nErrorCode;
         m_sEvidence = sMsg;
     }
+    /**
+     * @brief GetErrorCode
+     * @return
+     */
     inline int GetErrorCode(){ return m_nErrorCode; }
 
     // Define the error messages
@@ -69,7 +74,6 @@ public:
         if (m_sEvidence.length() > 0){
             sOutput = sErrMsg + ": " + m_sEvidence;
         }
-//        Project::GetOutputXML()->Log(sErrMsg,  m_sEvidence, SEVERITY_ERROR, 1);
         return sOutput;
     }
 

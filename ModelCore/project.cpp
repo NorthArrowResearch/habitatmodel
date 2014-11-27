@@ -59,7 +59,7 @@ Project::Project(const char * psProjectRoot,
 
     m_ProjectRootDir = new QDir(psProjectRoot);
     if (!m_ProjectRootDir->exists())
-        throw HabitatException(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
+        ProjectError(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
 
     m_XMLOutput->Log("Starting Simulation Run...");
     // Make a temporary folder for this simulation
@@ -263,6 +263,13 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
     }
     // Return the one we want.
     return m_HSC_store.value(nNewHSCID);
+}
+
+void Project::ProjectError(int nErrorCode){ ProjectError(nErrorCode, ""); }
+
+void Project::ProjectError(int nErrorCode, QString m_sEvidence){
+    GetOutputXML()->Log(HabitatException::GetReturnCodeOnlyAsString(nErrorCode),  m_sEvidence, SEVERITY_ERROR, 1);
+    throw HabitatException(nErrorCode, m_sEvidence);
 }
 
 void Project::LoadHSCs(){

@@ -28,9 +28,6 @@ HEADERS += \
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
-INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
-DEPENDPATH += $$PWD/../../../GCD/gcd-console/GCDCore
-
 INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 
@@ -83,9 +80,7 @@ unix:!macx {
     DEPENDPATH  += /usr/include/gdal
 }
 
-
 LIBS += -L$$DESTDIR -lModelCore
 LIBS += -L$$DESTDIR -lRasterManager
-LIBS += -L$$DESTDIR -lGCDCore
 
 message("Building to: $$DESTDIR")

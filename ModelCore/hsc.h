@@ -6,6 +6,11 @@
 
 namespace HabitatModel{
 
+enum HSCTypes {
+    HSC_CATEGORICAL = 0,
+    HSC_INFLECTION = 1
+};
+
 class Unit;
 class HMVariable;
 

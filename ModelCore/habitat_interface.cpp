@@ -1,8 +1,8 @@
 #define MY_DLL_EXPORT
 #include "habitat_interface.h"
 #include "habitatmodel_global.h"
-#include "project.h"
 #include "habitat_exception.h"
+#include "project.h"
 
 namespace HabitatModel{
 

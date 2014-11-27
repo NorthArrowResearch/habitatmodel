@@ -10,6 +10,13 @@
 
 namespace HabitatModel{
 
+enum ProjectInputTypeCodes {
+    PROJECT_INPUT_UNDEFINED = 0,
+    PROJECT_INPUT_RASTER = 1,
+    PROJECT_INPUT_VECTOR = 2,
+    PROJECT_INPUT_CSV = 3
+};
+
 class ProjectInputVector;
 class ProjectInputRaster;
 class ProjectInputCSV;

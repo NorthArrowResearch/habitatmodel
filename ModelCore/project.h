@@ -64,7 +64,7 @@ public:
     HSC *LoadHSC(int nNewHSCID, int nType);
 
     /**
-     * @brief GetConfig
+     * @brief GetConfigDom
      * @return
      */
     inline static QDomDocument * GetConfigDom() { return m_elConfig; }
@@ -197,6 +197,8 @@ public:
 
 
 
+    void ProjectError(int nErrorCode);
+    void ProjectError(int nErrorCode, QString m_sEvidence);
 private:
     // Project Attributes
     QString qd_date_created;

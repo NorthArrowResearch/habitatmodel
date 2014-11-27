@@ -1,5 +1,4 @@
 #include "xmlfile.h"
-#include "exception"
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
@@ -39,19 +38,19 @@ XMLFile::~XMLFile(){
 void XMLFile::Load(QString &sFilePath)
 {
     if (sFilePath.isEmpty() || sFilePath.isNull())
-        throw "The file path is null or empty";
+        throw HabitatException(FILE_NOT_FOUND, "Filepath was empty");
     else
         if (!QFile::exists(sFilePath))
-            throw "The GCD project file does not exist.";
+            throw HabitatException(FILE_NOT_FOUND, sFilePath);
 
     m_pDoc = new QDomDocument;
     m_xmlFile = new QFile(sFilePath);
     if (!m_xmlFile->open(QIODevice::ReadOnly))
-        throw "Failed to open the GCD XML project file as read only.";
+        throw HabitatException(FILE_READ_ONLY, sFilePath);
 
     if (!m_pDoc->setContent(m_xmlFile->readAll())) {
         m_xmlFile->close();
-        throw "Failed to load DOM from GCD XML project file.";
+        throw HabitatException(DOM_LOAD_ERROR, sFilePath);
     }
 }
 
