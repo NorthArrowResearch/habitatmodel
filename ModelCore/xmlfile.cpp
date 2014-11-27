@@ -11,15 +11,17 @@ namespace HabitatModel{
 
 XMLFile::XMLFile(QString sXmlFile, bool bInput)
 {
-    // Is it an input file or an output file
-    if (QFile(sXmlFile).exists())
+    // Is it an input file or an output file?
+    if (bInput && QFile(sXmlFile).exists())
         Load(sXmlFile);
-    else if (bInput && QFile(sXmlFile).exists())
-        Init();
-    else if (bInput && QFile(sXmlFile).exists())
-        throw HabitatException(FILE_PRESENT, sXmlFile);
-    else
+    else if (!bInput && !QFile(sXmlFile).exists())
+        Init(sXmlFile);
+
+    //Something is wrong. Throw an exception
+    else if (bInput && !QFile(sXmlFile).exists())
         throw HabitatException(FILE_NOT_FOUND, sXmlFile);
+    else
+        throw HabitatException(FILE_PRESENT, sXmlFile);
 }
 
 XMLFile::~XMLFile(){
@@ -31,7 +33,7 @@ XMLFile::~XMLFile(){
 
         delete m_xmlFile;
     }
-
+    delete m_pDoc;
 }
 
 void XMLFile::Load(QString &sFilePath)
@@ -55,18 +57,19 @@ void XMLFile::Load(QString &sFilePath)
 
 
 // Create the file with the base skeleton we need. Then close it.
-void XMLFile::Init(){
+void XMLFile::Init(QString &sFilePath){
+
+    m_pDoc = new QDomDocument;
+    m_xmlFile = new QFile(sFilePath);
 
     /*open a file */
     if (!m_xmlFile->open(QIODevice::WriteOnly))
-    {
-        /* show wrror message if not able to open file */
-        qXMLDebug("The file is in read only mode");
-    }
+        throw HabitatException(FILE_READ_ONLY, m_xmlFile->fileName());
     else
     {
         /*if file is successfully opened then create XML*/
         QXmlStreamWriter* xmlWriter = new QXmlStreamWriter();
+
         /* set device (here file)to streamwriter */
         xmlWriter->setDevice(m_xmlFile);
         /* Writes a document start with the XML version number version. */
@@ -90,14 +93,13 @@ void XMLFile::Init(){
 }
 
 void XMLFile::AddMeta(QString sTagName, QString sTagValue){
-    QDomDocument document = ReadLogFile();
     QDomElement meta_data, meta_data_tag;
-    QDomElement documentElement = document.documentElement();
+    QDomElement documentElement = m_pDoc->documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
 
     if( elements.size() == 0 )
     {
-      meta_data = document.createElement( "meta_data" );
+      meta_data = m_pDoc->createElement( "meta_data" );
       documentElement.insertBefore( meta_data, documentElement );
     }
     else if( elements.size() == 1 )
@@ -106,23 +108,22 @@ void XMLFile::AddMeta(QString sTagName, QString sTagValue){
     }
 
     // Create the message itself
-    meta_data_tag = document.createElement( sTagName );
+    meta_data_tag = m_pDoc->createElement( sTagName );
     meta_data_tag.setNodeValue(sTagValue);
     meta_data.appendChild( meta_data_tag );
 
-    WriteLogFile(&document);
+    WriteDomToFile();
 }
 
 void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 {
-    QDomDocument document = ReadLogFile();
     QDomElement messages, message, exception, description;
-    QDomElement documentElement = document.documentElement();
+    QDomElement documentElement = m_pDoc->documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "messages" );
 
     if( elements.size() == 0 )
     {
-      messages = document.createElement( "messages" );
+      messages = m_pDoc->createElement( "messages" );
       documentElement.insertBefore( messages, documentElement );
     }
     else if( elements.size() == 1 )
@@ -131,51 +132,36 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
     }
 
     // Create the message itself
-    message = document.createElement( "message" );
+    message = m_pDoc->createElement( "message" );
     message.setAttribute( "severity", nSeverity );
     message.setAttribute( "indent", indent );
 
     // Now create the description of the message
-    description = document.createElement( "description" );
+    description = m_pDoc->createElement( "description" );
     description.setNodeValue(sMsg);
     message.appendChild( description );
 
     // Only create an exception if we need to.
     if (nSeverity != 0 && sException.compare("") != 0){
-        exception = document.createElement( "exception" );
+        exception = m_pDoc->createElement( "exception" );
         exception.setNodeValue(sException);
         message.appendChild( exception );
     }
     messages.appendChild( message );
-    WriteLogFile(&document);
+    WriteDomToFile();
 }
 
-QDomDocument XMLFile::ReadLogFile(){
-    QDomDocument document;
-    if( !document.setContent( m_xmlFile ) )
-    {
-        qXMLDebug("Failed to parse the log file into a DOM tree");
-        m_xmlFile->close();
-    }
-    m_xmlFile->close();
 
-    return document;
-}
-
-void XMLFile::WriteLogFile(QDomDocument * pElement){
+void XMLFile::WriteDomToFile(){
 
     // Great. Now Write the domelement to the file.
     if( !m_xmlFile->open( QIODevice::WriteOnly | QIODevice::Text ) )
-    {
-        qDebug("%s %s", "Failed to open log file for writing:", qPrintable(m_xmlFile->fileName()) ); // << xmlFileInfo.fileName()
-    }
-    QTextStream stream( m_xmlFile );
-    stream << pElement->toString();
-    m_xmlFile->close();
-}
+        throw HabitatException(FILE_WRITE_ERROR,  m_xmlFile->fileName());
 
-void XMLFile::qXMLDebug(QString sMsg){
-    qDebug( "%s : %s", qPrintable(sMsg), qPrintable( m_xmlFile->fileName() ) );
+    QTextStream stream( m_xmlFile );
+    stream << m_pDoc->toString();
+    m_xmlFile->close();
+
 }
 
 

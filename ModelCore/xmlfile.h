@@ -16,8 +16,17 @@ class XMLFile
 public:
     XMLFile(QString sXmlFile, bool bInput);
     ~XMLFile();
-    void Init();
 
+    /**
+     * @brief Init
+     * @param sFilePath
+     */
+    void Init(QString &sFilePath);
+    /**
+     * @brief Load
+     * @param sFilePath
+     */
+    void Load(QString &sFilePath);
     /**
      * @brief Log : Write the <message> log files
      * @param sMsg
@@ -47,26 +56,16 @@ public:
     void AddMeta(QString sTagName, QString sTagValue);
 
     /**
-     * @brief ReadLog
+     * @brief WriteDomToFile
+     */
+    void WriteDomToFile();
+
+    /**
+     * @brief Document
      * @return
      */
-    QDomDocument ReadLogFile();
-
-    /**
-     * @brief WriteLogFile
-     * @param pElement
-     */
-    void WriteLogFile(QDomDocument *pElement);
-
-    /**
-     * @brief qXMLDebug
-     * @param sMsg
-     */
-    void qXMLDebug(QString sMsg);
-
-
-    void Load(QString &sFilePath);
     inline QDomDocument *Document(){ return m_pDoc; }
+
 private:
     QFile * m_xmlFile;
     QDomDocument * m_pDoc;

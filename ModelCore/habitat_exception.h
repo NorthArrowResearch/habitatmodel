@@ -11,6 +11,8 @@ enum ProjectErrorCodes {
     DIRECTORY_NOT_FOUND = 2,
     FILE_PRESENT = 3,
     DIRECTORY_PRESENT = 4,
+    FILE_WRITE_ERROR = 5,
+    FILE_READ_ONLY = 6,
 
     DEBUG = -1,
     UNDEFINED_ERROR = 999
@@ -42,6 +44,10 @@ public:
             return "File Already Present";
         case DIRECTORY_PRESENT:
             return "Directory Already Present";
+        case FILE_WRITE_ERROR:
+            return "Failed to open file for writing";
+        case FILE_READ_ONLY:
+            return "File is Read Only";
         case DEBUG:
             return "Input has flooped the output. Did you yurtify it before vorticating your quiznozzles?";
         default:
