@@ -13,7 +13,7 @@ XMLFile::XMLFile(QString sXmlFile, bool bInput)
     // Is it an input file or an output file?
     if (bInput && QFile(sXmlFile).exists())
         Load(sXmlFile);
-    else if (!bInput && !QFile(sXmlFile).exists())
+    else if (!bInput)
         Init(sXmlFile);
 
     //Something is wrong. Throw an exception
@@ -59,6 +59,11 @@ void XMLFile::Load(QString &sFilePath)
 void XMLFile::Init(QString &sFilePath){
 
     m_pDoc = new QDomDocument;
+
+    // If the file was already there remove it
+    if (QFile::exists(sFilePath))
+        QFile::remove(sFilePath);
+
     m_xmlFile = new QFile(sFilePath);
 
     /*open a file */
@@ -66,29 +71,16 @@ void XMLFile::Init(QString &sFilePath){
         throw HabitatException(FILE_READ_ONLY, m_xmlFile->fileName());
     else
     {
-        /*if file is successfully opened then create XML*/
-        QXmlStreamWriter* xmlWriter = new QXmlStreamWriter();
+        QDomElement log = m_pDoc->createElement("log");
+        QDomElement meta = m_pDoc->createElement("meta_data");
+        QDomElement messages = m_pDoc->createElement("messages");
 
-        /* set device (here file)to streamwriter */
-        xmlWriter->setDevice(m_xmlFile);
-        /* Writes a document start with the XML version number version. */
-        xmlWriter->writeStartDocument();
-        /* Writes a start element with name,
-        * Subsequent calls to writeAttribute() will add attributes to this element. */
-        xmlWriter->writeStartElement("log");
+        log.appendChild(meta);
+        log.appendChild(messages);
+        m_pDoc->appendChild(log);
 
-        xmlWriter->writeStartElement("meta_data");
-        xmlWriter->writeEndElement(); // </meta_data>
-
-        xmlWriter->writeStartElement("mesages");
-        xmlWriter->writeEndElement(); // </messages>
-
-        xmlWriter->writeEndElement(); // </log>
-
-        /*end document */
-        xmlWriter->writeEndDocument();
-        delete xmlWriter;
     }
+    m_xmlFile->close();
 }
 
 void XMLFile::AddMeta(QString sTagName, QString sTagValue){
@@ -120,6 +112,9 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
     QDomElement documentElement = m_pDoc->documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "messages" );
 
+    QDomText sMsgTxt = m_pDoc->createTextNode(sMsg);
+    QDomText sExceptionTxt = m_pDoc->createTextNode(sException);
+
     if( elements.size() == 0 )
     {
       messages = m_pDoc->createElement( "messages" );
@@ -137,16 +132,17 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 
     // Now create the description of the message
     description = m_pDoc->createElement( "description" );
-    description.setNodeValue(sMsg);
+    description.appendChild(sMsgTxt);
     message.appendChild( description );
 
     // Only create an exception if we need to.
     if (nSeverity != 0 && sException.compare("") != 0){
         exception = m_pDoc->createElement( "exception" );
-        exception.setNodeValue(sException);
+        exception.appendChild(sExceptionTxt);
         message.appendChild( exception );
     }
     messages.appendChild( message );
+
     WriteDomToFile();
 }
 

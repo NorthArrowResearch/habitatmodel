@@ -51,6 +51,7 @@ Project::Project(const char * psProjectRoot,
 {
 
     m_XMLInput = new XMLFile(psXMLInput, true);
+
     m_XMLOutput = new XMLFile(psXMLOutput, false);
 
     // This is mostly a convenience: a pointer to the
@@ -60,6 +61,7 @@ Project::Project(const char * psProjectRoot,
     m_ProjectRootDir = new QDir(psProjectRoot);
     if (!m_ProjectRootDir->exists())
         ProjectError(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
+
 
     m_XMLOutput->Log("Starting Simulation Run...");
     // Make a temporary folder for this simulation
