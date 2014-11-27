@@ -28,6 +28,15 @@ HEADERS += \
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
+INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
+DEPENDPATH += $$PWD/../../../GCD/gcd-console/GCDCore
+
+INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+
+INCLUDEPATH += $$PWD/../ModelCore
+DEPENDPATH += $$PWD/../ModelCore
+
 win32 {
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -43,6 +52,10 @@ win32 {
     LIBS += -L$$GDALWIN/lib -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
+
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+
 }
 macx{
     ## OSX common build here
@@ -70,14 +83,6 @@ unix:!macx {
     DEPENDPATH  += /usr/include/gdal
 }
 
-INCLUDEPATH += $$PWD/../../../GCD/gcd-console/GCDCore
-DEPENDPATH += $$PWD/../../../GCD/gcd-console/GCDCore
-
-INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
-DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
-
-INCLUDEPATH += $$PWD/../ModelCore
-DEPENDPATH += $$PWD/../ModelCore
 
 LIBS += -L$$DESTDIR -lModelCore
 LIBS += -L$$DESTDIR -lRasterManager

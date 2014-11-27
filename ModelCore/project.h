@@ -20,7 +20,7 @@
 
 namespace HabitatModel{
 
-class Project : public NamedObjectWithID
+class DLL_API Project : public NamedObjectWithID
 {
 public:
 

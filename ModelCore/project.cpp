@@ -1,3 +1,5 @@
+#define MY_DLL_EXPORT
+
 #include "project.h"
 #include <QString>
 #include <QTextStream>
@@ -64,6 +66,8 @@ int Project::Run()
         sim.next();
         sim.value()->Run();
     }
+
+    return PROCESS_OK;
 }
 
 Project::~Project(){
