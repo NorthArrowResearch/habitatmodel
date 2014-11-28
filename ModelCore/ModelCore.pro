@@ -23,7 +23,6 @@ SOURCES += \
     hsi.cpp \
     hsicurve.cpp \
     hsc.cpp \
-    namedobject.cpp \
     project.cpp \
     projectinput.cpp \
     simulationhscinput.cpp \

@@ -52,25 +52,14 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
             SetName(sTitle.c_str());
             SetID(nProjectVarID);
 
-            int nDataSourceID = elProjectVariable.firstChildElement("DataSourceID").text().toInt();
-            ProjectInput * pOriginalInput = Project::GetProjectInput(nDataSourceID);
-
             m_units = Project::GetUnit( elProjectVariable.firstChildElement("UnitsID").text().toInt() );
             m_variable = Project::GetHMVariable(elProjectVariable.firstChildElement("VariableID").text().toInt() );
 
-            // Now we need a copy of the project input (both an object copy and a copy of the file)
-            switch (pOriginalInput->getInputType()) {
-            case PROJECT_INPUT_RASTER:
-                m_project_input = new ProjectInputRaster(p_ProjectInput); break;
-            case PROJECT_INPUT_VECTOR:
-                m_project_input = new ProjectInputVector(p_ProjectInput); break;
-            case PROJECT_INPUT_CSV:
-                m_project_input = new ProjectInputCSV(p_ProjectInput); break;
-            }
+            int nDataSourceID = elProjectVariable.firstChildElement("DataSourceID").text().toInt();
+            ProjectInput * pOriginalInput = Project::GetProjectInput(nDataSourceID);
 
-            // Prepare copies the file to the correct place
-            // and coverts it to a raster if necessary.
-            m_project_input->Prepare();
+            // Now we need a copy of the project input (both an object copy and a copy of the file)
+            ProjectInput * pSimCopy = pOriginalInput->Clone();
         }
      }
 
@@ -89,13 +78,6 @@ SimulationHSCInput::~SimulationHSCInput(){
     delete m_hsi_curve;
 }
 
-HSICurve * SimulationHSCInput::GetHSICurve(){
-    return m_hsi_curve;
-}
-
-ProjectInput * SimulationHSCInput::GetProjectInput(){
-    return m_project_input;
-}
 
 }
 

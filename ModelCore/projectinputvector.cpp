@@ -2,19 +2,12 @@
 
 namespace HabitatModel {
 
-ProjectInputVector::ProjectInputVector(const char *sName, int nID, const char * psValueField) :
-    ProjectInput(sName, nID)
-{
-    QString sValueField = QString(psValueField);
-    Init(sValueField);
-}
-
 void ProjectInputVector::operator =(ProjectInputVector &source)
 {
 
 }
 
-ProjectInputVector::ProjectInputVector(ProjectInputVector &source)
+ProjectInputVector::ProjectInputVector(ProjectInputVector &source): ProjectInput(source)
 {
 
 }
@@ -26,7 +19,6 @@ ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
 //    m_sXField = QString(psXField);
 //    m_sYField = QString(psYField);
 //    m_sValueField = QString(psValueField);
-
 
 }
 

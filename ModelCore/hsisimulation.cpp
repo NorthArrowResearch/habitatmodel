@@ -100,10 +100,11 @@ void HSISimulation::Clean(){
 
 }
 
+// This function loads the HSC Inputs but it also creates copies of the
+// Inputs for preparation down in PrepareInputs()
 void HSISimulation::LoadHSCInputs(){
 
     QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
-
 
     for(int n= 0; n < elHSCInputs.length(); n++){
         QDomElement elHSCInput = elHSCInputs.at(n).toElement();
@@ -115,12 +116,6 @@ void HSISimulation::LoadHSCInputs(){
         m_simulation_hsc_inputs.insert(n, new SimulationHSCInput(elHSCInput, pHSICurve));
     }
 }
-
-bool HSISimulation::InputBelongs(ProjectInput * pInput){
-
-    return false;
-}
-
 
 void HSISimulation::PrepareInputs(){
 
@@ -137,18 +132,18 @@ void HSISimulation::PrepareInputs(){
     while (rInputs.hasNext()) {
         rInputs.next();
 
-        if (InputBelongs(rInputs.value())){
-            // This input is part of our simulation. add it to the store.
-            InsertProcessedInput(rInputs.value()->GetID(), rInputs.value());
+//        if (InputBelongs(rInputs.value())){
+//            // This input is part of our simulation. add it to the store.
+//            InsertProcessedInput(rInputs.value()->GetID(), rInputs.value());
 
-            if (dynamic_cast<ProjectInputRaster*>(rInputs.value())){
-                // Load the raster.
-                QString qsRasterSourceFilePath = rInputs.value()->getSourceFilePath();
-                std::string sRasterSourceFilePath = qsRasterSourceFilePath.toStdString();
-                RasterManager::RasterMeta erRasterInput (sRasterSourceFilePath.c_str());
-                RasterUnion(&erRasterInput);
-            }
-        }
+//            if (dynamic_cast<ProjectInputRaster*>(rInputs.value())){
+//                // Load the raster.
+//                QString qsRasterSourceFilePath = rInputs.value()->getSourceFilePath();
+//                std::string sRasterSourceFilePath = qsRasterSourceFilePath.toStdString();
+//                RasterManager::RasterMeta erRasterInput (sRasterSourceFilePath.c_str());
+//                RasterUnion(&erRasterInput);
+//            }
+//        }
     }
     rInputs.toFront();
 

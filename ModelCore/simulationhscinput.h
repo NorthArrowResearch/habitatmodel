@@ -29,6 +29,7 @@ public:
     inline Unit * GetUnit(){ return m_units; }
 
 
+    ~SimulationHSCInput();
 private:
 
     ProjectInput * m_project_input;

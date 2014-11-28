@@ -23,13 +23,15 @@ public:
      * @brief ProjectInputCSV
      * @param source
      */
-    ProjectInputCSV(ProjectInputCSV &source);
+    ProjectInputCSV(const ProjectInputCSV &source);
 
     /**
      * @brief operator =
      * @param source
      */
     void operator =(ProjectInputCSV &source);
+
+    inline ProjectInput * Clone(){ return new ProjectInputCSV(*this); }
 
     /**
      * @brief getXField

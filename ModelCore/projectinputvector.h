@@ -9,13 +9,7 @@ namespace HabitatModel {
 class ProjectInputVector : public ProjectInput
 {
 public:
-    /**
-     * @brief ProjectInputVector
-     * @param sName
-     * @param nID
-     * @param psValueField
-     */
-    ProjectInputVector(const char *sName, int nID, const char * psValueField);
+
 
     inline ~ProjectInputVector(){}
 
@@ -30,6 +24,8 @@ public:
      * @param source
      */
     void operator =(ProjectInputVector &source);
+
+    inline ProjectInput * Clone(){ return new ProjectInputVector(*this); }
 
     /**
      * @brief ProjectInputCSV
@@ -51,6 +47,7 @@ public:
      */
     void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath);
 
+    void Init(QString sValueField);
 private:
     QString m_sValueField;
 };

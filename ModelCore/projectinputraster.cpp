@@ -1,23 +1,16 @@
 #include "projectinputraster.h"
+#include "project.h"
 
 namespace HabitatModel {
 
-
-
-ProjectInputRaster::ProjectInputRaster(const char *sName, int nID) :
-    ProjectInput(sName, nID)
+void ProjectInputRaster::operator =(ProjectInputRaster &source)
 {
     Init();
 }
 
-void ProjectInputRaster::operator =(ProjectInputRaster &source)
+ProjectInputRaster::ProjectInputRaster(const ProjectInputRaster &source): ProjectInput(source)
 {
-
-}
-
-ProjectInputRaster::ProjectInputRaster(ProjectInputRaster &source)
-{
-
+    Init();
 }
 
 ProjectInputRaster::ProjectInputRaster(QDomElement * elProjectInput)
@@ -28,10 +21,12 @@ ProjectInputRaster::ProjectInputRaster(QDomElement * elProjectInput)
 
 void ProjectInputRaster::Init(){
     m_ProjectInputType = PROJECT_INPUT_RASTER;
+    // Here's where we need to run Simulation::RasterUnion
+
 }
 
 void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){
-    m_sRasterInputFileName = getSourceFilePath();
+//    m_sourcefilepath = getSourceFilePath();
 
     // Delete and recopy it
 //    if QFile::exists("/home/user/dst.txt")

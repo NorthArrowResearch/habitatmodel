@@ -17,41 +17,43 @@ public:
      * @brief NamedObject
      * @param sName
      */
-    NamedObject(const char * sName);
+    inline NamedObject(QString sName){ m_sName = sName; }
 
     /**
      * @brief NamedObject
      * @param elObject a domelement containing the object's properties
      * @param sTitleName the name of the element containing the name of the object
      */
-    NamedObject(QDomElement * elObject, QString sTitleName);
+    inline NamedObject(QDomElement * elObject, QString sTitleName){
+        m_sName = elObject->firstChildElement(sTitleName).text();
+    }
 
     /**
      * @brief NamedObject (Copy Constructor)
      * @param obj
      */
-    NamedObject(const NamedObject &obj);
+    inline NamedObject(const NamedObject &obj){ m_sName = obj.GetName(); }
 
     /**
      * @brief operator =  (Assignment Operator)
      * @param obj
      */
-    void operator=(const NamedObject &obj);
+    inline void operator=(const NamedObject &obj){ m_sName = obj.GetName(); }
 
     /**
      * @brief GetName
      * @return
      */
-    QString GetName() const;
+    inline QString GetName() const{ return m_sName; }
 
     /**
      * @brief SetName
      * @param sName
      */
-    void SetName(const char * sName);
+    inline void SetName(const char * sName){ m_sName = sName; }
 
 
-private:
+protected:
     QString m_sName; /**< TODO */
 };
 
@@ -67,7 +69,10 @@ public:
      * @param sName
      * @param nID
      */
-    NamedObjectWithID(const char * sName, int nID);
+    inline NamedObjectWithID(QString sName, int nID)
+        : NamedObject(sName){
+        m_id = nID;
+    }
 
     /**
      * @brief NamedObjectWithID
@@ -75,33 +80,42 @@ public:
      * @param sTitleName the name of the element containing the name of the object
      * @param sIDName the name of the element containing the id of the object
      */
-    NamedObjectWithID(QDomElement * elObject, QString sTitleName, QString sIDName);
+    inline NamedObjectWithID(QDomElement * elObject, QString sName, QString sIDName)
+        : NamedObject(sName){
+        m_id = elObject->firstChildElement(sIDName).text().toInt();
+    }
 
     /**
      * @brief NamedObjectWithID (Copy Constructor)
      * @param obj
      */
-    NamedObjectWithID(const NamedObject &obj);
+    inline NamedObjectWithID(const NamedObjectWithID &obj)
+        : NamedObject(obj){
+
+    }
 
     /**
      * @brief operator = (Assignment Operator)
      * @param obj
      */
-    void operator=(const NamedObject &obj);
+    inline void operator=(const NamedObjectWithID &obj){
+        m_sName = obj.GetName();
+        m_id = obj.GetID();
+    }
 
     /**
      * @brief GetID
      * @return
      */
-    int GetID() const;
+    inline int GetID() const { return m_id; }
 
     /**
      * @brief SetID
      * @param nID
      */
-    void SetID(int nID);
+    inline void SetID(int nID){  m_id = nID; }
 
-private:
+protected:
     int m_id; /**< TODO */
 
 };

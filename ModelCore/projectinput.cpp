@@ -3,12 +3,6 @@
 
 namespace HabitatModel{
 
-ProjectInput::ProjectInput(const char *sName, int nID)
-    : NamedObjectWithID(sName, nID)
-{
-
-}
-\
 
 ProjectInput::ProjectInput(QDomElement * elProjectInput)
     : NamedObjectWithID(elProjectInput, "Title", "DataSourceID")
@@ -25,17 +19,19 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
     Init(sCreatedOn, sProjectPath, pVariable, pSourceType, pUnit);
 }
 
-ProjectInput::ProjectInput(ProjectInput &source)
+ProjectInput::ProjectInput(const ProjectInput &source)
     : NamedObjectWithID(source.GetName(), source.GetID()) {
+
     Init(source.getCreatedOn(),
          source.getSourceFilePath(),
          source.getVariable(),
          source.getSourceType(),
          source.getUnit());
+
 }
 
-void ProjectInput::operator=(ProjectInput &source)
-{
+void ProjectInput::operator=(ProjectInput &source) {
+
     Init(source.getCreatedOn(),
          source.getSourceFilePath(),
          source.getVariable(),

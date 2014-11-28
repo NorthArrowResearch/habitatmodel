@@ -13,24 +13,19 @@ public:
 
     /**
      * @brief ProjectInputRaster
-     * @param sName
-     * @param nID
-     */
-    ProjectInputRaster(const char *sName, int nID);
-
-    inline ~ProjectInputRaster(){}
-
-    /**
-     * @brief ProjectInputRaster
      * @param source
      */
-    ProjectInputRaster(ProjectInputRaster &source);
+    ProjectInputRaster(const ProjectInputRaster & source);
+
+    inline ~ProjectInputRaster(){}
 
     /**
      * @brief operator =
      * @param source
      */
     void operator =(ProjectInputRaster &source);
+
+    inline ProjectInput * Clone(){ return new ProjectInputRaster(*this); }
 
     /**
      * @brief ProjectInputCSV

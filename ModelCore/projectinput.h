@@ -26,17 +26,16 @@ class ProjectInput : public NamedObjectWithID
 public:
 
     /**
-     * @brief ProjectInput
-     * @param sName
-     * @param nID
+     * @brief Clone
+     * @return
      */
-    ProjectInput(const char *sName, int nID);
+    virtual ProjectInput * Clone()=0;
 
     /**
      * @brief ProjectInput
      * @param source
      */
-    ProjectInput(ProjectInput &source);
+    ProjectInput(const ProjectInput &source);
 
     /**
      * @brief Init
@@ -69,52 +68,50 @@ public:
      * @brief getSourceType
      * @return
      */
-    inline NamedObjectWithID * getSourceType() { return m_source_type;  }
+    inline NamedObjectWithID * getSourceType() const { return m_source_type;  }
 
     /**
      * @brief getCreatedOn
      * @return
      */
-    inline QString getCreatedOn() { return m_screated_on; }
+    inline QString getCreatedOn() const { return m_screated_on; }
 
     /**
      * @brief getSourcePath
      * @return
      */
-    inline QString getSourceFilePath() { return m_sourcefilepath; }
+    inline QString getSourceFilePath() const { return m_sourcefilepath; }
 
     /**
      * @brief getVariable
      * @return
      */
-    inline HMVariable * getVariable() { return m_variable; }
+    inline HMVariable * getVariable() const { return m_variable; }
 
     /**
      * @brief getUnit
      * @return
      */
-    inline Unit * getUnit() { return m_unit; }
+    inline Unit * getUnit() const { return m_unit; }
 
     /**
      * @brief getFileName
      * @return
      */
-    inline QString getInputFileName(){
-        return QFileInfo(m_sourcefilepath).fileName();
-    }
+    inline QString getInputFileName() const { return QFileInfo(m_sourcefilepath).fileName(); }
     /**
      * @brief getRasterFileName
      * @return
      */
-    inline QFile * getInputRasterFileName() { return m_sRasterInputFile; }
+    inline QFile * getInputRasterFileName() const { return m_sRasterInputFile; }
 
     /**
      * @brief getRasterInputFileName
      * @return
      */
-    inline QString getUtilizationRasterFileName(){ return m_sUtilizationFileName; }
+    inline QString getUtilizationRasterFileName() const { return m_sUtilizationFileName; }
 
-    inline ProjectInputTypeCodes getInputType(){ return m_ProjectInputType; }
+    inline ProjectInputTypeCodes getInputType() const { return m_ProjectInputType; }
 
     /**
      * @brief SetRasterOutPutFileName
@@ -129,6 +126,7 @@ protected:
 
     QFile * m_sRasterInputFile;
     ProjectInputTypeCodes m_ProjectInputType;
+
 
 private:
 
