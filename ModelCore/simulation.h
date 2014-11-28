@@ -70,7 +70,7 @@ private:
     /**
      * @brief m_sfolder the simulation folder relative to project root
      */
-    QDir m_sfolder;
+    QString m_sfolder;
     QString m_screated_by;
 
     QString m_screated_on;

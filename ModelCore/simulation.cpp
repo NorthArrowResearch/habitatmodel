@@ -27,9 +27,9 @@ Simulation::Simulation(QDomElement * elSimulation)
     Project::GetOutputXML()->Log("Loading simulation: " + GetName() , 2);
 
     // First set all the member variables according to what's in the XML
-    QString mSimRootFolder = elSimulation->firstChildElement("Folder").text();
+    QString mSimRootFolder = QDir::fromNativeSeparators(elSimulation->firstChildElement("Folder").text());
 
-    m_sfolder =  QDir(Project::GetProjectRootPath()->filePath(mSimRootFolder));
+    m_sfolder =  Project::GetProjectRootPath()->filePath(mSimRootFolder);
 
     QString sQueued = elSimulation->firstChildElement("IsQueuedToRun").text();
     if (sQueued == "true" || sQueued == "1")
@@ -51,6 +51,7 @@ Simulation::Simulation(QDomElement * elSimulation)
 }
 
 void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){
+
     // First time round set the bounds to the first raster we give it.
     if (m_RasterTemplateMeta == NULL){
         m_RasterTemplateMeta = pMeta;

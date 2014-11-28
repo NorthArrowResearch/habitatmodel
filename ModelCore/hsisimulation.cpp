@@ -14,13 +14,13 @@ namespace HabitatModel{
 HSISimulation::HSISimulation(QDomElement *elSimulation)
     : Simulation(elSimulation)
 {
-    QString sRawHSISourcePath = elSimulation->firstChildElement("HSISourcePath").text();
+    QString sRawHSISourcePath = QDir::fromNativeSeparators(elSimulation->firstChildElement("HSISourcePath").text());
 
     // Now Create our HSI object if there is one.
     QDomElement elHSI = Project::GetConfigDom()->firstChildElement("HSI");
     m_hsiRef = new HSI(&elHSI);
 
-    m_HSISourcePath = QDir(Project::GetProjectRootPath()->filePath(sRawHSISourcePath));
+    m_HSISourcePath = Project::GetProjectRootPath()->filePath(sRawHSISourcePath);
 
     // Make a local copy of each data source as a local simulation object,
     // ready for preparation.

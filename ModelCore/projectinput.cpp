@@ -9,9 +9,9 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
 {
 
     QString sCreatedOn = elProjectInput->firstChildElement("CreatedOn").text();
-    QString sProjectPath = elProjectInput->firstChildElement("ProjectPath").text();
+    QString sProjectPath = QDir::toNativeSeparators(elProjectInput->firstChildElement("ProjectPath").text());
 
-    QDir sProjectPathDir = QDir(Project::GetProjectRootPath()->filePath(sProjectPath));
+    QString sProjectPathDir = Project::GetProjectRootPath()->filePath(sProjectPath);
 
     HMVariable * pVariable = Project::GetVariable(elProjectInput, "VariableID");
     NamedObjectWithID * pSourceType = Project::GetLookupTableItem(elProjectInput, "DataSourceTypeID");
@@ -32,7 +32,7 @@ ProjectInput::ProjectInput(const ProjectInput &source)
 
 }
 
-void ProjectInput::Init(QString sCreatedOn, QDir sProjectPath, HMVariable * pVariable,
+void ProjectInput::Init(QString sCreatedOn, QString sProjectPath, HMVariable * pVariable,
                         NamedObjectWithID * pSourceType, Unit * pUnit){
 
     m_screated_on = sCreatedOn;

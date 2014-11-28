@@ -58,7 +58,7 @@ Project::Project(const char * psProjectRoot,
     // Entire input Configuration DOM
     m_elConfig = m_XMLInput->Document();
 
-    m_ProjectRootDir = new QDir(psProjectRoot);
+    m_ProjectRootDir = new QDir(QDir::fromNativeSeparators(psProjectRoot));
     if (!m_ProjectRootDir->exists())
         ProjectError(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
 

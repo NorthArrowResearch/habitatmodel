@@ -50,7 +50,7 @@ public:
      * @param pSourceType
      * @param pUnit
      */
-    void Init(QString sCreatedOn, QDir sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit);
+    void Init(QString sCreatedOn, QString sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit);
 
 
     /**
@@ -75,7 +75,7 @@ public:
      * @brief getSourcePath
      * @return
      */
-    inline QDir GetSourceFilePath() const { return m_sourcefilepath; }
+    inline QString GetSourceFilePath() const { return m_sourcefilepath; }
 
     /**
      * @brief getVariable
@@ -93,12 +93,7 @@ public:
      * @brief getFileName
      * @return
      */
-    inline QString GetInputFileName() const { return QFileInfo(m_sourcefilepath.absolutePath()).fileName(); }
-    /**
-     * @brief getRasterFileName
-     * @return
-     */
-    inline QFile * GetInputRasterFileName() const { return m_sRasterInputFile; }
+    inline QString GetInputFileName() const { return QFileInfo(m_sourcefilepath).fileName(); }
 
     /**
      * @brief getRasterInputFileName
@@ -119,7 +114,6 @@ public:
 
 protected:
 
-    QFile * m_sRasterInputFile;
     ProjectInputTypeCodes m_ProjectInputType;
 
 
@@ -129,7 +123,7 @@ private:
 
     QString m_screated_on;
     // Absolute path to source file
-    QDir m_sourcefilepath;
+    QString m_sourcefilepath;
 
     QString m_sUtilizationFileName;
 

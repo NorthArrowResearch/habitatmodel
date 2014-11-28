@@ -81,7 +81,7 @@ public:
      * @param sIDName the name of the element containing the id of the object
      */
     inline NamedObjectWithID(QDomElement * elObject, QString sName, QString sIDName)
-        : NamedObject(sName){
+        : NamedObject(elObject, sName){
         m_id = elObject->firstChildElement(sIDName).text().toInt();
     }
 
