@@ -20,6 +20,18 @@ public:
     inline ~ProjectInputCSV(){}
 
     /**
+     * @brief ProjectInputCSV
+     * @param source
+     */
+    ProjectInputCSV(ProjectInputCSV &source);
+
+    /**
+     * @brief operator =
+     * @param source
+     */
+    void operator =(ProjectInputCSV &source);
+
+    /**
      * @brief getXField
      * @return
      */
@@ -49,8 +61,12 @@ public:
      */
     void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath);
 
-
-
+    /**
+     * @brief Init
+     * @param sXFieldName
+     * @param sYFieldName
+     */
+    void Init(QString sXFieldName, QString sYFieldName);
 private:
 
     QString m_sXFieldName;

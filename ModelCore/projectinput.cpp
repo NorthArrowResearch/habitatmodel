@@ -8,31 +8,53 @@ ProjectInput::ProjectInput(const char *sName, int nID)
 {
 
 }
+\
 
 ProjectInput::ProjectInput(QDomElement * elProjectInput)
-    : NamedObjectWithID(elProjectInput, "Title", "InputID")
+    : NamedObjectWithID(elProjectInput, "Title", "DataSourceID")
 {
-    //<ProjectInputs>
-    //<InputID>1</InputID<name />
-    //<ProjectID>1</ProjectID>
-    //<Title>MyPh</Title>
-    //<SourceTypeID>60</SourceTypeID>
-    //<CreatedOn>2014-10-17T13:43:59.18-06:00</CreatedOn>
-    //<SourcePath>C:\Users\A01674762\Desktop\ScratchWorkspace\SetNullTest_DomainPath.tif</SourcePath>
-    //<UnitID>6</UnitID>
-    //<VariableID>1</VariableID>
-    //</ProjectInputs>
 
-    m_screated_on = elProjectInput->firstChildElement("CreatedOn").text();
-    m_sourcefilepath = elProjectInput->firstChildElement("SourcePath").text();
+    QString sCreatedOn = elProjectInput->firstChildElement("CreatedOn").text();
+    QString sProjectPath = elProjectInput->firstChildElement("ProjectPath").text();
 
-    m_variable = Project::GetVariable(elProjectInput, "VariableID");
-    m_source_type = Project::GetLookupTableItem(elProjectInput, "SourceTypeID");
+    HMVariable * pVariable = Project::GetVariable(elProjectInput, "VariableID");
+    NamedObjectWithID * pSourceType = Project::GetLookupTableItem(elProjectInput, "DataSourceTypeID");
 
-    m_unit = Project::GetUnit(elProjectInput, "UnitID");
+    Unit * pUnit = Project::GetUnit(elProjectInput, "UnitID");
 
+    Init(sCreatedOn, sProjectPath, pVariable, pSourceType, pUnit);
+}
+
+ProjectInput::ProjectInput(ProjectInput &source)
+    : NamedObjectWithID(source.GetName(), source.GetID()) {
+    Init(source.getCreatedOn(),
+         source.getSourceFilePath(),
+         source.getVariable(),
+         source.getSourceType(),
+         source.getUnit());
+}
+
+void ProjectInput::operator=(ProjectInput &source)
+{
+    Init(source.getCreatedOn(),
+         source.getSourceFilePath(),
+         source.getVariable(),
+         source.getSourceType(),
+         source.getUnit());
 }
 
 
+void ProjectInput::Init(QString sCreatedOn, QString sProjectPath, HMVariable * pVariable,
+                        NamedObjectWithID * pSourceType, Unit * pUnit){
+
+    m_screated_on = sCreatedOn;
+    m_sourcefilepath = sProjectPath;
+
+    m_variable = pVariable;
+    m_source_type = pSourceType;
+
+    m_unit = pUnit;
+
+}
 
 }

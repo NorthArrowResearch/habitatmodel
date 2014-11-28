@@ -20,6 +20,7 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     m_hsiRef = new HSI(&elHSI);
 
     LoadHSCInputs();
+    PrepareInputs();
 }
 
 
@@ -101,24 +102,17 @@ void HSISimulation::Clean(){
 
 void HSISimulation::LoadHSCInputs(){
 
-    //  <SimulationHSCInputs>
-    //    <ProjectInputID>2</ProjectInputID>
-    //    <HSICurveID>3</HSICurveID>
-    //    <SimulationID>5</SimulationID>
-    //  </SimulationHSCInputs>
-
     QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
+
 
     for(int n= 0; n < elHSCInputs.length(); n++){
         QDomElement elHSCInput = elHSCInputs.at(n).toElement();
 
+        // It's easier to look up the hsi curve here.
         int nHSICurveID = elHSCInput.firstChildElement("HSICurveID").text().toInt();
-        int nProjectInputID = elHSCInput.firstChildElement("ProjectInputID").text().toInt();
+        HSICurve * pHSICurve = m_hsiRef->GetCurve(nHSICurveID);
 
-        HSICurve * p_HSICurve = m_hsiRef->GetCurve(nHSICurveID);
-        ProjectInput * p_ProjectInput;
-
-        m_simulation_hsc_inputs.insert(n, new SimulationHSCInput(p_HSICurve, p_ProjectInput));
+        m_simulation_hsc_inputs.insert(n, new SimulationHSCInput(elHSCInput, pHSICurve));
     }
 }
 
@@ -129,17 +123,17 @@ bool HSISimulation::InputBelongs(ProjectInput * pInput){
 
 
 void HSISimulation::PrepareInputs(){
+
     // This is a 3 step process:
     // 1). Go and get the appropriate project inputs
     // 2). Figure out the raster extents of these inputs
     // 3). Prepare them based on this extent.
     QHash<int, ProjectInput *> pRawInputStore = Project::GetRawProjectInputsStore();
-    // TODO: need to figure out how to have prepared inputs for each simulation
-    // Calculate the raster union and make rasters from CSV
 
     // First do the Rasters to find the union intersection
     // RasterMeta
     QHashIterator<int, ProjectInput *> rInputs(pRawInputStore);
+
     while (rInputs.hasNext()) {
         rInputs.next();
 

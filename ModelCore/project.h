@@ -52,7 +52,7 @@ public:
     void LoadUnits();
     void LoadHSCs();
     void LoadHSCCoordinatePairs();
-    void LoadProjectInputs();
+    void LoadProjectDataSources();
     void LoadSimulations();
 
     /**
@@ -119,8 +119,14 @@ public:
      * @param nid
      * @return
      */
-    inline static HMVariable * GetVariable(int nid){ return m_hmvariable_store.value(nid); }
+    inline static HMVariable * GetHMVariable(int nid){ return m_hmvariable_store.value(nid); }
 
+    /**
+     * @brief GetProjectInput
+     * @param nid
+     * @return
+     */
+    inline static ProjectInput * GetProjectInput(int nid){ return m_raw_project_inputs_store.value(nid); }
     /**
      * @brief GetVariable
      * @param elItem
@@ -129,7 +135,7 @@ public:
      */
     inline static HMVariable * GetVariable(QDomElement *elItem, QString sValIDName){
         int nVarID = elItem->firstChildElement(sValIDName).text().toInt();
-        return GetVariable(nVarID);
+        return GetHMVariable(nVarID);
     }
 
     /**
@@ -195,11 +201,12 @@ public:
      */
     inline static QHash<int, ProjectInput *> GetRawProjectInputsStore(){ return m_raw_project_inputs_store; }
 
+    static void ProjectError(int nErrorCode);
+    static void ProjectError(int nErrorCode, QString m_sEvidence);
 
 
-    void ProjectError(int nErrorCode);
-    void ProjectError(int nErrorCode, QString m_sEvidence);
 private:
+
     // Project Attributes
     QString qd_date_created;
     QString s_created_by;

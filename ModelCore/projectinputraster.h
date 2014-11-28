@@ -21,12 +21,25 @@ public:
     inline ~ProjectInputRaster(){}
 
     /**
+     * @brief ProjectInputRaster
+     * @param source
+     */
+    ProjectInputRaster(ProjectInputRaster &source);
+
+    /**
+     * @brief operator =
+     * @param source
+     */
+    void operator =(ProjectInputRaster &source);
+
+    /**
      * @brief ProjectInputCSV
      * @param elProjectInput
      */
     ProjectInputRaster(QDomElement *elProjectInput);
 
     void Prepare(RasterManager::RasterMeta *TemplateRaster, QString NewPath);
+    void Init();
 };
 
 }

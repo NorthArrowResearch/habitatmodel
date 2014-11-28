@@ -70,8 +70,6 @@ Project::Project(const char * psProjectRoot,
 //        m_TmpPath = new QDir(tmpPath);
 //    }
 
-
-
     // Populate our lookup table hashes with values that every simulation
     // Will need access to.
     m_XMLOutput->Log("Loading Objects...", 1);
@@ -79,7 +77,7 @@ Project::Project(const char * psProjectRoot,
     LoadUnits();
     LoadHSCs();
     LoadHMVariables();
-    LoadProjectInputs();
+    LoadProjectDataSources();
 
     // Now load the simulations. This instantiates new Simulation objects
     // Based on the simulation type (HSI, FIS, etc) and each of those will
@@ -91,7 +89,7 @@ Project::Project(const char * psProjectRoot,
 
 int Project::Run()
     {
-    m_XMLOutput->Log("Starting to run Simulations.");
+    m_XMLOutput->Log("Starting to run Simulations...");
     // Run the actual simulations. This is a polymorhic virtual function.
     QHashIterator<int, Simulation *> sim(m_simulation_store);
     while (sim.hasNext()) {
@@ -106,6 +104,7 @@ int Project::Run()
 
 void Project::LoadSimulations(){
 
+    m_XMLOutput->Log("Loading Simulations...",1);
     QDomNodeList elSimulations =  m_elConfig->elementsByTagName("Simulations");
 
     if (elSimulations.count() == 0)
@@ -142,39 +141,39 @@ void Project::LoadSimulations(){
             // m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
         }
         else{
-            ProjectError(DOM_NODE_MISSING, "No valid <HSI> or <FIS> nodes found in the config file.");
+            GetOutputXML()->Log("Missing HSI, FIS", "Simulation with ID '"+QString::number(nSimulationID) +"' has no valid <HSI> or <FIS> nodes found in the config file. Skipping Simulation", SEVERITY_WARNING, 1);
         }
 
     }
 
 }
 
-void Project::LoadProjectInputs(){
+void Project::LoadProjectDataSources(){
 
-    QDomNodeList elProjectInputs = m_elConfig->elementsByTagName("ProjectInputs");
+    QDomNodeList elProjectInputs = m_elConfig->elementsByTagName("ProjectDataSources");
 
     for(int n= 0; n < elProjectInputs.length(); n++){
         ProjectInput * p_projectinput;
 
         QDomElement elProjectInput = elProjectInputs.at(n).toElement();
-        QString sInputFilepath = elProjectInput.firstChildElement("SourcePath").text();
+        QString sInputFilepath = elProjectInput.firstChildElement("ProjectPath").text();
 
-//      int nProjectInputID = elProjectInput.firstChildElement("InputID").text().toInt();
-        int nproject_type = GetInputType(sInputFilepath);
+        int nProjectInputID = elProjectInput.firstChildElement("DataSourceID").text().toInt();
+        int nproject_input_type = GetInputType(sInputFilepath);
 
-        switch(nproject_type) {
+        switch(nproject_input_type) {
 
         case PROJECT_INPUT_RASTER :
             p_projectinput = new ProjectInputRaster(&elProjectInput);
-            m_raw_project_inputs_store.insert(n, p_projectinput);
+            m_raw_project_inputs_store.insert(nProjectInputID, p_projectinput);
             break;
         case PROJECT_INPUT_VECTOR :
             p_projectinput = new ProjectInputVector(&elProjectInput);
-            m_raw_project_inputs_store.insert(n, p_projectinput);
+            m_raw_project_inputs_store.insert(nProjectInputID, p_projectinput);
             break;
         case PROJECT_INPUT_CSV :
             p_projectinput = new ProjectInputCSV(&elProjectInput);
-            m_raw_project_inputs_store.insert(n, p_projectinput);
+            m_raw_project_inputs_store.insert(nProjectInputID, p_projectinput);
             break;
         case PROJECT_INPUT_UNDEFINED :
             ProjectError(FILE_NOT_FOUND, sInputFilepath);
@@ -186,21 +185,21 @@ void Project::LoadProjectInputs(){
 
 HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath){
 
-    if(sInputFilePath.endsWith(".tif") || sInputFilePath.endsWith(".tiff")) {
+    if(sInputFilePath.endsWith(".tif") || sInputFilePath.endsWith(".tiff"))
         return PROJECT_INPUT_RASTER;
-    }
-    else if(sInputFilePath.endsWith(".shp")){
+
+    else if(sInputFilePath.endsWith(".shp"))
         return PROJECT_INPUT_VECTOR;
-    }
-    else if(sInputFilePath.endsWith(".csv")){
+
+    else if(sInputFilePath.endsWith(".csv"))
         return PROJECT_INPUT_CSV;
-    }
-    else {
+
+    else
         return PROJECT_INPUT_UNDEFINED;
-    }
 }
 
 void Project::LoadLookupTable(){
+
     m_XMLOutput->Log("Loading Lookup Table", 2);
     QDomNodeList elListItems = m_elConfig->elementsByTagName("LookupListItems");
 
@@ -215,6 +214,7 @@ void Project::LoadLookupTable(){
 }
 
 void Project::LoadUnits(){
+
     m_XMLOutput->Log("Loading Units", 2);
     QDomNodeList elUnits = m_elConfig->elementsByTagName("Units");
 
@@ -227,6 +227,7 @@ void Project::LoadUnits(){
 }
 
 void Project::LoadHMVariables(){
+
     m_XMLOutput->Log("Loading HMVariables", 2);
     QDomNodeList elvars = m_elConfig->elementsByTagName("Variables");
 
@@ -267,12 +268,15 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
 }
 
 void Project::LoadHSCs(){
+
      m_XMLOutput->Log("Loading HSCs", 2);
-    // Load first the coordinate pairs and then the HSC categories. If the parent
+
+     // Load first the coordinate pairs and then the HSC categories. If the parent
     // HSC doesn't exist it is created.
     QDomNodeList elHSCCoordPairs = m_elConfig->elementsByTagName("HSCCoordinatePairs");
 
     for(int ncp= 0; ncp < elHSCCoordPairs.length(); ncp++){
+
         QDomElement elCoordinatePair = elHSCCoordPairs.at(ncp).toElement();
         int nCoordinatePairID = elCoordinatePair.firstChildElement("CoordinatePairID").text().toInt();
         int nHSCID = elCoordinatePair.firstChildElement("HSCID").text().toInt();
@@ -281,9 +285,11 @@ void Project::LoadHSCs(){
         pHSCInflection->AddCoordinatePair(nCoordinatePairID, new HSCCoordinatePair(&elCoordinatePair));
     }
 
+    // Now process the HSC Categories
     QDomNodeList elHSCCategories = m_elConfig->elementsByTagName("HSCCategories");
 
     for(int ncat= 0; ncat < elHSCCategories.length(); ncat++){
+
         QDomElement elCategory = elHSCCategories.at(ncat).toElement();
         int nCatID = elCategory.firstChildElement("CategoryID").text().toInt();
         int nHSCID = elCategory.firstChildElement("HSCID").text().toInt();

@@ -20,6 +20,18 @@ public:
     inline ~ProjectInputVector(){}
 
     /**
+     * @brief ProjectInputVector
+     * @param source
+     */
+    ProjectInputVector(ProjectInputVector &source);
+
+    /**
+     * @brief operator =
+     * @param source
+     */
+    void operator =(ProjectInputVector &source);
+
+    /**
      * @brief ProjectInputCSV
      * @param elProjectInput
      */

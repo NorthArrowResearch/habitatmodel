@@ -5,7 +5,18 @@ namespace HabitatModel {
 ProjectInputVector::ProjectInputVector(const char *sName, int nID, const char * psValueField) :
     ProjectInput(sName, nID)
 {
-    m_sValueField = QString(psValueField);
+    QString sValueField = QString(psValueField);
+    Init(sValueField);
+}
+
+void ProjectInputVector::operator =(ProjectInputVector &source)
+{
+
+}
+
+ProjectInputVector::ProjectInputVector(ProjectInputVector &source)
+{
+
 }
 
 ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
@@ -16,6 +27,12 @@ ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
 //    m_sYField = QString(psYField);
 //    m_sValueField = QString(psValueField);
 
+
+}
+
+void ProjectInputVector::Init(QString sValueField){
+     m_ProjectInputType = PROJECT_INPUT_VECTOR;
+     m_sValueField = sValueField;
 }
 
 void ProjectInputVector::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){

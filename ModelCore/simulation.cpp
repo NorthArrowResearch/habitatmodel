@@ -61,7 +61,6 @@ void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){
 
 void Simulation::Init(){
     m_RasterTemplateMeta = NULL;
-    PrepareInputs();
 }
 
 

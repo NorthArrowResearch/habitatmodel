@@ -32,7 +32,32 @@ public:
      */
     ProjectInput(const char *sName, int nID);
 
-    virtual inline ~ProjectInput(){}
+    /**
+     * @brief ProjectInput
+     * @param source
+     */
+    ProjectInput(ProjectInput &source);
+
+    /**
+     * @brief Init
+     * @param sCreatedOn
+     * @param sProjectPath
+     * @param pVariable
+     * @param pSourceType
+     * @param pUnit
+     */
+    void Init(QString sCreatedOn, QString sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit);
+
+    /**
+     * @brief operator =
+     * @param source
+     */
+    void operator =(ProjectInput &source);
+
+    /**
+     * @brief ~ProjectInput
+     */
+    virtual inline ~ProjectInput(){ }
 
     /**
      * @brief ProjectInput
@@ -81,13 +106,15 @@ public:
      * @brief getRasterFileName
      * @return
      */
-    inline QString getInputRasterFileName() { return m_sRasterInputFileName; }
+    inline QFile * getInputRasterFileName() { return m_sRasterInputFile; }
 
     /**
      * @brief getRasterInputFileName
      * @return
      */
     inline QString getUtilizationRasterFileName(){ return m_sUtilizationFileName; }
+
+    inline ProjectInputTypeCodes getInputType(){ return m_ProjectInputType; }
 
     /**
      * @brief SetRasterOutPutFileName
@@ -100,7 +127,8 @@ public:
 
 protected:
 
-    QString m_sRasterInputFileName;
+    QFile * m_sRasterInputFile;
+    ProjectInputTypeCodes m_ProjectInputType;
 
 private:
 
