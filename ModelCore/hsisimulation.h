@@ -41,9 +41,16 @@ public:
     int DetermineMethod();
 
     /**
+     * @brief GetHSISourcePath
+     * @return
+     */
+    inline QString GetHSISourcePath(){ return m_HSISourcePath.absolutePath(); }
+
+    /**
      * @brief AddRastersToExtents
      */
     void AddRastersToExtents();
+
 private:
 
     void PrepareVectorRasters();
@@ -51,6 +58,7 @@ private:
     void PrepareRasters();
 
     HSI * m_hsiRef;
+    QDir m_HSISourcePath;
 
     // Hash store of simulationhsc inputs related to this sim.
     QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;

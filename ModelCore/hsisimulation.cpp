@@ -14,10 +14,13 @@ namespace HabitatModel{
 HSISimulation::HSISimulation(QDomElement *elSimulation)
     : Simulation(elSimulation)
 {
+    QString sRawHSISourcePath = elSimulation->firstChildElement("HSISourcePath").text();
 
     // Now Create our HSI object if there is one.
     QDomElement elHSI = Project::GetConfigDom()->firstChildElement("HSI");
     m_hsiRef = new HSI(&elHSI);
+
+    m_HSISourcePath = QDir(Project::GetProjectRootPath()->filePath(sRawHSISourcePath));
 
     // Make a local copy of each data source as a local simulation object,
     // ready for preparation.
@@ -43,8 +46,10 @@ void HSISimulation::AddRastersToExtents(){
         i.next();
         // Here is the curve we want
         if (i.value()->GetProjectInput()->getInputType() == PROJECT_INPUT_RASTER){
+
             Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-            std::string sRasterPath = i.value()->GetProjectInput()->getInputFileName().toStdString();
+
+            std::string sRasterPath = i.value()->GetProjectInput()->GetInputFileName().toStdString();
             RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(sRasterPath.c_str());
             RasterUnion(pRasterMeta);
             delete pRasterMeta;
@@ -66,6 +71,7 @@ void HSISimulation::Run(){
 
     while (i.hasNext()) {
         i.next();
+
         // Here is the curve we want
         SimulationHSCInput * testa = i.value();
         HSICurve * testb = testa->GetHSICurve();

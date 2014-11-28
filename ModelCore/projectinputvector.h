@@ -10,14 +10,16 @@ class ProjectInputVector : public ProjectInput
 {
 public:
 
-
-    inline ~ProjectInputVector(){}
-
     /**
      * @brief ProjectInputVector
      * @param source
      */
     ProjectInputVector(ProjectInputVector &source);
+
+
+    void Init(QString sValueField);
+
+    inline ~ProjectInputVector(){}
 
     /**
      * @brief operator =
@@ -47,7 +49,7 @@ public:
      */
     void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath);
 
-    void Init(QString sValueField);
+
 private:
     QString m_sValueField;
 };

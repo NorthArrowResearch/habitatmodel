@@ -1,5 +1,6 @@
 #include "projectinputraster.h"
 #include "project.h"
+#include "rastermanager_interface.h"
 
 namespace HabitatModel {
 
@@ -21,9 +22,10 @@ void ProjectInputRaster::Init(){
 
 }
 
-void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){
+void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QString sPreparedRasterPath){
 //    m_sourcefilepath = getSourceFilePath();
 
+//    RasterManager::Copy()
     // Delete and recopy it
 //    if QFile::exists("/home/user/dst.txt")
 //        QFile::remove("/home/user/dst.txt");

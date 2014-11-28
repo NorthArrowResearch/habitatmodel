@@ -25,12 +25,6 @@ public:
      */
     ProjectInputCSV(const ProjectInputCSV &source);
 
-    /**
-     * @brief operator =
-     * @param source
-     */
-    void operator =(ProjectInputCSV &source);
-
     inline ProjectInput * Clone(){ return new ProjectInputCSV(*this); }
 
     /**

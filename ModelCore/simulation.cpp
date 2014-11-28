@@ -27,11 +27,9 @@ Simulation::Simulation(QDomElement * elSimulation)
     Project::GetOutputXML()->Log("Loading simulation: " + GetName() , 2);
 
     // First set all the member variables according to what's in the XML
-    QString mSimFolder = elSimulation->firstChildElement("Folder").text();
-    QString mSimOutputFolder = elSimulation->firstChildElement("HSISourcePath").text();
+    QString mSimRootFolder = elSimulation->firstChildElement("Folder").text();
 
-    m_sfolder =  QDir(Project::GetProjectRootPath()->filePath(mSimFolder));
-    m_HSISourcePath = QDir(Project::GetProjectRootPath()->filePath(mSimOutputFolder));
+    m_sfolder =  QDir(Project::GetProjectRootPath()->filePath(mSimRootFolder));
 
     QString sQueued = elSimulation->firstChildElement("IsQueuedToRun").text();
     if (sQueued == "true" || sQueued == "1")

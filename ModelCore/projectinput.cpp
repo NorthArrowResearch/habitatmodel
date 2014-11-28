@@ -11,39 +11,32 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
     QString sCreatedOn = elProjectInput->firstChildElement("CreatedOn").text();
     QString sProjectPath = elProjectInput->firstChildElement("ProjectPath").text();
 
+    QDir sProjectPathDir = QDir(Project::GetProjectRootPath()->filePath(sProjectPath));
+
     HMVariable * pVariable = Project::GetVariable(elProjectInput, "VariableID");
     NamedObjectWithID * pSourceType = Project::GetLookupTableItem(elProjectInput, "DataSourceTypeID");
 
     Unit * pUnit = Project::GetUnit(elProjectInput, "UnitID");
 
-    Init(sCreatedOn, sProjectPath, pVariable, pSourceType, pUnit);
+    Init(sCreatedOn, sProjectPathDir, pVariable, pSourceType, pUnit);
 }
 
 ProjectInput::ProjectInput(const ProjectInput &source)
     : NamedObjectWithID(source.GetName(), source.GetID()) {
 
-    Init(source.getCreatedOn(),
-         source.getSourceFilePath(),
-         source.getVariable(),
-         source.getSourceType(),
-         source.getUnit());
+    Init(source.GetCreatedOn(),
+         source.GetSourceFilePath(),
+         source.GetVariable(),
+         source.GetSourceType(),
+         source.GetUnit());
 
 }
 
-void ProjectInput::operator=(ProjectInput &source) {
-
-    Init(source.getCreatedOn(),
-         source.getSourceFilePath(),
-         source.getVariable(),
-         source.getSourceType(),
-         source.getUnit());
-}
-
-
-void ProjectInput::Init(QString sCreatedOn, QString sProjectPath, HMVariable * pVariable,
+void ProjectInput::Init(QString sCreatedOn, QDir sProjectPath, HMVariable * pVariable,
                         NamedObjectWithID * pSourceType, Unit * pUnit){
 
     m_screated_on = sCreatedOn;
+    //<ProjectPath>Inputs\DEM\DEM.tif</ProjectPath>
     m_sourcefilepath = sProjectPath;
 
     m_variable = pVariable;

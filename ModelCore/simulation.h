@@ -49,7 +49,6 @@ public:
 
     inline bool HasRasters(){ return m_HasRasters; }
 
-    inline QString GetHSISourcePath(){ return m_HSISourcePath.absolutePath(); }
     inline RasterManager::RasterMeta * GetExtentRectangle(){ return m_RasterTemplateMeta; }
     /**
      * @brief GetRasterExtentMeta
@@ -72,8 +71,6 @@ private:
      * @brief m_sfolder the simulation folder relative to project root
      */
     QDir m_sfolder;
-    QDir m_HSISourcePath;
-
     QString m_screated_by;
 
     QString m_screated_on;

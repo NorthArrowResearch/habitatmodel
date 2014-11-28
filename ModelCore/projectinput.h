@@ -32,6 +32,11 @@ public:
     virtual ProjectInput * Clone()=0;
 
     /**
+     * @brief ~ProjectInput
+     */
+    virtual inline ~ProjectInput(){ }
+
+    /**
      * @brief ProjectInput
      * @param source
      */
@@ -45,18 +50,8 @@ public:
      * @param pSourceType
      * @param pUnit
      */
-    void Init(QString sCreatedOn, QString sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit);
+    void Init(QString sCreatedOn, QDir sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit);
 
-    /**
-     * @brief operator =
-     * @param source
-     */
-    void operator =(ProjectInput &source);
-
-    /**
-     * @brief ~ProjectInput
-     */
-    virtual inline ~ProjectInput(){ }
 
     /**
      * @brief ProjectInput
@@ -68,42 +63,42 @@ public:
      * @brief getSourceType
      * @return
      */
-    inline NamedObjectWithID * getSourceType() const { return m_source_type;  }
+    inline NamedObjectWithID * GetSourceType() const { return m_source_type;  }
 
     /**
      * @brief getCreatedOn
      * @return
      */
-    inline QString getCreatedOn() const { return m_screated_on; }
+    inline QString GetCreatedOn() const { return m_screated_on; }
 
     /**
      * @brief getSourcePath
      * @return
      */
-    inline QString getSourceFilePath() const { return m_sourcefilepath; }
+    inline QDir GetSourceFilePath() const { return m_sourcefilepath; }
 
     /**
      * @brief getVariable
      * @return
      */
-    inline HMVariable * getVariable() const { return m_variable; }
+    inline HMVariable * GetVariable() const { return m_variable; }
 
     /**
      * @brief getUnit
      * @return
      */
-    inline Unit * getUnit() const { return m_unit; }
+    inline Unit * GetUnit() const { return m_unit; }
 
     /**
      * @brief getFileName
      * @return
      */
-    inline QString getInputFileName() const { return QFileInfo(m_sourcefilepath).fileName(); }
+    inline QString GetInputFileName() const { return QFileInfo(m_sourcefilepath.absolutePath()).fileName(); }
     /**
      * @brief getRasterFileName
      * @return
      */
-    inline QFile * getInputRasterFileName() const { return m_sRasterInputFile; }
+    inline QFile * GetInputRasterFileName() const { return m_sRasterInputFile; }
 
     /**
      * @brief getRasterInputFileName
@@ -133,7 +128,8 @@ private:
     NamedObjectWithID * m_source_type;
 
     QString m_screated_on;
-    QString m_sourcefilepath;
+    // Absolute path to source file
+    QDir m_sourcefilepath;
 
     QString m_sUtilizationFileName;
 
