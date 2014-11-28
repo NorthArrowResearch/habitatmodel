@@ -37,19 +37,19 @@ public:
      * @brief getXField
      * @return
      */
-    inline QString getXField() { return m_sXFieldName; }
+    inline QString GetXFieldName() const { return m_sXFieldName; }
 
     /**
      * @brief getYField
      * @return
      */
-    inline QString getYField() { return m_sYFieldName; }
+    inline QString GetYFieldName() const { return m_sYFieldName; }
 
     /**
      * @brief getValueField
      * @return
      */
-    inline QString getValueField() { return m_sFieldName; }
+    inline QString GetValueFieldName() const { return m_sFieldName; }
 
     /**
      * @brief CreateRasterFromCSV

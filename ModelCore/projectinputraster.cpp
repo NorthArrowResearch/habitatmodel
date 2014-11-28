@@ -3,10 +3,6 @@
 
 namespace HabitatModel {
 
-void ProjectInputRaster::operator =(ProjectInputRaster &source)
-{
-    Init();
-}
 
 ProjectInputRaster::ProjectInputRaster(const ProjectInputRaster &source): ProjectInput(source)
 {

@@ -22,17 +22,13 @@ ProjectInputCSV::ProjectInputCSV(QDomElement * elProjectInput)
     */
     QString sXFieldName  = elProjectInput->firstChildElement("XField").text();
     QString sYFieldName  = elProjectInput->firstChildElement("YField").text();
-
-}
-
-void ProjectInputCSV::operator =(ProjectInputCSV &source)
-{
+    Init(sXFieldName, sYFieldName);
 
 }
 
 ProjectInputCSV::ProjectInputCSV( const ProjectInputCSV &source): ProjectInput(source)
 {
-    m_ProjectInputType = source.getInputType();
+    Init(source.GetXFieldName(), source.GetYFieldName());
 }
 
 void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){

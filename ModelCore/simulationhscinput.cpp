@@ -22,7 +22,15 @@ namespace HabitatModel{
   <SimulationID>4</SimulationID>
 </SimulationHSCInputs>
 
- ProjectInputID -->  ProjectVariableID -->  ProjectDataSources
+ Here's the chain of how this works
+ -----------------------------------------------
+
+    SimulationHSCInputs->ProjectInputID ----links-to--->  ProjectVariables->ProjectVariableID
+
+    and then:
+
+    ProjectVariables->DataSourceID ----links-to--->  ProjectDataSources->DataSourceID
+
 
 */
 SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICurve)

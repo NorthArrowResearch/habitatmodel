@@ -19,7 +19,9 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     QDomElement elHSI = Project::GetConfigDom()->firstChildElement("HSI");
     m_hsiRef = new HSI(&elHSI);
 
-    LoadHSCInputs();
+    LoadInputs();
+    // Now that all the inputs are loaded we know the extent of the laoded
+    // Rasters and we can prepare the inputs.
     PrepareInputs();
 }
 
@@ -102,7 +104,7 @@ void HSISimulation::Clean(){
 
 // This function loads the HSC Inputs but it also creates copies of the
 // Inputs for preparation down in PrepareInputs()
-void HSISimulation::LoadHSCInputs(){
+void HSISimulation::LoadInputs(){
 
     QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
 

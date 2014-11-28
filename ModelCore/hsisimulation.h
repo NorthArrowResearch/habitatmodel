@@ -31,7 +31,7 @@ public:
     /**
      * @brief LoadHSCInputs
      */
-    void LoadHSCInputs();
+    void LoadInputs();
 
     void Run();
     void Clean();

@@ -19,12 +19,6 @@ public:
 
     inline ~ProjectInputRaster(){}
 
-    /**
-     * @brief operator =
-     * @param source
-     */
-    void operator =(ProjectInputRaster &source);
-
     inline ProjectInput * Clone(){ return new ProjectInputRaster(*this); }
 
     /**

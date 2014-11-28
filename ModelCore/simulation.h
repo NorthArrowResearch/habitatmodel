@@ -38,6 +38,8 @@ public:
      */
     virtual void Clean() = 0;
 
+    virtual void LoadInputs() = 0;
+
     virtual void PrepareInputs() = 0;
 
     /**
