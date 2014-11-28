@@ -47,6 +47,8 @@ public:
      */
     void Init();
 
+    inline bool HasRasters(){ return m_HasRasters; }
+
     /**
      * @brief GetRasterExtentMeta
      * @return
@@ -58,10 +60,10 @@ public:
 
 protected:
 
-    inline void InsertProcessedInput(int id, ProjectInput * pInput){ m_processed_inputs_store.insert(id, pInput);  }
     void RasterUnion(RasterManager::RasterMeta *pMeta);
 
     QString m_OutputRasterFileName;
+    bool m_HasRasters;
 
 private:
 
@@ -74,8 +76,6 @@ private:
 
     bool m_bqueued;
     bool m_badd_individual_output;
-
-    QHash<int, ProjectInput *> m_processed_inputs_store;
 
     RasterManager::RasterMeta * m_RasterTemplateMeta;
 };

@@ -67,16 +67,14 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
             ProjectInput * pOriginalInput = Project::GetProjectInput(nDataSourceID);
 
             // Now we need a copy of the project input (both an object copy and a copy of the file)
-            ProjectInput * pSimCopy = pOriginalInput->Clone();
+            m_project_input = pOriginalInput->Clone();
+
         }
      }
 
     // No project variable found for this HSC input. We must fail
     if (!bProjectVariableFound)
         Project::ProjectError(DOM_NODE_MISSING, "Missing <ProjectVariables> node for HSC input with ID:" + nProjectInputID );
-
-
-
 
 
 }

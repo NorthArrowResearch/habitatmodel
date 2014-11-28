@@ -23,13 +23,14 @@ public:
      */
     SimulationHSCInput(QDomElement elHSCInput, HSICurve *pHSICurve);
 
+    ~SimulationHSCInput();
+
     inline ProjectInput * GetProjectInput(){ return m_project_input; }
     inline HMVariable * GetHMVariable(){ return m_variable; }
     inline HSICurve * GetHSICurve(){ return m_hsi_curve; }
     inline Unit * GetUnit(){ return m_units; }
 
 
-    ~SimulationHSCInput();
 private:
 
     ProjectInput * m_project_input;

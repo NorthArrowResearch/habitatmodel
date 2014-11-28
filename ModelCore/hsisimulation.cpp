@@ -19,12 +19,38 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     QDomElement elHSI = Project::GetConfigDom()->firstChildElement("HSI");
     m_hsiRef = new HSI(&elHSI);
 
+    // Make a local copy of each data source as a local simulation object,
+    // ready for preparation.
     LoadInputs();
+
+    // Now, if this thing is a raster we need to add it to the ExtentRectangle
+    // For this simulation
+    AddRastersToExtents();
+
     // Now that all the inputs are loaded we know the extent of the laoded
     // Rasters and we can prepare the inputs.
     PrepareInputs();
 }
 
+void HSISimulation::AddRastersToExtents(){
+
+    // No Rasters, no point
+    if (!HasRasters())
+        return;
+
+    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+    while (i.hasNext()) {
+        i.next();
+        // Here is the curve we want
+        if (i.value()->GetProjectInput()->getInputType() == PROJECT_INPUT_RASTER){
+            std::string sRasterPath = i.value()->GetProjectInput()->getInputFileName().toStdString();
+            RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(sRasterPath.c_str());
+            RasterUnion(pRasterMeta);
+            delete pRasterMeta;
+        }
+
+    }
+}
 
 void HSISimulation::Run(){
 

@@ -28,13 +28,10 @@ public:
 
     inline ~HSISimulation(){  }
 
-    /**
-     * @brief LoadHSCInputs
-     */
     void LoadInputs();
-
     void Run();
     void Clean();
+    void PrepareInputs();
 
     /**
      * @brief DetermineMethod
@@ -42,8 +39,11 @@ public:
      * @return
      */
     int DetermineMethod();
-    void PrepareInputs();
-    bool InputBelongs(ProjectInput *pInput);
+
+    /**
+     * @brief AddRastersToExtents
+     */
+    void AddRastersToExtents();
 private:
 
     void PrepareVectorRasters();
