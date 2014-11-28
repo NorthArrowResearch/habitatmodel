@@ -43,12 +43,12 @@ void HSISimulation::AddRastersToExtents(){
         i.next();
         // Here is the curve we want
         if (i.value()->GetProjectInput()->getInputType() == PROJECT_INPUT_RASTER){
+            Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
             std::string sRasterPath = i.value()->GetProjectInput()->getInputFileName().toStdString();
             RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(sRasterPath.c_str());
             RasterUnion(pRasterMeta);
             delete pRasterMeta;
         }
-
     }
 }
 
@@ -132,6 +132,8 @@ void HSISimulation::Clean(){
 // Inputs for preparation down in PrepareInputs()
 void HSISimulation::LoadInputs(){
 
+    Project::GetOutputXML()->Log("Loading Inputs for HSI Simulation: " + GetName() , 2);
+
     QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
 
     for(int n= 0; n < elHSCInputs.length(); n++){
@@ -147,6 +149,7 @@ void HSISimulation::LoadInputs(){
 
 void HSISimulation::PrepareInputs(){
 
+    Project::GetOutputXML()->Log("Preparing inputs for HSI Simulation: " + GetName() , 2);
     // This is a 3 step process:
     // 1). Go and get the appropriate project inputs
     // 2). Figure out the raster extents of these inputs
@@ -159,27 +162,7 @@ void HSISimulation::PrepareInputs(){
 
     while (rInputs.hasNext()) {
         rInputs.next();
-
-//        if (InputBelongs(rInputs.value())){
-//            // This input is part of our simulation. add it to the store.
-//            InsertProcessedInput(rInputs.value()->GetID(), rInputs.value());
-
-//            if (dynamic_cast<ProjectInputRaster*>(rInputs.value())){
-//                // Load the raster.
-//                QString qsRasterSourceFilePath = rInputs.value()->getSourceFilePath();
-//                std::string sRasterSourceFilePath = qsRasterSourceFilePath.toStdString();
-//                RasterManager::RasterMeta erRasterInput (sRasterSourceFilePath.c_str());
-//                RasterUnion(&erRasterInput);
-//            }
-//        }
-    }
-    rInputs.toFront();
-
-    // Next Call Prepare on Each Raster
-    while (rInputs.hasNext()) {
-        rInputs.next();
-        // TODO: need something better than tmp path
-//        rInputs.value()->Prepare(GetRasterExtentMeta(), Project::GetTmpPath()->absolutePath());
+        rInputs.value()->Prepare(GetExtentRectangle(), GetHSISourcePath());
     }
 
 }
