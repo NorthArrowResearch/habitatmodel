@@ -27,7 +27,7 @@ Simulation::Simulation(QDomElement * elSimulation)
     Project::GetOutputXML()->Log("Loading simulation: " + GetName() , 2);
 
     // First set all the member variables according to what's in the XML
-    QString mSimRootFolder = QDir::fromNativeSeparators(elSimulation->firstChildElement("Folder").text());
+    QString mSimRootFolder = Project::SanitizePath((elSimulation->firstChildElement("Folder").text()));
 
     m_sfolder =  Project::GetProjectRootPath()->filePath(mSimRootFolder);
 

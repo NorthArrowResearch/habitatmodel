@@ -204,7 +204,12 @@ public:
     static void ProjectError(int nErrorCode);
     static void ProjectError(int nErrorCode, QString m_sEvidence);
 
-
+    /**
+     * @brief SanitizePath
+     * @param sPath
+     * @return
+     */
+    static QString SanitizePath(QString sPath);
 private:
 
     // Project Attributes

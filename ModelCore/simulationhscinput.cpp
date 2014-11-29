@@ -68,7 +68,6 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
 
             // Now we need a copy of the project input (both an object copy and a copy of the file)
             m_project_input = pOriginalInput->Clone();
-
         }
      }
 

@@ -14,13 +14,14 @@ namespace HabitatModel{
 HSISimulation::HSISimulation(QDomElement *elSimulation)
     : Simulation(elSimulation)
 {
-    QString sRawHSISourcePath = QDir::fromNativeSeparators(elSimulation->firstChildElement("HSISourcePath").text());
+    m_HasRasters = false;
 
     // Now Create our HSI object if there is one.
     QDomElement elHSI = Project::GetConfigDom()->firstChildElement("HSI");
     m_hsiRef = new HSI(&elHSI);
 
-    m_HSISourcePath = Project::GetProjectRootPath()->filePath(sRawHSISourcePath);
+    QString sRawHSISourcePath = QDir::fromNativeSeparators(elSimulation->firstChildElement("HSISourcePath").text());
+    m_HSISourcePath = Project::GetProjectRootPath()->filePath(Project::SanitizePath(sRawHSISourcePath));
 
     // Make a local copy of each data source as a local simulation object,
     // ready for preparation.
@@ -42,14 +43,17 @@ void HSISimulation::AddRastersToExtents(){
         return;
 
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+
     while (i.hasNext()) {
         i.next();
         // Here is the curve we want
-        if (i.value()->GetProjectInput()->getInputType() == PROJECT_INPUT_RASTER){
+        ProjectInput * pInput = i.value()->GetProjectInput();
+
+        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
 
             Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
 
-            std::string sRasterPath = i.value()->GetProjectInput()->GetInputFileName().toStdString();
+            std::string sRasterPath = i.value()->GetProjectInput()->GetSourceFilePath().toStdString();
             RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(sRasterPath.c_str());
             RasterUnion(pRasterMeta);
             delete pRasterMeta;
@@ -149,17 +153,21 @@ void HSISimulation::LoadInputs(){
         int nHSICurveID = elHSCInput.firstChildElement("HSICurveID").text().toInt();
         HSICurve * pHSICurve = m_hsiRef->GetCurve(nHSICurveID);
 
-        m_simulation_hsc_inputs.insert(n, new SimulationHSCInput(elHSCInput, pHSICurve));
+        SimulationHSCInput * newHSCInput = new SimulationHSCInput(elHSCInput, pHSICurve);
+
+        ProjectInput * pInput = newHSCInput->GetProjectInput();
+        if ( dynamic_cast <ProjectInputRaster *> ( pInput ))
+            m_HasRasters = true;
+
+        m_simulation_hsc_inputs.insert(n, newHSCInput);
+
     }
 }
 
 void HSISimulation::PrepareInputs(){
 
     Project::GetOutputXML()->Log("Preparing inputs for HSI Simulation: " + GetName() , 2);
-    // This is a 3 step process:
-    // 1). Go and get the appropriate project inputs
-    // 2). Figure out the raster extents of these inputs
-    // 3). Prepare them based on this extent.
+
     QHash<int, ProjectInput *> pRawInputStore = Project::GetRawProjectInputsStore();
 
     // First do the Rasters to find the union intersection
@@ -173,6 +181,15 @@ void HSISimulation::PrepareInputs(){
 
 }
 
+HSISimulation::~HSISimulation(){
+    // Empty HSC input store
+    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+    while (i.hasNext()) {
+        i.next();
+        delete i.value();
+    }
+
+}
 
 
 }

@@ -25,10 +25,10 @@ public:
 
     ~SimulationHSCInput();
 
-    inline ProjectInput * GetProjectInput(){ return m_project_input; }
-    inline HMVariable * GetHMVariable(){ return m_variable; }
-    inline HSICurve * GetHSICurve(){ return m_hsi_curve; }
-    inline Unit * GetUnit(){ return m_units; }
+    inline ProjectInput * GetProjectInput() const { return m_project_input; }
+    inline HMVariable * GetHMVariable() const { return m_variable; }
+    inline HSICurve * GetHSICurve() const { return m_hsi_curve; }
+    inline Unit * GetUnit() const { return m_units; }
 
 
 private:

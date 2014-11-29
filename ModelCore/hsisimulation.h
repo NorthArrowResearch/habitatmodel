@@ -26,7 +26,7 @@ public:
      */
     HSISimulation(QDomElement *elSimulation);
 
-    inline ~HSISimulation(){  }
+    ~HSISimulation();
 
     void LoadInputs();
     void Run();
@@ -45,6 +45,13 @@ public:
      * @return
      */
     inline QString GetHSISourcePath(){ return m_HSISourcePath; }
+
+    /**
+     * @brief GetSimulationHSCInput
+     * @param nIndex
+     * @return
+     */
+    inline SimulationHSCInput * GetSimulationHSCInput(int nIndex) const { return m_simulation_hsc_inputs.value(nIndex); }
 
     /**
      * @brief AddRastersToExtents

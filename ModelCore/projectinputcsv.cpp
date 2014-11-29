@@ -32,7 +32,7 @@ ProjectInputCSV::ProjectInputCSV( const ProjectInputCSV &source): ProjectInput(s
 }
 
 void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){
-    m_ProjectInputType = PROJECT_INPUT_CSV;
+
     m_sXFieldName = sXFieldName;
     m_sYFieldName = sYFieldName;
     //NOte: m_sFieldName only gets set on prepare()

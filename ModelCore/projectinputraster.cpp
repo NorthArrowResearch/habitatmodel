@@ -17,22 +17,42 @@ ProjectInputRaster::ProjectInputRaster(QDomElement * elProjectInput)
 }
 
 void ProjectInputRaster::Init(){
-    m_ProjectInputType = PROJECT_INPUT_RASTER;
-    // Here's where we need to run Simulation::RasterUnion
+
 
 }
 
 void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QString sPreparedRasterPath){
-//    m_sourcefilepath = getSourceFilePath();
 
-//    RasterManager::Copy()
-    // Delete and recopy it
-//    if QFile::exists("/home/user/dst.txt")
-//        QFile::remove("/home/user/dst.txt");
+    QFileInfo sFileInfo(GetSourceFilePath());
 
-//    QFile::copy("/home/user/src.txt", "/home/user/dst.txt");
+    std::string sOriginalRaster = GetSourceFilePath().toStdString();
 
-    //TODO: resize the raster to the input template then change the source path to the new one
+    QString sFileName = sFileInfo.fileName();
+    QString sDir = sFileInfo.dir().dirName();
+
+    QFileInfo sNewFilePath(QDir(sPreparedRasterPath).filePath(sDir + QDir::separator() + sFileName));
+    QDir sNewDir = QDir(sNewFilePath.absolutePath());
+
+    Project::GetOutputXML()->Log("MAking : " + sNewDir.absolutePath() , 2);
+    // Make a path if we don't have one already.
+    if (!sNewDir.exists()){
+      sNewDir.mkpath(".");
+    }
+
+    // Delete the file if it already exists.
+   if (sNewFilePath.exists())
+        QFile::remove(sNewFilePath.absoluteFilePath());
+
+    std::string finalPath = sNewFilePath.absoluteFilePath().toStdString();
+
+    RasterManager::Copy( sOriginalRaster.c_str(),
+                         finalPath.c_str(),
+                         TemplateRaster->GetCellWidth(),
+                         TemplateRaster->GetLeft(),
+                         TemplateRaster->GetTop(),
+                         TemplateRaster->GetRows(),
+                         TemplateRaster->GetCols());
+
 }
 
 

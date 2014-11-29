@@ -58,7 +58,7 @@ Project::Project(const char * psProjectRoot,
     // Entire input Configuration DOM
     m_elConfig = m_XMLInput->Document();
 
-    m_ProjectRootDir = new QDir(QDir::fromNativeSeparators(psProjectRoot));
+    m_ProjectRootDir = new QDir(SanitizePath(psProjectRoot));
     if (!m_ProjectRootDir->exists())
         ProjectError(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
 
@@ -306,6 +306,13 @@ void Project::ProjectError(int nErrorCode){ ProjectError(nErrorCode, ""); }
 void Project::ProjectError(int nErrorCode, QString m_sEvidence){
     GetOutputXML()->Log(HabitatException::GetReturnCodeOnlyAsString(nErrorCode),  m_sEvidence, SEVERITY_ERROR, 1);
     throw HabitatException(nErrorCode, m_sEvidence);
+}
+
+QString Project::SanitizePath(QString sPath){
+    // It's possible this will need to be more complicated
+    // later which is why we need a function for one command.
+    sPath.replace("\\", "/");
+    return sPath;
 }
 
 

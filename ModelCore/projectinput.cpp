@@ -9,8 +9,7 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
 {
 
     QString sCreatedOn = elProjectInput->firstChildElement("CreatedOn").text();
-    QString sProjectPath = QDir::toNativeSeparators(elProjectInput->firstChildElement("ProjectPath").text());
-
+    QString sProjectPath = Project::SanitizePath(elProjectInput->firstChildElement("ProjectPath").text());
     QString sProjectPathDir = Project::GetProjectRootPath()->filePath(sProjectPath);
 
     HMVariable * pVariable = Project::GetVariable(elProjectInput, "VariableID");

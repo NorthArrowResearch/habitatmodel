@@ -101,8 +101,6 @@ public:
      */
     inline QString getUtilizationRasterFileName() const { return m_sUtilizationFileName; }
 
-    inline ProjectInputTypeCodes getInputType() const { return m_ProjectInputType; }
-
     /**
      * @brief SetRasterOutPutFileName
      * @param sOutputFile
@@ -111,10 +109,6 @@ public:
     inline void setUtilizationRasterFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
 
     virtual void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath) = 0;
-
-protected:
-
-    ProjectInputTypeCodes m_ProjectInputType;
 
 
 private:

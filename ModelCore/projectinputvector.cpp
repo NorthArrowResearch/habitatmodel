@@ -23,7 +23,6 @@ ProjectInputVector::ProjectInputVector(QDomElement * elProjectInput)
 }
 
 void ProjectInputVector::Init(QString sValueField){
-     m_ProjectInputType = PROJECT_INPUT_VECTOR;
      m_sValueField = sValueField;
 }
 
