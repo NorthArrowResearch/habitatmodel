@@ -33,9 +33,10 @@ void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QSt
     QFileInfo sNewFilePath(QDir(sPreparedRasterPath).filePath(sDir + QDir::separator() + sFileName));
     QDir sNewDir = QDir(sNewFilePath.absolutePath());
 
-    Project::GetOutputXML()->Log("MAking : " + sNewDir.absolutePath() , 2);
+
     // Make a path if we don't have one already.
     if (!sNewDir.exists()){
+      Project::GetOutputXML()->Log("Dir Doesn't exist. Making' : " + sNewDir.absolutePath() , 2);
       sNewDir.mkpath(".");
     }
 
@@ -44,6 +45,8 @@ void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QSt
         QFile::remove(sNewFilePath.absoluteFilePath());
 
     std::string finalPath = sNewFilePath.absoluteFilePath().toStdString();
+
+    Project::GetOutputXML()->Log("Copying file' : " + sOriginalRaster + " to:  " + finalPath , 2);
 
     RasterManager::Copy( sOriginalRaster.c_str(),
                          finalPath.c_str(),

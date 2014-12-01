@@ -1,4 +1,5 @@
 #include "habitatmodelengine.h"
+#include "rastermanager_interface.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -35,10 +36,10 @@ int HabitatModelEngine::Run(int argc, char *argv[])
 int HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
-
+    RasterManager::RegisterGDAL();
     HabitatModel::Project theProject(argv[1], argv[2], argv[3]);
     eResult = theProject.Run();
-
+    RasterManager::DestroyGDAL();
     return eResult;
 }
 
