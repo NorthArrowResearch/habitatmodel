@@ -7,9 +7,9 @@ namespace HabitatModel{
 
 enum XML_LOG_SEVERITY {
     SEVERITY_SUCCESS = 0,
-    SEVERITY_VERBOSE = 1,
-    SEVERITY_WARNING = 2,
-    SEVERITY_ERROR = 3
+    SEVERITY_WARNING = 1,
+    SEVERITY_ERROR = 2,
+    SEVERITY_VERBOSE = 3,
 };
 
 class XMLFile
@@ -48,6 +48,13 @@ public:
      * @param indent
      */
     inline void Log(QString sMsg, int indent){ Log(sMsg, "", SEVERITY_SUCCESS, indent); }
+
+    /**
+     * @brief LogDebug
+     * @param sMsg
+     * @param indent
+     */
+    inline void LogDebug(QString sMsg, int indent){ Log(sMsg, "", SEVERITY_VERBOSE, indent); }
 
     /**
      * @brief Meta: Write the meta_data parameters one at a time.

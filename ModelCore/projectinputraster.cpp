@@ -36,7 +36,7 @@ void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QSt
 
     // Make a path if we don't have one already.
     if (!sNewDir.exists()){
-      Project::GetOutputXML()->Log("Dir Doesn't exist. Making' : " + sNewDir.absolutePath() , 2);
+      Project::GetOutputXML()->LogDebug("Dir Doesn't exist. Making' : " + sNewDir.absolutePath() , 3);
       sNewDir.mkpath(".");
     }
 
@@ -46,7 +46,7 @@ void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QSt
 
     std::string finalPath = sNewFilePath.absoluteFilePath().toStdString();
 
-    Project::GetOutputXML()->Log("Copying file' : " + sOriginalRaster + " to:  " + finalPath , 2);
+    Project::GetOutputXML()->LogDebug("Copying file' : " + sOriginalRaster + " to:  " + finalPath , 3);
 
     RasterManager::Copy( sOriginalRaster.c_str(),
                          finalPath.c_str(),
