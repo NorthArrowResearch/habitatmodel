@@ -7,7 +7,7 @@ namespace HabitatModel{
 HSICurve::HSICurve(QDomElement * elHSICurve)
 {
     m_fWeight = elHSICurve->firstChildElement("Weight").text().toDouble();
-    m_hsc = Project::GetHSC(elHSICurve, "HSIID");
+    m_hsc = Project::GetHSC(elHSICurve, "HSCID");
 }
 
 }

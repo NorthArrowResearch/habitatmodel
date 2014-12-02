@@ -3,6 +3,7 @@
 #include <QDomElement>
 #include <QHash>
 #include "hsi.h"
+#include "math.h"
 #include "project.h"
 #include "projectinput.h"
 #include "rastermanager_interface.h"
@@ -116,83 +117,124 @@ void HSISimulation::Run(){
 
     Project::GetOutputXML()->Log("Combining all output rasters into one: " + GetHSISourcePath() , 2);
 
-
     //Method of combination
     uint nMethod = DetermineMethod();
 
     // Our final output Raster file name and path:
     QString sHSIOutputFile = GetHSISourcePath();
 
-
-
     const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
 
-    // Reset the iterator to the begginning and run it again, this time working on outputs
+    static QHash<int, GDALDataset *> dDatasets;
+    QHash<int, char *> dInBuffers;
+
+    int sRasterCols = GetRasterExtentMeta()->GetCols();
+    unsigned char * pReadBuffer = (unsigned char*) CPLMalloc(sizeof(double) * sRasterCols);
+
+    // Open all the inputs into a hash of datasets. We must remember to clean this up later
     i.toFront();
     while (i.hasNext()) {
         i.next();
 
-//        // Rasterman doesn't use Qt so we need to step down to char *
-//        const QByteArray sInputQB = sInput.toLocal8Bit();
-//        GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sInputQB.data(), GA_ReadOnly);
+        // Here is the corresponding input raster, added as a hash to a dataset
+        ProjectInput * pSimHSCHSOutput = i.value()->GetProjectInput();
+        const QByteArray sHSIOutputQB = pSimHSCHSOutput->GetHSOutputRasterFileName().toLocal8Bit();
+        GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
 
-//        //allocate memory for reading from DEM and writing to hillshade
-//        QHash<int, HSCCoordinatePair *> m_coordinate_pairs;
-//        unsigned char *pReadBuffer = (unsigned char*) CPLMalloc(sizeof(int)*sOutputRasterMeta->GetCols());
+        // Add a buffer for reading this input
+        char * pReadBuffer = (char*) CPLMalloc(sizeof(double)*sRasterCols);
 
-//        //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
-//        for (int i=1; i < sOutputRasterMeta->GetRows() - 1; i++)
-//        {
-//            //assign no data for first and last positions in the row
-//            pReadBuffer[0] = sOutputRasterMeta->GetNoDataValue(), pReadBuffer[ sOutputRasterMeta->GetCols() - 1 ] = sOutputRasterMeta->GetNoDataValue();
+        // Notice these get the same keys.
+        dDatasets.insert(i.key(), pInputDS);
+        dInBuffers.insert(i.key(), pReadBuffer);
+    }
 
-//            for (int j=1; j < sOutputRasterMeta->GetCols() - 1; j++)
-//            {
-//                pReadBuffer[j] =  CombineUsingMethod();
+    //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
+    for (int i=1; i < GetRasterExtentMeta()->GetRows() - 1; i++)
+    {
+        // Populate the buffers with a new line from each file.
+        QHashIterator<int, GDALDataset *> QHDSIterator(dDatasets);
+        while (QHDSIterator.hasNext()) {
+            QHDSIterator.next();
+            // Read the row
+            QHDSIterator.value()->GetRasterBand(1)->RasterIO(GF_Read, 0,  i,
+                                               sRasterCols, 1,
+                                               dInBuffers.value(QHDSIterator.key()),
+                                               sRasterCols, 1,
+                                               GDT_Float64, 0, 0);
+        }
 
-//                Select Case aSim.HSIRow.HSIMethodID
-//                    Case 44 ' Arithmetic Mean
-//                        fHSIValue += aValueRow.HSCValue
-//                    Case 45 ' Geometric(Mean)
-//                        fHSIValue *= aValueRow.HSCValue
-//                    Case 47 ' Minimum
-//                        If nCount = 0 OrElse fHSIValue > aValueRow.HSCValue Then
-//                            fHSIValue = aValueRow.HSCValue
-//                        End If
-//                    Case 46 ' Product
-//                        fHSIValue *= aValueRow.HSCValue
-//                    Case 48 ' Weighted (Mean)
-//                        fHSIValue += aValueRow.HSCValue * aValueRow.HSICurvesRow.Weight
-//                    Case Else
-//                        Dim ex As New Exception("Unrecognized HSI method")
-//                        ex.Data.Add("HSI Method ID", aSim.HSIRow.HSIMethodID.ToString)
-//                        Throw ex
-//                End Select
+        for (int j=1; j < sRasterCols - 1; j++)
+        {
+            QHash<int, double> dCellContents;
+            QHashIterator<int, char *> QHIBIterator(dInBuffers);
+            while (QHIBIterator.hasNext()) {
+                QHIBIterator.next();
+                dCellContents.insert(QHIBIterator.key(), QHIBIterator.value()[j]);
+            }
 
+            switch (nMethod) {
+            case HSI_PRODUCT:
+                pReadBuffer[j] = HSICombineProduct(dCellContents);
+                break;
+            case HSI_ARITHMETIC_MEAN:
+                pReadBuffer[j] = HSIArithmeticMean(dCellContents);
+                break;
+            case HSI_GEOMETRIC_MEAN:
+                pReadBuffer[j] = HSIGeometricMean(dCellContents);
+                break;
+            case HSI_MINIMUM:
+                pReadBuffer[j] = HSIMinimum(dCellContents);
+                break;
+            case HSI_WEIGHTED_MEAN:
+                pReadBuffer[j] = HSIWeightedMean(dCellContents);
+                break;
+            default:
+                break;
+            }
 
-//            }
-//            pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
-//                                                  sOutputRasterMeta->GetCols(),1,
-//                                                  pReadBuffer,
-//                                                  sOutputRasterMeta->GetCols(),1,
-//                                                  sOutputRasterMeta->GetGDALDataType(),
-//                                                  0,0 );
-//        }
-        //close datasets
-//        GDALClose(pInputDS);
-
-
-//        CPLFree(pReadBuffer);
-//        pReadBuffer = NULL;
-
+        }
+        pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
+                                              sRasterCols,1,
+                                              pReadBuffer,
+                                              sRasterCols,1,
+                                              GetRasterExtentMeta()->GetGDALDataType(),
+                                              0,0 );
     }
 
     GDALClose(pOutputDS);
+    CPLFree(pReadBuffer);
+    pReadBuffer = NULL;
+
+    // Let's remember to clean up the inputs
+    QHashIterator<int, GDALDataset *> qhds(dDatasets);
+    while (qhds.hasNext()) {
+        qhds.next();
+        GDALClose(qhds.value());
+        delete qhds.value();
+    }
+    QHashIterator<int, char *> qhbuff(dInBuffers);
+    while (qhbuff.hasNext()) {
+        qhbuff.next();
+        CPLFree(qhbuff.value());
+        delete qhbuff.value();
+    }
 
 
 }
 
+void HSISimulation::PrepareInputs(){
+
+    Project::GetOutputXML()->Log("Preparing inputs for HSI Simulation: " + GetName() , 2);
+
+    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+    while (i.hasNext()) {
+        i.next();
+        i.value()->GetProjectInput()->Prepare(GetRasterExtentMeta());
+    }
+
+}
 
 int HSISimulation::DetermineMethod(){
     if (m_hsiRef->GetMethod() == NULL)
@@ -240,16 +282,55 @@ void HSISimulation::LoadInputs(){
     }
 }
 
-void HSISimulation::PrepareInputs(){
-
-    Project::GetOutputXML()->Log("Preparing inputs for HSI Simulation: " + GetName() , 2);
-
-    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
-    while (i.hasNext()) {
-        i.next();
-        i.value()->GetProjectInput()->Prepare(GetRasterExtentMeta());
+double HSISimulation::HSICombineProduct(QHash<int, double> dCellContents){
+    double dSum = 0;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+        dSum += x.value();
     }
+    return dSum;
+}
 
+double HSISimulation::HSIArithmeticMean(QHash<int, double> dCellContents){
+    double dSum = 0;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+        dSum += x.value();
+    }
+    return dSum / dCellContents.size();
+}
+
+double HSISimulation::HSIGeometricMean(QHash<int, double> dCellContents){
+    double dProd = 0;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+        dProd *= x.value();
+    }
+    return pow(dProd, 1/dCellContents.size());
+}
+
+double HSISimulation::HSIMinimum(QHash<int, double> dCellContents){
+    double dMin = 0;
+    bool first = true;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+        if (first){
+            first = false;
+            dMin = x.value();
+        }
+        else if(x.value() < dMin)
+            dMin = x.value();
+    }
+    return dMin;
+}
+
+double HSISimulation::HSIWeightedMean(QHash<int, double> dCellContents){
+    Project::GetOutputXML()->LogDebug("WEIGHTED MEAN NOT YET IMPLEMENTED!", 3);
+    return 5.0;
 }
 
 HSISimulation::~HSISimulation(){
