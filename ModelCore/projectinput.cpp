@@ -28,7 +28,7 @@ ProjectInput::ProjectInput(const ProjectInput &source)
          source.GetVariable(),
          source.GetSourceType(),
          source.GetUnit(),
-         source.GetUtilizationRasterFileName(),
+         source.GetPreparedRasterFileName(),
          source.GetHSOutputRasterFileName());
 }
 
@@ -40,7 +40,7 @@ void ProjectInput::Init(QString sCreatedOn, QString sProjectPath, HMVariable * p
     m_sourcefilepath = sProjectPath;
     m_variable = pVariable;
     m_source_type = pSourceType;
-    m_sUtilizationFileName = sUtilizationRasterFileName;
+    m_preparedrasterfilename = sUtilizationRasterFileName;
     m_hsoutputfilepath = sHSOutputFileName;
     m_unit = pUnit;
 

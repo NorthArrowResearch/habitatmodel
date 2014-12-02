@@ -23,9 +23,10 @@ HSCCategorical::~HSCCategorical()
 
 
 void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
+
     Project::GetOutputXML()->Log("Processing Raster against Categorical HSC: " + sInput , 2);
 
-    Project::GetOutputXML()->Log("Processing Raster against HSC Inflection Curve: " + sInput , 2);
+    Project::EnsureFile(sOutput);
 
     // Rasterman doesn't use Qt so we need to step down to char *
     const QByteArray sInputQB = sInput.toLocal8Bit();

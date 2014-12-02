@@ -82,21 +82,19 @@ void HSISimulation::AddRastersToExtents(){
 
 void HSISimulation::Run(){
 
-    //Method of combination
-    uint nMethod = DetermineMethod();
+    /**
+     *
+     *  Get and loop over all the simulationHSCInputs, comparing them to
+     *  their curves along the way.
+     *
+     **/
 
-    // Our final output Raster file name and path:
-    QString sHSIOutputFile = GetHSISourcePath();
-
-    // Get and loop over all the simulationHSCInputs, comparing them to
-    // their curves along the way.
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
 
     while (i.hasNext()) {
         i.next();
 
         // Here is the curve we want
-        SimulationHSCInput * pSimHSCInput = i.value();
         HSC * pHSC = i.value()->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
@@ -104,14 +102,28 @@ void HSISimulation::Run(){
 
         // Pure virtual function will decide if it's a categorical
         // or coordinate pair HSC
-        pHSC->ProcessRaster( pInput->GetUtilizationRasterFileName(), //rename to prepareedsomething
+        pHSC->ProcessRaster( pInput->GetPreparedRasterFileName(),
                              pInput->GetHSOutputRasterFileName(),
                              GetRasterExtentMeta());
 
     }
 
-    // Combine Output Rasters using HSIMethodID in HSI
+    /**
+     *
+     *  Combine Output Rasters using HSIMethodID in HSI
+     *
+     **/
+
     Project::GetOutputXML()->Log("Combining all output rasters into one: " + GetHSISourcePath() , 2);
+
+
+    //Method of combination
+    uint nMethod = DetermineMethod();
+
+    // Our final output Raster file name and path:
+    QString sHSIOutputFile = GetHSISourcePath();
+
+
 
     const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
