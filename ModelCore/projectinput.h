@@ -50,7 +50,7 @@ public:
      * @param pSourceType
      * @param pUnit
      */
-    void Init(QString sCreatedOn, QString sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit);
+    void Init(QString sCreatedOn, QString sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit, QString sUtilizationRasterFileName);
 
 
     /**
@@ -99,23 +99,35 @@ public:
      * @brief getRasterInputFileName
      * @return
      */
-    inline QString getUtilizationRasterFileName() const { return m_sUtilizationFileName; }
+    inline QString GetUtilizationRasterFileName() const { return m_sUtilizationFileName; }
 
     /**
      * @brief SetRasterOutPutFileName
      * @param sOutputFile
      * @return
      */
-    inline void setUtilizationRasterFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
+    inline void SetUtilizationRasterFileName(QString sOutputFile) {  m_sUtilizationFileName = sOutputFile; }
 
-    virtual void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath) = 0;
+    /**
+     * @brief Prepare
+     * @param TemplateRaster
+     * @param NewPath
+     */
+    virtual void Prepare(RasterManager::RasterMeta * TemplateRasterMeta) = 0;
 
-
+    virtual void SetValueFieldName(QString sValueField ) = 0;
+    /**
+     * @brief PrepareForInputFile
+     * @param sOriginalRaster
+     * @param sFinalPath
+     */
+    QString PrepareForInputFile();
 private:
 
     NamedObjectWithID * m_source_type;
 
     QString m_screated_on;
+
     // Absolute path to source file
     QString m_sourcefilepath;
 

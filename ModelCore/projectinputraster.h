@@ -21,13 +21,15 @@ public:
 
     inline ProjectInput * Clone(){ return new ProjectInputRaster(*this); }
 
+    inline void SetValueFieldName(QString sValueField){ return; }
+
     /**
      * @brief ProjectInputCSV
      * @param elProjectInput
      */
     ProjectInputRaster(QDomElement *elProjectInput);
 
-    void Prepare(RasterManager::RasterMeta *TemplateRaster, QString sPreparedRasterPath);
+    void Prepare(RasterManager::RasterMeta *TemplateRasterMeta);
     void Init();
 };
 

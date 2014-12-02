@@ -3,6 +3,7 @@
 #include "simulation.h"
 #include "hsi.h"
 #include "project.h"
+#include "rastermeta.h"
 
 namespace HabitatModel{
 
@@ -54,7 +55,7 @@ void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){
 
     // First time round set the bounds to the first raster we give it.
     if (m_RasterTemplateMeta == NULL){
-        m_RasterTemplateMeta = pMeta;
+        m_RasterTemplateMeta = new RasterManager::RasterMeta(*pMeta);
     }
     else {
         m_RasterTemplateMeta->Union(pMeta);

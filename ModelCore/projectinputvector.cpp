@@ -26,7 +26,7 @@ void ProjectInputVector::Init(QString sValueField){
      m_sValueField = sValueField;
 }
 
-void ProjectInputVector::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){
+void ProjectInputVector::Prepare(RasterManager::RasterMeta * TemplateRaster){
 
 }
 

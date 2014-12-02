@@ -56,6 +56,7 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
             bProjectVariableFound = true;
 
             std::string sTitle = elProjectVariable.firstChildElement("Title").text().toStdString();
+
             // Set this object's name and ID.
             SetName(sTitle.c_str());
             SetID(nProjectVarID);
@@ -68,6 +69,17 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
 
             // Now we need a copy of the project input (both an object copy and a copy of the file)
             m_project_input = pOriginalInput->Clone();
+
+            // CSVs need a data field added to them
+            if ( dynamic_cast <ProjectInputCSV *> ( m_project_input )){
+                QString sValueField = elProjectVariable.firstChildElement("ValueField").text();
+                m_project_input->SetValueFieldName(sValueField);
+            }
+
+            // The prepeared file path is explicitly given to us in the XML
+            QString sHSOutputPath = elHSCInput.firstChildElement("HSOutputPath").text();
+            m_project_input->SetUtilizationRasterFileName(sHSOutputPath);
+
         }
      }
 

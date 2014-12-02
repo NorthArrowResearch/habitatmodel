@@ -64,7 +64,7 @@ void HSISimulation::AddRastersToExtents(){
 void HSISimulation::Run(){
 
     //Method of combination
-    int nMethod = DetermineMethod();
+    uint nMethod = DetermineMethod();
 
     // Our final output Raster file name and path:
     QString sNewFileName = "OUTPUT-" + GetName() + ".tif";
@@ -176,7 +176,7 @@ void HSISimulation::PrepareInputs(){
 
     while (rInputs.hasNext()) {
         rInputs.next();
-        rInputs.value()->Prepare(GetExtentRectangle(), GetHSISourcePath());
+        rInputs.value()->Prepare(GetExtentRectangle());
     }
 
 }

@@ -26,7 +26,9 @@ public:
      */
     Simulation(QDomElement *elSimulation);
 
-    virtual inline ~Simulation(){  }
+    virtual inline ~Simulation(){
+        delete m_RasterTemplateMeta;
+    }
 
     /**
      * @brief run

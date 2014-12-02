@@ -45,6 +45,8 @@ public:
      */
     inline QString GetValueFieldName() const { return m_sFieldName; }
 
+
+    inline void SetValueFieldName(QString sValueField){ if (!sValueField.isEmpty()) m_sFieldName = sValueField; }
     /**
      * @brief CreateRasterFromCSV
      * @param sCSVFilePath
@@ -55,7 +57,7 @@ public:
      * @brief Prepare
      * @param csvRasterMeta
      */
-    void Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath);
+    void Prepare(RasterManager::RasterMeta * TemplateRaster);
 
     /**
      * @brief Init

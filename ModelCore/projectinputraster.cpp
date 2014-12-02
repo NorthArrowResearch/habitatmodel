@@ -21,41 +21,24 @@ void ProjectInputRaster::Init(){
 
 }
 
-void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRaster, QString sPreparedRasterPath){
+void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
 
-    QFileInfo sFileInfo(GetSourceFilePath());
+    QString sOriginalRaster = GetSourceFilePath();
+    QString sFinalPath = PrepareForInputFile();
 
-    std::string sOriginalRaster = GetSourceFilePath().toStdString();
+    Project::GetOutputXML()->LogDebug("Copying file' : " + sOriginalRaster + " to:  " + sFinalPath , 3);
 
-    QString sFileName = sFileInfo.fileName();
-    QString sDir = sFileInfo.dir().dirName();
+    // Rasterman doesn't support Qstring so we have to step everything down to char*
+    const QByteArray qbOriginalRaster = sOriginalRaster.toLocal8Bit();
+    const QByteArray qbFinalRaster = sFinalPath.toLocal8Bit();
 
-    QFileInfo sNewFilePath(QDir(sPreparedRasterPath).filePath(sDir + QDir::separator() + sFileName));
-    QDir sNewDir = QDir(sNewFilePath.absolutePath());
-
-
-    // Make a path if we don't have one already.
-    if (!sNewDir.exists()){
-      Project::GetOutputXML()->LogDebug("Dir Doesn't exist. Making' : " + sNewDir.absolutePath() , 3);
-      sNewDir.mkpath(".");
-    }
-
-    // Delete the file if it already exists.
-   if (sNewFilePath.exists())
-        QFile::remove(sNewFilePath.absoluteFilePath());
-
-    std::string finalPath = sNewFilePath.absoluteFilePath().toStdString();
-
-    Project::GetOutputXML()->LogDebug("Copying file' : " + sOriginalRaster + " to:  " + finalPath , 3);
-
-    RasterManager::Copy( sOriginalRaster.c_str(),
-                         finalPath.c_str(),
-                         TemplateRaster->GetCellWidth(),
-                         TemplateRaster->GetLeft(),
-                         TemplateRaster->GetTop(),
-                         TemplateRaster->GetRows(),
-                         TemplateRaster->GetCols());
-
+    RasterManager::Copy( qbOriginalRaster.data(),
+                         qbFinalRaster.data(),
+                         TemplateRasterMeta->GetCellWidth(),
+                         TemplateRasterMeta->GetLeft(),
+                         TemplateRasterMeta->GetTop(),
+                         TemplateRasterMeta->GetRows(),
+                         TemplateRasterMeta->GetCols());
 }
 
 

@@ -38,23 +38,29 @@ void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){
     //NOte: m_sFieldName only gets set on prepare()
 }
 
-void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRaster, QString NewPath){
+void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
 
     Project::GetOutputXML()->Log("Preparing CSV Input: " + GetName() , 3);
 
-//    m_sFieldName  = elProjectInput->firstChildElement("FieldName").text();
-    // TODO: build safe filename from csv input
-    // simulationname-hsisimulation-inputid-fname.tif
-//    QString sNewFileName = "InputCSV-" + getInputFileName() + ".tif";
+    QString sCSVFilePath = GetSourceFilePath();
+    QString sFinalRasterPath = PrepareForInputFile();
 
-//    m_sRasterInputFileName = Project::GetTmpPath()->absoluteFilePath(sNewFileName);
+    // Rasterman doesn't support Qstring so we have to step everything down to char*
+    const QByteArray qbCSVFilePath = sCSVFilePath.toLocal8Bit();
+    const QByteArray qbFinalRaster = sFinalRasterPath.toLocal8Bit();
 
-//    RasterManager::Raster::CSVtoRaster(getSourceFilePath().toStdString().c_str(),
-//                                       m_sRasterInputFileName.toStdString().c_str(),
-//                                       m_sXFieldName.toStdString().c_str(),
-//                                       m_sYFieldName.toStdString().c_str(),
-//                                       m_sFieldName.toStdString().c_str(),
-//                                       TemplateRaster );
+    const QByteArray qbXFieldName = GetXFieldName().toLocal8Bit();
+    const QByteArray qbYFieldName = GetYFieldName().toLocal8Bit();
+    const QByteArray qbDataFieldName = GetValueFieldName().toLocal8Bit();
+
+    Project::GetOutputXML()->Log("Create Tif from CSV: " + sCSVFilePath , 3);
+
+    RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
+                                       qbFinalRaster.data(),
+                                       qbXFieldName.data(),
+                                       qbYFieldName.data(),
+                                       qbDataFieldName.data(),
+                                       TemplateRasterMeta );
 }
 
 
