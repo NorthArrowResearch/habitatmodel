@@ -34,8 +34,9 @@ ProjectInput::ProjectInput(const ProjectInput &source)
 
 QString ProjectInput::PrepareForInputFile(){
 
-    QFileInfo sNewFilePath(GetUtilizationRasterFileName());
-    QDir sNewDir = QDir(sNewFilePath.absolutePath());
+    QString sFilePath = Project::GetProjectRootPath()->filePath(GetUtilizationRasterFileName());
+    QFileInfo sNewFileInfo(sFilePath);
+    QDir sNewDir = QDir(sNewFileInfo.absolutePath());
 
     // Make a path if we don't have one already.
     if (!sNewDir.exists()){
@@ -44,10 +45,10 @@ QString ProjectInput::PrepareForInputFile(){
     }
 
     // Delete the file if it already exists.
-   if (sNewFilePath.exists())
-        QFile::remove(sNewFilePath.absoluteFilePath());
+   if (sNewFileInfo.exists())
+        QFile::remove(sNewFileInfo.absoluteFilePath());
 
-   return sNewFilePath.absoluteFilePath();
+   return sNewFileInfo.absoluteFilePath();
 
 }
 

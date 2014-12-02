@@ -168,15 +168,10 @@ void HSISimulation::PrepareInputs(){
 
     Project::GetOutputXML()->Log("Preparing inputs for HSI Simulation: " + GetName() , 2);
 
-    QHash<int, ProjectInput *> pRawInputStore = Project::GetRawProjectInputsStore();
-
-    // First do the Rasters to find the union intersection
-    // RasterMeta
-    QHashIterator<int, ProjectInput *> rInputs(pRawInputStore);
-
-    while (rInputs.hasNext()) {
-        rInputs.next();
-        rInputs.value()->Prepare(GetExtentRectangle());
+    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+    while (i.hasNext()) {
+        i.next();
+        i.value()->GetProjectInput()->Prepare(GetRasterExtentMeta());
     }
 
 }

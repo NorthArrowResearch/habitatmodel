@@ -51,7 +51,6 @@ public:
 
     inline bool HasRasters(){ return m_HasRasters; }
 
-    inline RasterManager::RasterMeta * GetExtentRectangle(){ return m_RasterTemplateMeta; }
     /**
      * @brief GetRasterExtentMeta
      * @return
