@@ -25,7 +25,7 @@ void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRasterMeta)
 
     QString sOriginalRaster = GetSourceFilePath();
 
-    QString sFinalPath = Project::GetProjectRootPath()->filePath(GetPreparedRasterFileName());
+    QString sFinalPath = GetPreparedRasterFileName();
 
     // Make sure there's a directory and delete any duplicate files.
     Project::EnsureFile(sFinalPath);

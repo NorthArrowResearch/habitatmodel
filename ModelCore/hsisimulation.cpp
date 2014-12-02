@@ -93,9 +93,9 @@ void HSISimulation::Run(){
 
     while (i.hasNext()) {
         i.next();
-
+        SimulationHSCInput * pSimHSCInput= i.value();
         // Here is the curve we want
-        HSC * pHSC = i.value()->GetHSICurve()->GetHSC();
+        HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
         ProjectInput * pInput = i.value()->GetProjectInput();
@@ -104,7 +104,7 @@ void HSISimulation::Run(){
         // or coordinate pair HSC
         pHSC->ProcessRaster( pInput->GetPreparedRasterFileName(),
                              pInput->GetHSOutputRasterFileName(),
-                             GetRasterExtentMeta());
+                             GetRasterExtentMeta() );
 
     }
 

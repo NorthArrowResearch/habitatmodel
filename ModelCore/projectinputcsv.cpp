@@ -43,7 +43,7 @@ void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
     Project::GetOutputXML()->Log("Preparing CSV Input: " + GetName() , 3);
 
     QString sCSVFilePath = GetSourceFilePath();
-    QString sFinalRasterPath = Project::GetProjectRootPath()->filePath(GetPreparedRasterFileName());
+    QString sFinalRasterPath = GetPreparedRasterFileName();
 
     // Make sure there's a directory and delete any duplicate files.
     Project::EnsureFile(sFinalRasterPath);
