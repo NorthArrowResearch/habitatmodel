@@ -130,7 +130,7 @@ int HSISimulation::DetermineMethod(){
     else if ( sMethod.compare("Minimum") == 0 ){ return HSI_MINIMUM; }
     else if ( sMethod.compare("Weighted Mean") == 0 ){ return HSI_WEIGHTED_MEAN; }
     else {
-        throw std::runtime_error("ERROR:  Could not determine Method for Raster combination in HSI Simulation");
+        Project::ProjectError(SEVERITY_ERROR, "Could not determine Method for Raster combination in HSI Simulation");
     }
 }
 
