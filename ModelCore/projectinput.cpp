@@ -17,7 +17,7 @@ ProjectInput::ProjectInput(QDomElement * elProjectInput)
 
     Unit * pUnit = Project::GetUnit(elProjectInput, "UnitID");
 
-    Init(sCreatedOn, sProjectPathDir, pVariable, pSourceType, pUnit, "");
+    Init(sCreatedOn, sProjectPathDir, pVariable, pSourceType, pUnit, "", "");
 }
 
 ProjectInput::ProjectInput(const ProjectInput &source)
@@ -28,40 +28,22 @@ ProjectInput::ProjectInput(const ProjectInput &source)
          source.GetVariable(),
          source.GetSourceType(),
          source.GetUnit(),
-         source.GetUtilizationRasterFileName());
+         source.GetUtilizationRasterFileName(),
+         source.GetHSOutputRasterFileName());
 }
 
-
-QString ProjectInput::PrepareForInputFile(){
-
-    QString sFilePath = Project::GetProjectRootPath()->filePath(GetUtilizationRasterFileName());
-    QFileInfo sNewFileInfo(sFilePath);
-    QDir sNewDir = QDir(sNewFileInfo.absolutePath());
-
-    // Make a path if we don't have one already.
-    if (!sNewDir.exists()){
-      Project::GetOutputXML()->LogDebug("Dir Doesn't exist. Making' : " + sNewDir.absolutePath() , 3);
-      sNewDir.mkpath(".");
-    }
-
-    // Delete the file if it already exists.
-   if (sNewFileInfo.exists())
-        QFile::remove(sNewFileInfo.absoluteFilePath());
-
-   return sNewFileInfo.absoluteFilePath();
-
-}
 
 void ProjectInput::Init(QString sCreatedOn, QString sProjectPath, HMVariable * pVariable,
-                        NamedObjectWithID * pSourceType, Unit * pUnit, QString sUtilizationRasterFileName){
+                        NamedObjectWithID * pSourceType, Unit * pUnit, QString sUtilizationRasterFileName, QString sHSOutputFileName){
 
     m_screated_on = sCreatedOn;
-    //<ProjectPath>Inputs\DEM\DEM.tif</ProjectPath>
+
     m_sourcefilepath = sProjectPath;
 
     m_variable = pVariable;
     m_source_type = pSourceType;
     m_sUtilizationFileName = sUtilizationRasterFileName;
+    m_hsoutputfilepath = sHSOutputFileName;
     m_unit = pUnit;
 
 }

@@ -24,7 +24,11 @@ void ProjectInputRaster::Init(){
 void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
 
     QString sOriginalRaster = GetSourceFilePath();
-    QString sFinalPath = PrepareForInputFile();
+
+    QString sFinalPath = Project::GetProjectRootPath()->filePath(GetUtilizationRasterFileName());
+
+    // Make sure there's a directory and delete any duplicate files.
+    Project::EnsureFile(sFinalPath);
 
     Project::GetOutputXML()->LogDebug("Copying file' : " + sOriginalRaster + " to:  " + sFinalPath , 3);
 

@@ -210,6 +210,14 @@ public:
      * @return
      */
     static QString SanitizePath(QString sPath);
+
+    /**
+     * @brief EnsureFile makes sure there's a directory waiting for the file and deletes any
+     *        matching file to make room.
+     * @param sFilePath
+     */
+    static void EnsureFile(QString sFilePath);
+
 private:
 
     // Project Attributes

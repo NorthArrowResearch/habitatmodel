@@ -30,7 +30,6 @@ public:
     inline HSICurve * GetHSICurve() const { return m_hsi_curve; }
     inline Unit * GetUnit() const { return m_units; }
 
-
 private:
 
     ProjectInput * m_project_input;

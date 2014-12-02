@@ -321,6 +321,26 @@ QString Project::SanitizePath(QString sPath){
 }
 
 
+void Project::EnsureFile(QString sFilePath){
+
+    QFileInfo sNewFileInfo(sFilePath);
+    QDir sNewDir = QDir(sNewFileInfo.absolutePath());
+
+    // Make a path if we don't have one already.
+    if (!sNewDir.exists()){
+      Project::GetOutputXML()->LogDebug("Dir Doesn't exist. Making : " + sNewDir.absolutePath() , 3);
+      sNewDir.mkpath(".");
+    }
+
+    // Delete the file if it already exists.
+   if (sNewFileInfo.exists()){
+       Project::GetOutputXML()->LogDebug("File exists. Deleting : " + sNewFileInfo.fileName() , 3);
+       QFile::remove(sNewFileInfo.absoluteFilePath());
+   }
+
+
+}
+
 Project::~Project(){
 
     // Empty the survey store
