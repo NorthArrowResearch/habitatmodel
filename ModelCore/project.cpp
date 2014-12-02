@@ -122,14 +122,19 @@ void Project::LoadSimulations(){
 
         bool bHSIID=false, bFISID=false;
 
-        QDomNodeList elConfigHSIs = m_elConfig->elementsByTagName("HSI");
+        if (nSimulationHSIID > 0)
+            bHSIID = true;
+        else
+            bFISID = true;
 
-        for(int n= 0; n < elConfigHSIs.length(); n++){
-            QDomElement elHSI = elConfigHSIs.at(n).toElement();
-            int nTestHSIID = elHSI.firstChildElement("HSIID").text().toInt();
-            if (nSimulationHSIID == nTestHSIID)
-                bHSIID = true;
-        }
+//        QDomNodeList elConfigHSIs = m_elConfig->elementsByTagName("HSI");
+
+//        for(int n= 0; n < elConfigHSIs.length(); n++){
+//            QDomElement elHSI = elConfigHSIs.at(n).toElement();
+//            int nTestHSIID = elHSI.firstChildElement("HSIID").text().toInt();
+//            if (nSimulationHSIID == nTestHSIID)
+//                bHSIID = true;
+//        }
 
         Simulation * newSim;
 

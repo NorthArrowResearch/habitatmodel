@@ -16,9 +16,28 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 {
     m_HasRasters = false;
 
+    QDomElement * elHSI = NULL;
     // Now Create our HSI object if there is one.
-    QDomElement elHSI = Project::GetConfigDom()->firstChildElement("HSI");
-    m_hsiRef = new HSI(&elHSI);
+    int nSimulationHSIID = elSimulation->firstChildElement("HSIID").text().toInt();
+
+    QDomNodeList elConfigHSIs = Project::GetConfigDom()->elementsByTagName("HSI");
+
+    bool bHSIFound = false;
+    for(int n= 0; n < elConfigHSIs.length(); n++){
+        if (!bHSIFound){
+            elHSI = new QDomElement(elConfigHSIs.at(n).toElement());
+            int nTestHSIID = elHSI->firstChildElement("HSIID").text().toInt();
+            if (nSimulationHSIID == nTestHSIID)
+                bHSIFound = true;
+        }
+    }
+
+    if (elHSI == NULL)
+        Project::ProjectError(SEVERITY_ERROR, "Project is missing an HSI.");
+
+    m_hsiRef = new HSI(elHSI);
+
+    delete elHSI;
 
     QString sRawHSISourcePath = QDir::fromNativeSeparators(elSimulation->firstChildElement("HSISourcePath").text());
     m_HSISourcePath = Project::GetProjectRootPath()->filePath(Project::SanitizePath(sRawHSISourcePath));
@@ -122,6 +141,9 @@ void HSISimulation::Run(){
 }
 
 int HSISimulation::DetermineMethod(){
+    if (m_hsiRef->GetMethod() == NULL)
+        Project::ProjectError(SEVERITY_ERROR, "This HSI has no method.");
+
     QString sMethod = m_hsiRef->GetMethod()->GetName();
 
     if ( sMethod.compare("Product") == 0 ){ return HSI_PRODUCT; }
