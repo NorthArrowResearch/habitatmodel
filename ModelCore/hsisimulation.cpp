@@ -5,7 +5,7 @@
 #include "hsi.h"
 #include "project.h"
 #include "projectinput.h"
-#include "rastermeta.h"
+#include "rastermanager_interface.h"
 
 
 namespace HabitatModel{
@@ -86,55 +86,101 @@ void HSISimulation::Run(){
     uint nMethod = DetermineMethod();
 
     // Our final output Raster file name and path:
-    QString sNewFileName = GetHSISourcePath();
+    QString sHSIOutputFile = GetHSISourcePath();
 
-    // Get and loop over all the simulationHSCInputs
+    // Get and loop over all the simulationHSCInputs, comparing them to
+    // their curves along the way.
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
 
     while (i.hasNext()) {
         i.next();
 
         // Here is the curve we want
-        SimulationHSCInput * testa = i.value();
-        HSICurve * pCurve = testa->GetHSICurve();
+        SimulationHSCInput * pSimHSCInput = i.value();
         HSC * pHSC = i.value()->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
         ProjectInput * pInput = i.value()->GetProjectInput();
 
-        QString pProjectInputFile = pInput->GetInputFileName();
+        // Pure virtual function will decide if it's a categorical
+        // or coordinate pair HSC
+        pHSC->ProcessRaster( pInput->GetUtilizationRasterFileName(), //rename to prepareedsomething
+                             pInput->GetHSOutputRasterFileName(),
+                             GetRasterExtentMeta());
 
-        // Use: Project::GetRasterExtentMeta() for size.
-
-        //We don't know what kind of HSC it is so we need to type-check the value that gets spit back
-
-        // Then we do something like
-        // for rows
-            // for cols
-//               psOutput[j] = HSCInflection.GetHSValue(psInput[j]);
-        //WRite file.
-
-
-        // Create utilization raster
-        // gdal writeio (GDT_float64 blah blah blah)
     }
 
     // Combine Output Rasters using HSIMethodID in HSI
+    Project::GetOutputXML()->Log("Combining all output rasters into one: " + GetHSISourcePath() , 2);
 
-    // This might be done by opening a QHash of buffers, each responsible for a line of the
-    // Utilization raster. Then pass all the buffers into a function and let that functions
-    // Sort it out.
-
-        // Use: Project::GetRasterExtentMeta() for size.f
+    const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
+    GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
 
     // Reset the iterator to the begginning and run it again, this time working on outputs
     i.toFront();
     while (i.hasNext()) {
         i.next();
 
+//        // Rasterman doesn't use Qt so we need to step down to char *
+//        const QByteArray sInputQB = sInput.toLocal8Bit();
+//        GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sInputQB.data(), GA_ReadOnly);
+
+//        //allocate memory for reading from DEM and writing to hillshade
+//        QHash<int, HSCCoordinatePair *> m_coordinate_pairs;
+//        unsigned char *pReadBuffer = (unsigned char*) CPLMalloc(sizeof(int)*sOutputRasterMeta->GetCols());
+
+//        //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
+//        for (int i=1; i < sOutputRasterMeta->GetRows() - 1; i++)
+//        {
+//            //assign no data for first and last positions in the row
+//            pReadBuffer[0] = sOutputRasterMeta->GetNoDataValue(), pReadBuffer[ sOutputRasterMeta->GetCols() - 1 ] = sOutputRasterMeta->GetNoDataValue();
+
+//            for (int j=1; j < sOutputRasterMeta->GetCols() - 1; j++)
+//            {
+//                pReadBuffer[j] =  CombineUsingMethod();
+
+//                Select Case aSim.HSIRow.HSIMethodID
+//                    Case 44 ' Arithmetic Mean
+//                        fHSIValue += aValueRow.HSCValue
+//                    Case 45 ' Geometric(Mean)
+//                        fHSIValue *= aValueRow.HSCValue
+//                    Case 47 ' Minimum
+//                        If nCount = 0 OrElse fHSIValue > aValueRow.HSCValue Then
+//                            fHSIValue = aValueRow.HSCValue
+//                        End If
+//                    Case 46 ' Product
+//                        fHSIValue *= aValueRow.HSCValue
+//                    Case 48 ' Weighted (Mean)
+//                        fHSIValue += aValueRow.HSCValue * aValueRow.HSICurvesRow.Weight
+//                    Case Else
+//                        Dim ex As New Exception("Unrecognized HSI method")
+//                        ex.Data.Add("HSI Method ID", aSim.HSIRow.HSIMethodID.ToString)
+//                        Throw ex
+//                End Select
+
+
+//            }
+//            pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
+//                                                  sOutputRasterMeta->GetCols(),1,
+//                                                  pReadBuffer,
+//                                                  sOutputRasterMeta->GetCols(),1,
+//                                                  sOutputRasterMeta->GetGDALDataType(),
+//                                                  0,0 );
+//        }
+        //close datasets
+//        GDALClose(pInputDS);
+
+
+//        CPLFree(pReadBuffer);
+//        pReadBuffer = NULL;
+
     }
 
+    GDALClose(pOutputDS);
+
+
 }
+
 
 int HSISimulation::DetermineMethod(){
     if (m_hsiRef->GetMethod() == NULL)

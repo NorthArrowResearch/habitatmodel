@@ -27,6 +27,13 @@ public:
      */
     double GetHSValue(double fInputValue);
 
+    /**
+     * @brief ProcessRaster
+     * @param sInput
+     * @param sOutput
+     * @param sOutputRasterMeta
+     */
+    void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta *sOutputRasterMeta);
 private:
 
     // We have some stores of objects related to this

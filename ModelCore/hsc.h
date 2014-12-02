@@ -3,6 +3,7 @@
 
 #include <QString>
 #include "namedobject.h"
+#include "rastermeta.h"
 
 namespace HabitatModel{
 
@@ -24,6 +25,7 @@ public:
      */
     HSC(QDomElement *elHSC);
 
+    virtual void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta) = 0;
 
 private:
     NamedObjectWithID * m_source;

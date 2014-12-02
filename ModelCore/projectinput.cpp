@@ -37,9 +37,7 @@ void ProjectInput::Init(QString sCreatedOn, QString sProjectPath, HMVariable * p
                         NamedObjectWithID * pSourceType, Unit * pUnit, QString sUtilizationRasterFileName, QString sHSOutputFileName){
 
     m_screated_on = sCreatedOn;
-
     m_sourcefilepath = sProjectPath;
-
     m_variable = pVariable;
     m_source_type = pSourceType;
     m_sUtilizationFileName = sUtilizationRasterFileName;

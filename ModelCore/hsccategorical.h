@@ -29,6 +29,13 @@ public:
      */
     inline void AddCategory(int nHSCID, HSCCategory * pHSCCategory){ m_categories.insert(nHSCID, pHSCCategory);  }
 
+    /**
+     * @brief ProcessRaster
+     * @param sInput
+     * @param sOutput
+     * @param sOutputRasterMeta
+     */
+    void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta *sOutputRasterMeta);
 private:
 
     QHash<int, HSCCategory *> m_categories;

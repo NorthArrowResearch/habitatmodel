@@ -46,7 +46,7 @@ void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
     QString sFinalRasterPath = Project::GetProjectRootPath()->filePath(GetUtilizationRasterFileName());
 
     // Make sure there's a directory and delete any duplicate files.
-    Project::EnsureFile(sCSVFilePath);
+    Project::EnsureFile(sFinalRasterPath);
 
     // Rasterman doesn't support Qstring so we have to step everything down to char*
     const QByteArray qbCSVFilePath = sCSVFilePath.toLocal8Bit();
