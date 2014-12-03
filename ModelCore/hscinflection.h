@@ -25,7 +25,7 @@ public:
      * @param fInputValue
      * @return
      */
-    double GetHSValue(double fInputValue);
+    double GetHSValue(double fInputValue, double dNoData);
 
     /**
      * @brief ProcessRaster

@@ -109,9 +109,6 @@ void HSISimulation::Run(){
 
     }
 
-    // ------------------   REMOVE ME WHEN THE ABOVE WORKS   ----------------------
-    return;
-
     /**
      *
      *  Combine Output Rasters using HSIMethodID in HSI
@@ -121,12 +118,13 @@ void HSISimulation::Run(){
     Project::GetOutputXML()->Log("Combining all output rasters into one: " + GetHSISourcePath() , 2);
 
     //Method of combination
-    uint nMethod = DetermineMethod();
+    int nMethod = DetermineMethod();
 
     // Our final output Raster file name and path:
     QString sHSIOutputFile = GetHSISourcePath();
     Project::EnsureFile(sHSIOutputFile);
 
+    // Step it down to char* for Rasterman and create+open an output file
     const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
 
@@ -154,6 +152,8 @@ void HSISimulation::Run(){
         dInBuffers.insert(i.key(), pReadBuffer);
     }
 
+    double dNoDataVal = GetRasterExtentMeta()->GetNoDataValue();
+
     //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
     for (int i=1; i < GetRasterExtentMeta()->GetRows() - 1; i++)
     {
@@ -180,19 +180,19 @@ void HSISimulation::Run(){
 
             switch (nMethod) {
             case HSI_PRODUCT:
-                pReadBuffer[j] = HSICombineProduct(dCellContents);
+                pReadBuffer[j] = HSICombineProduct(dCellContents, dNoDataVal);
                 break;
             case HSI_ARITHMETIC_MEAN:
-                pReadBuffer[j] = HSIArithmeticMean(dCellContents);
+                pReadBuffer[j] = HSIArithmeticMean(dCellContents, dNoDataVal);
                 break;
             case HSI_GEOMETRIC_MEAN:
-                pReadBuffer[j] = HSIGeometricMean(dCellContents);
+                pReadBuffer[j] = HSIGeometricMean(dCellContents, dNoDataVal);
                 break;
             case HSI_MINIMUM:
-                pReadBuffer[j] = HSIMinimum(dCellContents);
+                pReadBuffer[j] = HSIMinimum(dCellContents, dNoDataVal);
                 break;
             case HSI_WEIGHTED_MEAN:
-                pReadBuffer[j] = HSIWeightedMean(dCellContents);
+                pReadBuffer[j] = HSIWeightedMean(dCellContents, dNoDataVal);
                 break;
             default:
                 break;
@@ -248,9 +248,10 @@ int HSISimulation::DetermineMethod(){
     else if ( sMethod.compare("Geometric Mean") == 0 ){ return HSI_GEOMETRIC_MEAN; }
     else if ( sMethod.compare("Minimum") == 0 ){ return HSI_MINIMUM; }
     else if ( sMethod.compare("Weighted Mean") == 0 ){ return HSI_WEIGHTED_MEAN; }
-    else {
-        Project::ProjectError(SEVERITY_ERROR, "Could not determine Method for Raster combination in HSI Simulation");
-    }
+
+    Project::ProjectError(SEVERITY_ERROR, "Could not determine Method for Raster combination in HSI Simulation");
+    return -1;
+
 }
 
 void HSISimulation::Clean(){
@@ -283,42 +284,62 @@ void HSISimulation::LoadInputs(){
     }
 }
 
-double HSISimulation::HSICombineProduct(QHash<int, double> dCellContents){
+double HSISimulation::HSICombineProduct(QHash<int, double> dCellContents, double dNoDataVal){
     double dSum = 0;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
         x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
         dSum += x.value();
     }
     return dSum;
 }
 
-double HSISimulation::HSIArithmeticMean(QHash<int, double> dCellContents){
+double HSISimulation::HSIArithmeticMean(QHash<int, double> dCellContents, double dNoDataVal){
     double dSum = 0;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
         x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
         dSum += x.value();
     }
     return dSum / dCellContents.size();
 }
 
-double HSISimulation::HSIGeometricMean(QHash<int, double> dCellContents){
+double HSISimulation::HSIGeometricMean(QHash<int, double> dCellContents, double dNoDataVal){
     double dProd = 0;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
         x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
         dProd *= x.value();
     }
-    return pow(dProd, 1/dCellContents.size());
+    return pow(dProd, 1 / dCellContents.size() );
 }
 
-double HSISimulation::HSIMinimum(QHash<int, double> dCellContents){
+double HSISimulation::HSIMinimum(QHash<int, double> dCellContents, double dNoDataVal){
     double dMin = 0;
     bool first = true;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
         x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
         if (first){
             first = false;
             dMin = x.value();
@@ -329,7 +350,7 @@ double HSISimulation::HSIMinimum(QHash<int, double> dCellContents){
     return dMin;
 }
 
-double HSISimulation::HSIWeightedMean(QHash<int, double> dCellContents){
+double HSISimulation::HSIWeightedMean(QHash<int, double> dCellContents, double dNoDataVal){
     Project::GetOutputXML()->LogDebug("WEIGHTED MEAN NOT YET IMPLEMENTED!", 3);
     return 5.0;
 }

@@ -52,7 +52,7 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
         // Loop through columns
         for (int j=1; j < sRasterCols - 1; j++)
         {
-            pReadBuffer[j] =  GetHSValue(pReadBuffer[j]);
+            pReadBuffer[j] =  GetHSValue(pReadBuffer[j], sOutputRasterMeta->GetNoDataValue() );
         }
         pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
                                               sRasterCols,1,
@@ -76,7 +76,7 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
  * closest after/above the desired value. Then use these before and after
  * values to interpolate the desired habitat suitability value.
  */
-double HSCInflection::GetHSValue(double fInputValue)
+double HSCInflection::GetHSValue(double fInputValue, double dNoData)
 {
     HSCCoordinatePair * pCoordBefore = NULL;
     double fDistanceBefore;
@@ -121,7 +121,7 @@ double HSCInflection::GetHSValue(double fInputValue)
     }
 
     // Check if we have a before and after value, then interpolate
-    double HSValue = 0;
+    double HSValue = dNoData;
     if (bBefore && bAfter)
     {
         HSValue = pCoordBefore->HSValue() + ((pCoordAfter->HSValue() - pCoordBefore->HSValue()) * ((fInputValue - pCoordBefore->XValue()) / (pCoordAfter->XValue() - pCoordBefore->XValue())));

@@ -71,11 +71,11 @@ private:
     QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
 
     // Here are the combination functions
-    double HSICombineProduct(QHash<int, double> dCellContents);
-    double HSIArithmeticMean(QHash<int, double> dCellContents);
-    double HSIGeometricMean(QHash<int, double> dCellContents);
-    double HSIMinimum(QHash<int, double> dCellContents);
-    double HSIWeightedMean(QHash<int, double> dCellContents);
+    double HSICombineProduct(QHash<int, double> dCellContents, double dNoDataVal);
+    double HSIArithmeticMean(QHash<int, double> dCellContents, double dNoDataVal);
+    double HSIGeometricMean(QHash<int, double> dCellContents, double dNoDataVal);
+    double HSIMinimum(QHash<int, double> dCellContents, double dNoDataVal);
+    double HSIWeightedMean(QHash<int, double> dCellContents, double dNoDataVal);
 };
 
 
