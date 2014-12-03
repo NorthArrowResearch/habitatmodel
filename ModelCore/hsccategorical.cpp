@@ -37,24 +37,26 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sOutputQB.data(), sOutputRasterMeta);
 
     // Allocate memory for reading from DEM
-    unsigned char *pReadBuffer = (unsigned char*) CPLMalloc(sizeof(int)*sRasterCols);
+    int * pReadBuffer = (int * ) CPLMalloc(sizeof(int)*sRasterCols);
 
     // Loop through each DEM cell
-    for (int i=1; i < sOutputRasterMeta->GetRows() - 1; i++)
+    for (int i=0; i < sOutputRasterMeta->GetRows(); i++)
     {
         // Read the row
         // WARNING: I'm going to try reading as a byte. if this doesn't cast doubles properly
         // Then do it manually.
-        pInputDS->GetRasterBand(1)->RasterIO(GF_Read, 0,  i,
+        pInputDS->GetRasterBand(1)->RasterIO( GF_Read, 0,  i,
                                            sRasterCols, 1,
                                            pReadBuffer,
                                            sRasterCols, 1,
-                                           GDT_Byte, 0, 0);
+                                           GDT_Byte, 0, 0 );
 
         // Loop through columns
-        for (int j=1; j < sRasterCols - 1; j++)
+        for (int j=0; j < sRasterCols; j++)
         {
-            pReadBuffer[j] =  GetHSValue(pReadBuffer[j]);
+            if (pReadBuffer[j] != sOutputRasterMeta->GetNoDataValue()) {
+                pReadBuffer[j] =  GetHSValue(pReadBuffer[j], sOutputRasterMeta->GetNoDataValue());
+            }
         }
         pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
                                               sRasterCols,1,
@@ -74,7 +76,7 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
 
 }
 
-double HSCCategorical::GetHSValue(int nCategory)
+double HSCCategorical::GetHSValue(int nCategory, double dNoDataVal)
 {
     QHashIterator<int, HSCCategory *> m(m_categories);
     while (m.hasNext()) {
@@ -84,7 +86,7 @@ double HSCCategorical::GetHSValue(int nCategory)
             return m.value()->GetHSValue();
     }
 
-    return 0;
+    return dNoDataVal;
 }
 
 } // HabitatModel

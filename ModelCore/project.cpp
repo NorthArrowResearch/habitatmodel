@@ -257,11 +257,11 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
                 HSC * p_newHSC;
                 switch (nType) {
                 case HSC_CATEGORICAL:
-                    p_newHSC = new HSCInflection(&elHSC);
+                    p_newHSC = new HSCCategorical(&elHSC);
                     m_HSC_store.insert(nHSCID, p_newHSC);
                     break;
                 case HSC_INFLECTION:
-                    p_newHSC = new HSCCategorical(&elHSC);
+                    p_newHSC = new HSCInflection(&elHSC);
                     m_HSC_store.insert(nHSCID, p_newHSC);
                     break;
                 }

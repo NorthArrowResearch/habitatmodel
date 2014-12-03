@@ -38,7 +38,7 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sOutputQB.data(), sOutputRasterMeta);
 
     // Allocate memory for reading from DEM
-    unsigned char *pReadBuffer = (unsigned char*) CPLMalloc(sizeof(double)*sRasterCols);
+    double * pReadBuffer = (double*) CPLMalloc(sizeof(double)*sRasterCols);
 
     // Loop through each DEM cell
     for (int i=1; i < sOutputRasterMeta->GetRows() - 1; i++)

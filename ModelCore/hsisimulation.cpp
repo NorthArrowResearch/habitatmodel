@@ -109,6 +109,9 @@ void HSISimulation::Run(){
 
     }
 
+    // ------------------   REMOVE ME WHEN THE ABOVE WORKS   ----------------------
+    return;
+
     /**
      *
      *  Combine Output Rasters using HSIMethodID in HSI
@@ -122,6 +125,7 @@ void HSISimulation::Run(){
 
     // Our final output Raster file name and path:
     QString sHSIOutputFile = GetHSISourcePath();
+    Project::EnsureFile(sHSIOutputFile);
 
     const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
@@ -220,8 +224,6 @@ void HSISimulation::Run(){
         CPLFree(qhbuff.value());
         delete qhbuff.value();
     }
-
-
 }
 
 void HSISimulation::PrepareInputs(){
@@ -233,7 +235,6 @@ void HSISimulation::PrepareInputs(){
         i.next();
         i.value()->GetProjectInput()->Prepare(GetRasterExtentMeta());
     }
-
 }
 
 int HSISimulation::DetermineMethod(){
