@@ -8,8 +8,11 @@
 #include <QHash>
 #include <QDomDocument>
 #include "namedobject.h"
-#include "rastermeta.h"
 #include "projectinput.h"
+
+namespace RasterManager{
+    class RasterMeta;
+}
 
 namespace HabitatModel{
 
@@ -27,7 +30,7 @@ public:
     Simulation(QDomElement *elSimulation);
 
     virtual inline ~Simulation(){
-        delete m_RasterTemplateMeta;
+        m_RasterTemplateMeta = NULL;
     }
 
     /**

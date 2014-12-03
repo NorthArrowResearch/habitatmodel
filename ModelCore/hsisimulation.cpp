@@ -5,6 +5,7 @@
 #include "hsi.h"
 #include "math.h"
 #include "project.h"
+#include "gdal_priv.h"
 #include "projectinput.h"
 #include "rastermanager_interface.h"
 
@@ -216,14 +217,14 @@ void HSISimulation::Run(){
     while (qhds.hasNext()) {
         qhds.next();
         GDALClose(qhds.value());
-        delete qhds.value();
     }
+    dDatasets.clear();
     QHashIterator<int, char *> qhbuff(dInBuffers);
     while (qhbuff.hasNext()) {
         qhbuff.next();
         CPLFree(qhbuff.value());
-        delete qhbuff.value();
     }
+    dInBuffers.clear();
 }
 
 void HSISimulation::PrepareInputs(){
@@ -352,7 +353,12 @@ double HSISimulation::HSIMinimum(QHash<int, double> dCellContents, double dNoDat
 
 double HSISimulation::HSIWeightedMean(QHash<int, double> dCellContents, double dNoDataVal){
     Project::GetOutputXML()->LogDebug("WEIGHTED MEAN NOT YET IMPLEMENTED!", 3);
-    return 5.0;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        return dNoDataVal;
+        x.next();
+    }
+    return dNoDataVal;
 }
 
 HSISimulation::~HSISimulation(){

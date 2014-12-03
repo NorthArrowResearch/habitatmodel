@@ -3,8 +3,6 @@
 
 #include "simulation.h"
 #include "hsi.h"
-#include "rastermeta.h"
-
 namespace HabitatModel{
 
 enum HSIMethods {

@@ -3,7 +3,10 @@
 
 #include <QString>
 #include "namedobject.h"
-#include "rastermeta.h"
+
+namespace RasterManager{
+    class RasterMeta;
+}
 
 namespace HabitatModel{
 

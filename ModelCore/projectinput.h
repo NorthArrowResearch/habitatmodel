@@ -4,9 +4,12 @@
 #include "unit.h"
 #include "hmvariable.h"
 #include "namedobject.h"
-#include "rastermeta.h"
 #include <QDir>
 #include <QString>
+
+namespace RasterManager{
+    class RasterMeta;
+}
 
 namespace HabitatModel{
 
@@ -16,7 +19,7 @@ enum ProjectInputTypeCodes {
     PROJECT_INPUT_VECTOR = 2,
     PROJECT_INPUT_CSV = 3
 };
-
+class RasterMeta;
 class ProjectInputVector;
 class ProjectInputRaster;
 class ProjectInputCSV;

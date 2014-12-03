@@ -63,14 +63,9 @@ HEADERS +=\
     xmlfile.h \
     habitat_exception.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
-
 
 win32 {
     ## There's some trickiness in windows 32 vs 64-bits
@@ -110,6 +105,8 @@ unix:!macx {
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
+    target.path = /usr/lib
+    INSTALLS += target
 
     # GDAL is required
     LIBS += -L/usr/lib -lgdal
