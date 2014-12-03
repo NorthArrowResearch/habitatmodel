@@ -21,6 +21,7 @@ HSCInflection::~HSCInflection()
         m.next();
         delete m.value();
     }
+    m_coordinate_pairs.clear();
 }
 
 void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
@@ -121,6 +122,7 @@ double HSCInflection::GetHSValue(double fInputValue, double dNoData)
     }
 
     // Check if we have a before and after value, then interpolate
+    // Return noDataVal if nothing is found.
     double HSValue = dNoData;
     if (bBefore && bAfter)
     {

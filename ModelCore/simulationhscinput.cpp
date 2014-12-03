@@ -55,10 +55,8 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
 
             bProjectVariableFound = true;
 
-            std::string sTitle = elProjectVariable.firstChildElement("Title").text().toStdString();
-
             // Set this object's name and ID.
-            SetName(sTitle.c_str());
+            SetName(elProjectVariable.firstChildElement("Title").text());
             SetID(nProjectVarID);
 
             m_units = Project::GetUnit( elProjectVariable.firstChildElement("UnitsID").text().toInt() );

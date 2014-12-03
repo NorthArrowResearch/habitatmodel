@@ -32,6 +32,7 @@ HSI::~HSI(){
         i.next();
         delete i.value();
     }
+    m_curves.clear();
 }
 
 void HSI::LoadCurves(){

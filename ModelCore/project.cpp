@@ -213,7 +213,8 @@ void Project::LoadLookupTable(){
         QDomNode elListItem = elListItems.at(n);
         int nListItemID = elListItem.firstChildElement("ItemID").text().toInt();
         QString sname = elListItem.firstChildElement("ItemName").text();
-        m_lookup_table.insert(nListItemID, new NamedObjectWithID(sname.toStdString().c_str(), nListItemID));
+        const QByteArray QBsname = sname.toLocal8Bit();
+        m_lookup_table.insert(nListItemID, new NamedObjectWithID(QBsname.data(), nListItemID));
     }
 
 }
@@ -349,6 +350,7 @@ Project::~Project(){
         i.next();
         delete i.value();
     }
+    m_hmvariable_store.clear();
 
     // Empty the unit store
     QHashIterator<int, Unit *> j(m_unit_store);
@@ -356,6 +358,7 @@ Project::~Project(){
         j.next();
         delete j.value();
     }
+    m_unit_store.clear();
 
     // Empty the HSC store
     QHashIterator<int, HSC *> k(m_HSC_store);
@@ -363,6 +366,7 @@ Project::~Project(){
         k.next();
         delete k.value();
     }
+    m_HSC_store.clear();
 
     // Empty the lookup table store
     QHashIterator<int, NamedObjectWithID *> l(m_lookup_table);
@@ -370,6 +374,7 @@ Project::~Project(){
         l.next();
         delete l.value();
     }
+    m_lookup_table.clear();
 
     // Empty the project input store store
     QHashIterator<int, ProjectInput *> m(m_raw_project_inputs_store);
@@ -377,6 +382,7 @@ Project::~Project(){
         m.next();
         delete m.value();
     }
+    m_raw_project_inputs_store.clear();
 
     // Empty the Simulation store
     QHashIterator<int, Simulation *> n(m_simulation_store);
@@ -384,6 +390,7 @@ Project::~Project(){
         n.next();
         delete n.value();
     }
+    m_simulation_store.clear();
 
     delete m_ProjectRootDir;
     delete m_XMLInput;

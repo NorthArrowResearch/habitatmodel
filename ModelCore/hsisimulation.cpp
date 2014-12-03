@@ -73,9 +73,9 @@ void HSISimulation::AddRastersToExtents(){
         if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
 
             Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-
-            std::string sRasterPath = i.value()->GetProjectInput()->GetSourceFilePath().toStdString();
-            RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(sRasterPath.c_str());
+            QString sRasterPath = pInput->GetSourceFilePath();
+            const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
+            RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
             RasterUnion(pRasterMeta);
             delete pRasterMeta;
         }
@@ -368,6 +368,9 @@ HSISimulation::~HSISimulation(){
         i.next();
         delete i.value();
     }
+    m_simulation_hsc_inputs.clear();
+
+    delete m_hsiRef;
 
 }
 

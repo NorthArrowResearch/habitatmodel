@@ -9,10 +9,9 @@
 #include <QDomDocument>
 #include "namedobject.h"
 #include "projectinput.h"
-
-namespace RasterManager{
-    class RasterMeta;
-}
+// We need a complete type in order to destruct RasterMeta.
+// Find a way to make this work in windows without removing this include
+#include "rastermeta.h"
 
 namespace HabitatModel{
 
@@ -30,7 +29,7 @@ public:
     Simulation(QDomElement *elSimulation);
 
     virtual inline ~Simulation(){
-        m_RasterTemplateMeta = NULL;
+        delete m_RasterTemplateMeta;
     }
 
     /**

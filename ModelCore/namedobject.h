@@ -50,7 +50,7 @@ public:
      * @brief SetName
      * @param sName
      */
-    inline void SetName(const char * sName){ m_sName = sName; }
+    inline void SetName(QString sName){ m_sName = sName; }
 
 
 protected:
