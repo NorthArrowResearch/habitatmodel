@@ -14,6 +14,12 @@ public:
      */
     HSCCoordinatePair(QDomElement *elCoordinatePair);
 
+    /**
+     * @brief HSCCoordinatePair
+     * @param pInput
+     */
+    HSCCoordinatePair(HSCCoordinatePair *pInput);
+
     ~HSCCoordinatePair();
 
     /**
@@ -27,6 +33,10 @@ public:
      * @return
      */
     inline double HSValue() { return m_fHSVal;}
+    /**
+     * @brief HSCCoordinatePair
+     * @param pInput
+     */
 
 private:
     double m_fXVal;

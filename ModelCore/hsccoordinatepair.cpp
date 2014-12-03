@@ -17,6 +17,11 @@ HSCCoordinatePair::HSCCoordinatePair(QDomElement * elCoordinatePair)
     m_fHSVal = elCoordinatePair->firstChildElement("HSValue").text().toDouble();
 }
 
+HSCCoordinatePair::HSCCoordinatePair(HSCCoordinatePair * pInput){
+    m_fHSVal = pInput->HSValue();
+    m_fXVal = pInput->XValue();
+}
+
 HSCCoordinatePair::~HSCCoordinatePair(){
 
 }

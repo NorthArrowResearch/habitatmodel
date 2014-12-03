@@ -10,6 +10,12 @@ HSICurve::HSICurve(QDomElement * elHSICurve)
     m_hsc = Project::GetHSC(elHSICurve, "HSCID");
 }
 
+
+HSICurve::~HSICurve(){
+
+
+}
+
 }
 
 //    Example Node:

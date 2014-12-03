@@ -18,7 +18,9 @@ public:
      * @param nHSCID
      * @param pHSCCoordPair
      */
-    inline void AddCoordinatePair(int nHSCID, HSCCoordinatePair * pHSCCoordPair){ m_coordinate_pairs.insert(nHSCID, pHSCCoordPair);  }
+    inline void AddCoordinatePair(int nHSCID, HSCCoordinatePair * pHSCCoordPair){
+        m_coordinate_pairs.insert(nHSCID, new HSCCoordinatePair(pHSCCoordPair));
+    }
 
     /**
      * @brief GetHSValue: Gets the habitat utilization value for the specified input variable value

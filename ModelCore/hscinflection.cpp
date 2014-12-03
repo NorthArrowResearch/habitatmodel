@@ -1,11 +1,9 @@
 #include "hscinflection.h"
-
+#include "project.h"
 #include "hsccoordinatepair.h"
 #include "rastermanager_interface.h"
 #include <QDomElement>
 #include <QHashIterator>
-#include "project.h"
-#include "gdal_priv.h"
 
 namespace HabitatModel {
 

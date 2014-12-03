@@ -4,7 +4,6 @@
 #include <QDomElement>
 #include <QHashIterator>
 #include "rastermanager_interface.h"
-#include "gdal_priv.h"
 
 namespace HabitatModel {
 
@@ -20,6 +19,7 @@ HSCCategorical::~HSCCategorical()
         m.next();
         delete m.value();
     }
+    m_categories.clear();
 }
 
 

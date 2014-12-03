@@ -27,11 +27,6 @@ HSI::HSI(QDomElement * elHSI) : NamedObjectWithID(elHSI, "Title", "HSIID")
 HSI::~HSI(){
 
     // Empty the HSI curve store
-    QHashIterator<int, HSICurve *> i(m_curves);
-    while (i.hasNext()) {
-        i.next();
-        delete i.value();
-    }
     m_curves.clear();
 }
 

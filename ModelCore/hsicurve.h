@@ -17,6 +17,7 @@ public:
      * @param elHSICurve the Dom node containing the HSI Curve
      */
     HSICurve(QDomElement *elHSICurve);
+    ~HSICurve();
 
     inline double GetWeight() { return m_fWeight;}
     inline HSC * GetHSC(){ return m_hsc; }

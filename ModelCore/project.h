@@ -61,7 +61,7 @@ public:
      * @param nType
      * @return
      */
-    HSC *LoadHSC(int nNewHSCID, int nType);
+    HSC * LoadHSC(int nNewHSCID, int nType);
 
     /**
      * @brief GetConfigDom

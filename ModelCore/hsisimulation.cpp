@@ -5,9 +5,9 @@
 #include "hsi.h"
 #include "math.h"
 #include "project.h"
-#include "gdal_priv.h"
 #include "projectinput.h"
 #include "rastermanager_interface.h"
+#include "gdal_priv.h"
 
 
 namespace HabitatModel{
@@ -125,10 +125,6 @@ void HSISimulation::Run(){
     QString sHSIOutputFile = GetHSISourcePath();
     Project::EnsureFile(sHSIOutputFile);
 
-    // Step it down to char* for Rasterman and create+open an output file
-    const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
-    GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
-
     static QHash<int, GDALDataset *> dDatasets;
     QHash<int, char *> dInBuffers;
 
@@ -154,6 +150,11 @@ void HSISimulation::Run(){
     }
 
     double dNoDataVal = GetRasterExtentMeta()->GetNoDataValue();
+
+    // Step it down to char* for Rasterman and create+open an output file
+    const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
+    GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
+
 
     //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
     for (int i=1; i < GetRasterExtentMeta()->GetRows() - 1; i++)
@@ -207,8 +208,8 @@ void HSISimulation::Run(){
                                               GetRasterExtentMeta()->GetGDALDataType(),
                                               0,0 );
     }
-
-    GDALClose(pOutputDS);
+    if ( pOutputDS != NULL)
+        GDALClose(pOutputDS);
     CPLFree(pReadBuffer);
     pReadBuffer = NULL;
 
