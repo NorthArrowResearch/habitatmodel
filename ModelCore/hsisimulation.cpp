@@ -6,6 +6,9 @@
 #include "math.h"
 #include "project.h"
 #include "projectinput.h"
+#include "projectinputraster.h"
+#include "projectinputcsv.h"
+#include "projectinputvector.h"
 #include "rastermanager_interface.h"
 #include "gdal_priv.h"
 
@@ -129,7 +132,6 @@ void HSISimulation::Run(){
     QHash<int, char *> dInBuffers;
 
     int sRasterCols = GetRasterExtentMeta()->GetCols();
-    unsigned char * pReadBuffer = (unsigned char*) CPLMalloc(sizeof(double) * sRasterCols);
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
     i.toFront();
@@ -154,10 +156,10 @@ void HSISimulation::Run(){
     // Step it down to char* for Rasterman and create+open an output file
     const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
-
+    double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
     //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
-    for (int i=1; i < GetRasterExtentMeta()->GetRows() - 1; i++)
+    for (int i=0; i < GetRasterExtentMeta()->GetRows(); i++)
     {
         // Populate the buffers with a new line from each file.
         QHashIterator<int, GDALDataset *> QHDSIterator(dDatasets);
@@ -171,7 +173,7 @@ void HSISimulation::Run(){
                                                GDT_Float64, 0, 0);
         }
 
-        for (int j=1; j < sRasterCols - 1; j++)
+        for (int j=0; j < sRasterCols; j++)
         {
             QHash<int, double> dCellContents;
             QHashIterator<int, char *> QHIBIterator(dInBuffers);
@@ -364,6 +366,7 @@ double HSISimulation::HSIWeightedMean(QHash<int, double> dCellContents, double d
 
 HSISimulation::~HSISimulation(){
     // Empty HSC input store
+
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
     while (i.hasNext()) {
         i.next();

@@ -1,11 +1,10 @@
 #ifndef PROJECTINPUT_H
 #define PROJECTINPUT_H
 
-#include "unit.h"
-#include "hmvariable.h"
-#include "namedobject.h"
 #include <QDir>
 #include <QString>
+#include "namedobject.h"
+
 
 namespace RasterManager{
     class RasterMeta;
@@ -23,6 +22,8 @@ class RasterMeta;
 class ProjectInputVector;
 class ProjectInputRaster;
 class ProjectInputCSV;
+class Unit;
+class HMVariable;
 
 class ProjectInput : public NamedObjectWithID
 {
@@ -38,6 +39,19 @@ public:
      * @brief ~ProjectInput
      */
     virtual inline ~ProjectInput(){ }
+
+    /**
+     * @brief Prepare
+     * @param TemplateRaster
+     * @param NewPath
+     */
+    virtual void Prepare(RasterManager::RasterMeta * TemplateRasterMeta) = 0;
+
+    /**
+     * @brief SetValueFieldName
+     * @param sValueField
+     */
+    virtual void SetValueFieldName(QString sValueField ) = 0;
 
     /**
      * @brief ProjectInput
@@ -122,16 +136,6 @@ public:
      * @param sOutputFile
      */
     inline void SetHSOutputRasterFileName(QString sOutputFile) {  m_hsoutputfilepath = sOutputFile; }
-
-
-    /**
-     * @brief Prepare
-     * @param TemplateRaster
-     * @param NewPath
-     */
-    virtual void Prepare(RasterManager::RasterMeta * TemplateRasterMeta) = 0;
-
-    virtual void SetValueFieldName(QString sValueField ) = 0;
 
 private:
 

@@ -3,6 +3,7 @@
 
 #include "simulation.h"
 #include "hsi.h"
+
 namespace HabitatModel{
 
 enum HSIMethods {

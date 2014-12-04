@@ -3,7 +3,7 @@
 #include "simulation.h"
 #include "hsi.h"
 #include "project.h"
-#include "rastermeta.h"
+#include "rastermanager_interface.h"
 
 namespace HabitatModel{
 
@@ -49,6 +49,10 @@ Simulation::Simulation(QDomElement * elSimulation)
 
     Init();
 
+}
+
+Simulation::~Simulation() {
+    delete m_RasterTemplateMeta;
 }
 
 void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){

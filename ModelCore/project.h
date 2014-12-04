@@ -6,20 +6,18 @@
 #include <QDir>
 
 #include "habitatmodel_global.h"
+#include "namedobject.h"
 #include "habitat_exception.h"
-#include "hmvariable.h"
-#include "unit.h"
-#include "hsc.h"
-#include "projectinputcsv.h"
-#include "projectinputraster.h"
-#include "projectinputvector.h"
 #include "projectinput.h"
-#include "simulation.h"
 #include "habitat_interface.h"
 #include "xmlfile.h"
-#include "namedobject.h"
 
 namespace HabitatModel{
+
+class Simulation;
+class HSC;
+class Unit;
+class HMVariable;
 
 class DLL_API Project
 {

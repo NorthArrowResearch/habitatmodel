@@ -22,12 +22,29 @@ public:
     inline ~ProjectInputVector(){}
 
     /**
+     * @brief Clone
+     * @return
+     */
+    inline ProjectInput * Clone(){ return new ProjectInputVector(*this); }
+
+    /**
+     * @brief SetValueFieldName
+     * @param sValueField
+     */
+    inline void SetValueFieldName(QString sValueField){ return; }
+
+    /**
+     * @brief Prepare
+     * @param TemplateRaster
+     */
+    void Prepare(RasterManager::RasterMeta * TemplateRaster);
+
+
+    /**
      * @brief operator =
      * @param source
      */
     void operator =(ProjectInputVector &source);
-
-    inline ProjectInput * Clone(){ return new ProjectInputVector(*this); }
 
     /**
      * @brief ProjectInputCSV
@@ -43,17 +60,7 @@ public:
      */
     QString getValueField();
 
-    /**
-     * @brief SetValueFieldName
-     * @param sValueField
-     */
-    inline void SetValueFieldName(QString sValueField){ return; }
 
-    /**
-     * @brief Prepare
-     * @param TemplateRaster
-     */
-    void Prepare(RasterManager::RasterMeta * TemplateRaster);
 
 
 private:

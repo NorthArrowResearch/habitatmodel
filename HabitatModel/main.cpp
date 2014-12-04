@@ -5,7 +5,7 @@
 #include <QDebug>
 
 #include "habitatmodelengine.h"
-#include "project.h"\
+#include "project.h"
 #include "habitat_exception.h"
 
 int main(int argc, char *argv[])

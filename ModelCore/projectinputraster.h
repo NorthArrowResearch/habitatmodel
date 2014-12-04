@@ -21,6 +21,8 @@ public:
 
     inline ProjectInput * Clone(){ return new ProjectInputRaster(*this); }
 
+    void Prepare(RasterManager::RasterMeta *TemplateRasterMeta);
+
     inline void SetValueFieldName(QString sValueField){ return; }
 
     /**
@@ -29,7 +31,6 @@ public:
      */
     ProjectInputRaster(QDomElement *elProjectInput);
 
-    void Prepare(RasterManager::RasterMeta *TemplateRasterMeta);
     void Init();
 };
 

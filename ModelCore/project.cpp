@@ -17,7 +17,6 @@
 #include "hsccategorical.h"
 #include "hscinflection.h"
 #include "hmvariable.h"
-#include "projectinput.h"
 #include "projectinputcsv.h"
 #include "projectinputraster.h"
 #include "projectinputvector.h"
