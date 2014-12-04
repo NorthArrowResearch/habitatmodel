@@ -83,11 +83,15 @@ double HSCCategorical::GetHSValue(int nCategory, double dNoDataVal)
     while (m.hasNext()) {
         m.next();
 
-        if (m.value()->GetCategory() == nCategory)
+        if (m.value()->GetCategoryID() == nCategory)
             return m.value()->GetHSValue();
     }
 
     return dNoDataVal;
+}
+
+void HSCCategorical::AddCategory(int nHSCID, HSCCategory *pHSCCategory){
+    m_categories.insert(nHSCID, new HSCCategory(pHSCCategory));
 }
 
 } // HabitatModel

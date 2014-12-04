@@ -27,7 +27,7 @@ public:
      * @param nHSCID
      * @param pHSCCategory
      */
-    inline void AddCategory(int nHSCID, HSCCategory * pHSCCategory){ m_categories.insert(nHSCID, pHSCCategory);  }
+    void AddCategory(int nHSCID, HSCCategory * pHSCCategory);
 
     /**
      * @brief ProcessRaster

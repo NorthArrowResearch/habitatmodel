@@ -9,9 +9,11 @@ class HSCCategory
 {
 public:
     HSCCategory(QDomElement *elCategory);
+    HSCCategory(HSCCategory *pInput);
 
-    inline int GetCategory() { return m_nCategoryValue;}
-    inline int GetHSValue() { return m_fHSVal;}
+    inline int GetCategoryID() { return m_nCategoryValue;}
+    inline int GetCategoryValue() { return m_nCategoryValue;}
+    inline double GetHSValue() { return m_fHSVal; }
 
 private:
 

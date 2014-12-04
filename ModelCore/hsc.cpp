@@ -32,4 +32,8 @@ HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "Title", "HSCID")
 
 }
 
+HSC::~HSC(){
+
+}
+
 }

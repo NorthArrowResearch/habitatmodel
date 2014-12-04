@@ -22,6 +22,10 @@ HSCInflection::~HSCInflection()
     m_coordinate_pairs.clear();
 }
 
+void HSCInflection::AddCoordinatePair(int nHSCID, HSCCoordinatePair *pHSCCoordPair){
+    m_coordinate_pairs.insert(nHSCID, new HSCCoordinatePair(pHSCCoordPair));
+}
+
 void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
 
     Project::GetOutputXML()->Log("Processing Raster against HSC Inflection Curve: " + sInput , 2);
@@ -89,13 +93,13 @@ double HSCInflection::GetHSValue(double fInputValue, double dNoData)
     while (m.hasNext()) {
         m.next();
 
-        if (m.value()->XValue() == fInputValue)
+        if (m.value()->GetXValue() == fInputValue)
         {
-            return m.value()->HSValue();
+            return m.value()->GetHSValue();
         }
         else
         {
-            double fDifference = m.value()->XValue() - fInputValue;
+            double fDifference = m.value()->GetXValue() - fInputValue;
             if (fDifference > 0)
             {
                 // The inflection point is greater than the desired value
@@ -124,7 +128,7 @@ double HSCInflection::GetHSValue(double fInputValue, double dNoData)
     double HSValue = dNoData;
     if (bBefore && bAfter)
     {
-        HSValue = pCoordBefore->HSValue() + ((pCoordAfter->HSValue() - pCoordBefore->HSValue()) * ((fInputValue - pCoordBefore->XValue()) / (pCoordAfter->XValue() - pCoordBefore->XValue())));
+        HSValue = pCoordBefore->GetHSValue() + ((pCoordAfter->GetHSValue() - pCoordBefore->GetHSValue()) * ((fInputValue - pCoordBefore->GetXValue()) / (pCoordAfter->GetXValue() - pCoordBefore->GetXValue())));
     }
 
     // TODO: get the habitat suitability value

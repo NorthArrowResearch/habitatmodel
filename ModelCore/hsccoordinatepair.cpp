@@ -18,8 +18,8 @@ HSCCoordinatePair::HSCCoordinatePair(QDomElement * elCoordinatePair)
 }
 
 HSCCoordinatePair::HSCCoordinatePair(HSCCoordinatePair * pInput){
-    m_fHSVal = pInput->HSValue();
-    m_fXVal = pInput->XValue();
+    m_fHSVal = pInput->GetHSValue();
+    m_fXVal = pInput->GetXValue();
 }
 
 HSCCoordinatePair::~HSCCoordinatePair(){

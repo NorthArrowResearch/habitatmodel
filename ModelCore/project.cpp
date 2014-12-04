@@ -287,8 +287,10 @@ void Project::LoadHSCs(){
         int nHSCID = elCoordinatePair.firstChildElement("HSCID").text().toInt();
 
         HSCInflection * pHSCInflection = (HSCInflection*) LoadHSC(nHSCID, HSC_INFLECTION);
-        pHSCInflection->AddCoordinatePair(nCoordinatePairID, new HSCCoordinatePair(&elCoordinatePair));
+        HSCCoordinatePair coordpair(&elCoordinatePair);
+        pHSCInflection->AddCoordinatePair(nCoordinatePairID, &coordpair);
     }
+
 
     // Now process the HSC Categories
     QDomNodeList elHSCCategories = m_elConfig->elementsByTagName("HSCCategories");
@@ -301,6 +303,7 @@ void Project::LoadHSCs(){
 
         HSCCategorical * pHSCCategorical = (HSCCategorical*) LoadHSC(nHSCID, HSC_CATEGORICAL);
         pHSCCategorical->AddCategory(nCatID, new HSCCategory(&elCategory));
+        pHSCCategorical = NULL;
     }
 
 }

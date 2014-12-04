@@ -1,7 +1,7 @@
 #ifndef HSCCOORDINATEPAIR_H
 #define HSCCOORDINATEPAIR_H
 
-#include "hsc.h"
+#include <QDomElement>
 
 namespace HabitatModel{
 
@@ -26,13 +26,13 @@ public:
      * @brief XValue
      * @return
      */
-    inline double XValue() { return m_fXVal;}
+    inline double GetXValue() { return m_fXVal;}
 
     /**
      * @brief HSValue
      * @return
      */
-    inline double HSValue() { return m_fHSVal;}
+    inline double GetHSValue() { return m_fHSVal;}
     /**
      * @brief HSCCoordinatePair
      * @param pInput

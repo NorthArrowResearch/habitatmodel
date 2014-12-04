@@ -14,7 +14,6 @@ enum HSCTypes {
     HSC_CATEGORICAL = 0,
     HSC_INFLECTION = 1
 };
-
 class Unit;
 class HMVariable;
 
@@ -27,6 +26,8 @@ public:
      * @param elHSC dom element containing an HSC
      */
     HSC(QDomElement *elHSC);
+
+    virtual ~HSC();
 
     virtual void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta) = 0;
 

@@ -18,4 +18,10 @@ HSCCategory::HSCCategory(QDomElement * elCategory)
     m_fHSVal = elCategory->firstChildElement("HSValue").text().toDouble();
 }
 
+HSCCategory::HSCCategory(HSCCategory * pInput){
+    m_nCategoryID = pInput->GetCategoryID();
+    m_nCategoryValue = pInput->GetCategoryValue();
+    m_fHSVal = pInput->GetHSValue();
+}
+
 }
