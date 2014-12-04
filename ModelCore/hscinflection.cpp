@@ -40,6 +40,9 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
     GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sInputQB.data(), GA_ReadOnly);
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sOutputQB.data(), sOutputRasterMeta);
 
+    GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
+    GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
+
     // Allocate memory for reading from DEM
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double)*sRasterCols);
 
@@ -47,22 +50,24 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
     for (int i=1; i < sOutputRasterMeta->GetRows() - 1; i++)
     {
         // Read the row
-        pInputDS->GetRasterBand(1)->RasterIO(GF_Read, 0,  i,
-                                           sRasterCols, 1,
-                                           pReadBuffer,
-                                           sRasterCols, 1,
-                                           GDT_Float64, 0, 0);
+        pInputRB->RasterIO(GF_Read, 0,  i,
+                           sRasterCols, 1,
+                           pReadBuffer,
+                           sRasterCols, 1,
+                           pInputRB->GetRasterDataType(),
+                           0, 0);
+
         // Loop through columns
         for (int j=1; j < sRasterCols - 1; j++)
         {
-            pReadBuffer[j] =  GetHSValue(pReadBuffer[j], sOutputRasterMeta->GetNoDataValue() );
+            pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pInputRB->GetNoDataValue() );
         }
-        pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
-                                              sRasterCols,1,
-                                              pReadBuffer,
-                                              sRasterCols,1,
-                                              GDT_Float64,
-                                              0,0);
+        pOutputRB->RasterIO(GF_Write,0,i,
+                            sRasterCols,1,
+                            pReadBuffer,
+                            sRasterCols,1,
+                            pOutputRB->GetRasterDataType(),
+                            0,0);
     }
 
     //close datasets

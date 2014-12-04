@@ -94,16 +94,16 @@ void HSISimulation::Run(){
      *
      **/
 
-    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+    QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
 
-    while (i.hasNext()) {
-        i.next();
-        SimulationHSCInput * pSimHSCInput= i.value();
+    while (dSimHSCInputs.hasNext()) {
+        dSimHSCInputs.next();
+        SimulationHSCInput * pSimHSCInput= dSimHSCInputs.value();
         // Here is the curve we want
         HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
-        ProjectInput * pInput = i.value()->GetProjectInput();
+        ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
 
         // Pure virtual function will decide if it's a categorical
         // or coordinate pair HSC
@@ -128,27 +128,28 @@ void HSISimulation::Run(){
     QString sHSIOutputFile = GetHSISourcePath();
     Project::EnsureFile(sHSIOutputFile);
 
-    static QHash<int, GDALDataset *> dDatasets;
+    QHash<int, GDALRasterBand *> dDatasets;
     QHash<int, char *> dInBuffers;
 
     int sRasterCols = GetRasterExtentMeta()->GetCols();
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
-    i.toFront();
-    while (i.hasNext()) {
-        i.next();
+    dSimHSCInputs.toFront();
+    while (dSimHSCInputs.hasNext()) {
+        dSimHSCInputs.next();
 
         // Here is the corresponding input raster, added as a hash to a dataset
-        ProjectInput * pSimHSCHSOutput = i.value()->GetProjectInput();
+        ProjectInput * pSimHSCHSOutput = dSimHSCInputs.value()->GetProjectInput();
         const QByteArray sHSIOutputQB = pSimHSCHSOutput->GetHSOutputRasterFileName().toLocal8Bit();
         GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
+        GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 
         // Add a buffer for reading this input
         char * pReadBuffer = (char*) CPLMalloc(sizeof(double)*sRasterCols);
 
         // Notice these get the same keys.
-        dDatasets.insert(i.key(), pInputDS);
-        dInBuffers.insert(i.key(), pReadBuffer);
+        dDatasets.insert(dSimHSCInputs.key(), pInputRB);
+        dInBuffers.insert(dSimHSCInputs.key(), pReadBuffer);
     }
 
     double dNoDataVal = GetRasterExtentMeta()->GetNoDataValue();
@@ -156,21 +157,23 @@ void HSISimulation::Run(){
     // Step it down to char* for Rasterman and create+open an output file
     const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
+    GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
     //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
     for (int i=0; i < GetRasterExtentMeta()->GetRows(); i++)
     {
         // Populate the buffers with a new line from each file.
-        QHashIterator<int, GDALDataset *> QHDSIterator(dDatasets);
-        while (QHDSIterator.hasNext()) {
-            QHDSIterator.next();
+        QHashIterator<int, GDALRasterBand *> dDatasetIterator(dDatasets);
+        while (dDatasetIterator.hasNext()) {
+            dDatasetIterator.next();
             // Read the row
-            QHDSIterator.value()->GetRasterBand(1)->RasterIO(GF_Read, 0,  i,
+            dDatasetIterator.value()->RasterIO(GF_Read, 0,  i,
                                                sRasterCols, 1,
-                                               dInBuffers.value(QHDSIterator.key()),
+                                               dInBuffers.value(dDatasetIterator.key()),
                                                sRasterCols, 1,
-                                               GDT_Float64, 0, 0);
+                                               pOutputRB->GetRasterDataType(),
+                                               0, 0);
         }
 
         for (int j=0; j < sRasterCols; j++)
@@ -203,12 +206,12 @@ void HSISimulation::Run(){
             }
 
         }
-        pOutputDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,
-                                              sRasterCols,1,
-                                              pReadBuffer,
-                                              sRasterCols,1,
-                                              GetRasterExtentMeta()->GetGDALDataType(),
-                                              0,0 );
+        pOutputRB->RasterIO(GF_Write, 0, i,
+                            sRasterCols, 1,
+                            pReadBuffer,
+                            sRasterCols, 1,
+                            pOutputRB->GetRasterDataType(),
+                            0, 0 );
     }
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);
@@ -216,7 +219,7 @@ void HSISimulation::Run(){
     pReadBuffer = NULL;
 
     // Let's remember to clean up the inputs
-    QHashIterator<int, GDALDataset *> qhds(dDatasets);
+    QHashIterator<int, GDALRasterBand *> qhds(dDatasets);
     while (qhds.hasNext()) {
         qhds.next();
         GDALClose(qhds.value());

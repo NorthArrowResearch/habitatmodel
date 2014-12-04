@@ -36,10 +36,16 @@ int HabitatModelEngine::Run(int argc, char *argv[])
 int HabitatModelEngine::RunHabitatModel(int argc, char *argv[])
 {
     int eResult = HabitatModel::PROCESS_OK;
-    RasterManager::RegisterGDAL();
+
+    // Initialize GDAL drivers
+    GDALAllRegister();
+
     HabitatModel::Project theProject(argv[1], argv[2], argv[3]);
     eResult = theProject.Run();
-    RasterManager::DestroyGDAL();
+
+    // De-initialize all GDAL drivers.
+    GDALDestroyDriverManager();
+
     return eResult;
 }
 
