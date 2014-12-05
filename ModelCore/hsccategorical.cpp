@@ -44,30 +44,30 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
     int * pReadBuffer = (int * ) CPLMalloc(sizeof(int)*sRasterCols);
 
     // Loop through each DEM cell
-    for (int i=0; i < sOutputRasterMeta->GetRows(); i++)
+    for (int i = 0; i < sOutputRasterMeta->GetRows(); i++)
     {
         // Read the row
         // WARNING: I'm going to try reading as a byte. if this doesn't cast doubles properly
         // Then do it manually.
-        pInputDS->GetRasterBand(1)->RasterIO( GF_Read, 0,  i,
-                                              sRasterCols, 1,
-                                              pReadBuffer,
-                                              sRasterCols, 1,
-                                              GDT_Byte, 0, 0 );
+        pInputRB->RasterIO( GF_Read, 0,  i,
+                            sRasterCols, 1,
+                            pReadBuffer,
+                            sRasterCols, 1,
+                            GDT_Byte, 0, 0 );
 
         // Loop through columns
-        for (int j=0; j < sRasterCols; j++)
+        for (int j = 0; j < sRasterCols; j++)
         {
             if (pReadBuffer[j] != pInputRB->GetNoDataValue()) {
                 pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pInputRB->GetNoDataValue());
             }
         }
-        pOutputRB->RasterIO(GF_Write,0,i,
-                            sRasterCols,1,
+        pOutputRB->RasterIO(GF_Write, 0, i,
+                            sRasterCols, 1,
                             pReadBuffer,
-                            sRasterCols,1,
-                            pOutputRB->GetRasterDataType(),
-                            0,0);
+                            sRasterCols, 1,
+                            GDT_Float64,
+                            0, 0 );
     }
 
     //close datasets

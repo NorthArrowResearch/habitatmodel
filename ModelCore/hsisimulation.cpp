@@ -129,7 +129,7 @@ void HSISimulation::Run(){
     Project::EnsureFile(sHSIOutputFile);
 
     QHash<int, GDALRasterBand *> dDatasets;
-    QHash<int, char *> dInBuffers;
+    QHash<int, double *> dInBuffers;
 
     int sRasterCols = GetRasterExtentMeta()->GetCols();
 
@@ -145,7 +145,7 @@ void HSISimulation::Run(){
         GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 
         // Add a buffer for reading this input
-        char * pReadBuffer = (char*) CPLMalloc(sizeof(double)*sRasterCols);
+        double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
         // Notice these get the same keys.
         dDatasets.insert(dSimHSCInputs.key(), pInputRB);
@@ -172,14 +172,14 @@ void HSISimulation::Run(){
                                                sRasterCols, 1,
                                                dInBuffers.value(dDatasetIterator.key()),
                                                sRasterCols, 1,
-                                               pOutputRB->GetRasterDataType(),
+                                               GDT_Float64,
                                                0, 0);
         }
 
         for (int j=0; j < sRasterCols; j++)
         {
             QHash<int, double> dCellContents;
-            QHashIterator<int, char *> QHIBIterator(dInBuffers);
+            QHashIterator<int, double *> QHIBIterator(dInBuffers);
             while (QHIBIterator.hasNext()) {
                 QHIBIterator.next();
                 dCellContents.insert(QHIBIterator.key(), QHIBIterator.value()[j]);
@@ -210,9 +210,10 @@ void HSISimulation::Run(){
                             sRasterCols, 1,
                             pReadBuffer,
                             sRasterCols, 1,
-                            pOutputRB->GetRasterDataType(),
+                            GDT_Float64,
                             0, 0 );
     }
+
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);
     CPLFree(pReadBuffer);
@@ -225,7 +226,7 @@ void HSISimulation::Run(){
         GDALClose(qhds.value());
     }
     dDatasets.clear();
-    QHashIterator<int, char *> qhbuff(dInBuffers);
+    QHashIterator<int, double *> qhbuff(dInBuffers);
     while (qhbuff.hasNext()) {
         qhbuff.next();
         CPLFree(qhbuff.value());

@@ -47,27 +47,27 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double)*sRasterCols);
 
     // Loop through each DEM cell
-    for (int i=1; i < sOutputRasterMeta->GetRows() - 1; i++)
+    for (int i=0; i < sOutputRasterMeta->GetRows(); i++)
     {
         // Read the row
         pInputRB->RasterIO(GF_Read, 0,  i,
                            sRasterCols, 1,
                            pReadBuffer,
                            sRasterCols, 1,
-                           pInputRB->GetRasterDataType(),
+                           GDT_Float64,
                            0, 0);
 
         // Loop through columns
-        for (int j=1; j < sRasterCols - 1; j++)
+        for (int j=0; j < sRasterCols; j++)
         {
             pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pInputRB->GetNoDataValue() );
         }
-        pOutputRB->RasterIO(GF_Write,0,i,
-                            sRasterCols,1,
+        pOutputRB->RasterIO(GF_Write, 0, i,
+                            sRasterCols, 1,
                             pReadBuffer,
-                            sRasterCols,1,
-                            pOutputRB->GetRasterDataType(),
-                            0,0);
+                            sRasterCols, 1,
+                            GDT_Float64,
+                            0, 0);
     }
 
     //close datasets
