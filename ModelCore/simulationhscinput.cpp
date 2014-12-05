@@ -60,7 +60,7 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
             SetID(nProjectVarID);
 
             m_units = Project::GetUnit( elProjectVariable.firstChildElement("UnitsID").text().toInt() );
-            m_variable = Project::GetHMVariable(elProjectVariable.firstChildElement("VariableID").text().toInt() );
+            m_variable = Project::GetHMVariable( elProjectVariable.firstChildElement("VariableID").text().toInt() );
 
             int nDataSourceID = elProjectVariable.firstChildElement("DataSourceID").text().toInt();
             ProjectInput * pOriginalInput = Project::GetProjectInput(nDataSourceID);

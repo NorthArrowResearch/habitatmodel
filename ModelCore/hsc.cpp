@@ -3,7 +3,7 @@
 
 namespace HabitatModel{
 
-HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "Title", "HSCID")
+HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "HSCName", "HSCID")
 {
 
     //Example Node:
@@ -20,15 +20,15 @@ HSC::HSC(QDomElement * elHSC) : NamedObjectWithID(elHSC, "Title", "HSCID")
     //  <CategoryID>79</CategoryID>
     //</HSC>
 
-    m_location = elHSC->firstChildElement("VariableName").text();
-    m_figure = elHSC->firstChildElement("CategoryID").text().toInt();
+    m_location = elHSC->firstChildElement("Location").text();
+    m_figure = elHSC->firstChildElement("Figure").text().toInt();
 
     m_source = Project::GetLookupTableItem(elHSC, "SourceID");
-    m_lifestage = Project::GetLookupTableItem(elHSC, "LifestageID");
+    m_lifestage = Project::GetLookupTableItem(elHSC, "LifeStageID");
     m_species = Project::GetLookupTableItem(elHSC, "SpeciesID");
 
     m_variable = Project::GetVariable(elHSC, "HSCVariableID");
-    m_unit = Project::GetUnit(elHSC, "HSCVariableID");
+    m_unit = Project::GetUnit(elHSC, "UnitID");
 
 }
 

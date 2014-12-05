@@ -63,19 +63,14 @@ Project::Project(const char * psProjectRoot,
 
 
     m_XMLOutput->Log("Starting Simulation Run...");
-    // Make a temporary folder for this simulation
-//    if (m_ConfigPath->mkdir("tmp")){
-//        QDir tmpPath = QDir(m_ConfigPath->absolutePath() + QDir::separator() + "tmp");
-//        m_TmpPath = new QDir(tmpPath);
-//    }
 
     // Populate our lookup table hashes with values that every simulation
     // Will need access to.
     m_XMLOutput->Log("Loading Objects...", 1);
     LoadLookupTable();
+    LoadHMVariables();
     LoadUnits();
     LoadHSCs();
-    LoadHMVariables();
     LoadProjectDataSources();
 
     // Now load the simulations. This instantiates new Simulation objects
@@ -125,15 +120,6 @@ void Project::LoadSimulations(){
             bHSIID = true;
         else
             bFISID = true;
-
-//        QDomNodeList elConfigHSIs = m_elConfig->elementsByTagName("HSI");
-
-//        for(int n= 0; n < elConfigHSIs.length(); n++){
-//            QDomElement elHSI = elConfigHSIs.at(n).toElement();
-//            int nTestHSIID = elHSI.firstChildElement("HSIID").text().toInt();
-//            if (nSimulationHSIID == nTestHSIID)
-//                bHSIID = true;
-//        }
 
         Simulation * newSim;
 

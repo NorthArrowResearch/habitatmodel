@@ -67,7 +67,7 @@ public:
      * @param pSourceType
      * @param pUnit
      */
-    void Init(QString sCreatedOn, QString sProjectPath, HMVariable *pVariable, NamedObjectWithID *pSourceType, Unit *pUnit, QString sUtilizationRasterFileName, QString sHSOutputFileName);
+    void Init(QString sCreatedOn, QString sProjectPath, NamedObjectWithID *pSourceType, QString sUtilizationRasterFileName, QString sHSOutputFileName);
 
 
     /**
@@ -93,18 +93,6 @@ public:
      * @return
      */
     inline QString GetSourceFilePath() const { return m_sourcefilepath; }
-
-    /**
-     * @brief getVariable
-     * @return
-     */
-    inline HMVariable * GetVariable() const { return m_variable; }
-
-    /**
-     * @brief getUnit
-     * @return
-     */
-    inline Unit * GetUnit() const { return m_unit; }
 
     /**
      * @brief getFileName
@@ -148,8 +136,6 @@ private:
     QString m_hsoutputfilepath;
     QString m_preparedrasterfilename;
 
-    HMVariable * m_variable;
-    Unit * m_unit;
 
 };
 
