@@ -6,18 +6,19 @@
 namespace HabitatModel{
 
 enum ProjectErrorCodes {
-    PROCESS_OK = 0,
-    FILE_NOT_FOUND = 1,
-    DIRECTORY_NOT_FOUND = 2,
-    FILE_PRESENT = 3,
-    DIRECTORY_PRESENT = 4,
-    FILE_WRITE_ERROR = 5,
-    FILE_READ_ONLY = 6,
-    DOM_LOAD_ERROR = 7,
-    DOM_NODE_MISSING = 8,
+    PROCESS_OK
+    , FILE_NOT_FOUND
+    , DIRECTORY_NOT_FOUND
+    , FILE_PRESENT
+    , DIRECTORY_PRESENT
+    , FILE_WRITE_ERROR
+    , FILE_READ_ONLY
+    , DOM_LOAD_ERROR
+    , DOM_NODE_MISSING
+    , NO_RASTERS
 
-    DEBUG = -1,
-    UNDEFINED_ERROR = 999
+    , DEBUG
+    , UNDEFINED_ERROR
 };
 
 class HabitatException :public std::exception
@@ -43,24 +44,37 @@ public:
         switch (eErrorCode) {
         case PROCESS_OK:
             return "process completed successfully";
+            break;
         case FILE_NOT_FOUND:
             return "File Not Found";
+            break;
         case DIRECTORY_NOT_FOUND:
             return "Directory Not Found";
+            break;
         case FILE_PRESENT:
             return "File Already Present";
+            break;
         case DIRECTORY_PRESENT:
             return "Directory Already Present";
+            break;
         case FILE_WRITE_ERROR:
             return "Failed to open file for writing";
+            break;
         case FILE_READ_ONLY:
             return "File is Read Only";
+            break;
         case DOM_NODE_MISSING:
             return "Missing Dom Node";
+            break;
         case DEBUG:
             return "Input has flooped the output. Did you yurtify it before vorticating your quiznozzles?";
+            break;
+        case NO_RASTERS:
+            return "No Rasters found. Exiting";
+            break;
         default:
             return "Unhandled Raster Manager return code.";
+            break;
         }
     };
 

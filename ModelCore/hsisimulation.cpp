@@ -131,6 +131,9 @@ void HSISimulation::Run(){
     QHash<int, GDALRasterBand *> dDatasets;
     QHash<int, double *> dInBuffers;
 
+    if (HasRasters() == false) {
+        throw HabitatException(NO_RASTERS, "For now you need to have at least one raster in your inputs.");
+    }
     int sRasterCols = GetRasterExtentMeta()->GetCols();
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later

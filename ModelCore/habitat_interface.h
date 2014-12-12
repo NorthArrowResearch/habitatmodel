@@ -21,7 +21,7 @@ extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
  * @param eErrorCode
  * @return
  */
-extern "C" DLL_API inline const char *GetReturnCodeAsString(int eErrorCode){
+extern "C" DLL_API inline const char * GetReturnCodeAsString(int eErrorCode){
     return HabitatException::GetReturnCodeOnlyAsString(eErrorCode);
 }
 
