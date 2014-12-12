@@ -25,10 +25,11 @@ extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
     return eResult;
 }
 
-
-extern "C" DLL_API void GetReturnCodeAsString(int eErrorCode, const char ** sErr){
+extern "C" DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
+{
     const char * pHabErr = HabitatException::GetReturnCodeOnlyAsString(eErrorCode);
-    sErr = &pHabErr;
+    strncpy(sErr, pHabErr, iBufferSize);
+    sErr[ iBufferSize - 1 ] = 0;
 }
 
 }

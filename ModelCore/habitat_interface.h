@@ -22,7 +22,7 @@ extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
  * @param eErrorCode
  * @return
  */
-extern "C" DLL_API void GetReturnCodeAsString(int eErrorCode, const char **sErr);
+extern "C" DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize);
 
 }
 
