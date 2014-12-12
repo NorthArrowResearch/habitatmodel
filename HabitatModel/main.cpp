@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
         HabitatModelEngine::HabitatModelEngine * habmodel = new HabitatModelEngine::HabitatModelEngine();
         int eResult = habmodel->Run(argc, argv);
         if (eResult <= 0) {
-            std::cout << std::endl << HabitatModel::GetReturnCodeAsString(eResult) << std::endl;
+            std::cout << std::endl << HabitatModel::HabitatException::GetReturnCodeOnlyAsString(eResult) << std::endl;
         }
         else {
-            std::cerr << std::endl <<  HabitatModel::GetReturnCodeAsString(eResult) << std::endl;
+            std::cerr << std::endl <<  HabitatModel::HabitatException::GetReturnCodeOnlyAsString(eResult) << std::endl;
             exit (EXIT_FAILURE);
         }
 

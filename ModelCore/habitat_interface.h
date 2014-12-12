@@ -16,15 +16,14 @@ extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
                                       const char *psXMLInput,
                                       const char * psXMLOutput);
 
+
 /**
  * @brief GetReturnCodeAsString
  * @param eErrorCode
  * @return
  */
-extern "C" DLL_API inline const char * GetReturnCodeAsString(int eErrorCode){
-    return HabitatException::GetReturnCodeOnlyAsString(eErrorCode);
-}
-
+extern "C" DLL_API void GetReturnCodeAsString(int eErrorCode, const char **sErr);
 
 }
+
 #endif // HABITAT_INTERFACE_H
