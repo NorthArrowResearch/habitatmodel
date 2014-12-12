@@ -21,10 +21,11 @@ int HabitatModelEngine::Run(int argc, char *argv[])
         return eResult;
     }
     else{
-        std::cout << "\n Habitat Model Command Line";
-        std::cout << "\n    usage: habitatmodel <xml_input_file_path> <xml_output_file_path>";
+        std::cout << "\n Habitat Model Command Line v"<<VERSION;
+        std::cout << "\n    usage: habitatmodel <root_project_path> <xml_input_file_path> <xml_output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
+        std::cout << "\n       root_project_path: Absolute full path to existing project folder.";
         std::cout << "\n    xml_config_file_path: Absolute full path to existing xml config file.";
         std::cout << "\n    xml_output_file_path: Absolute full path to desired xml output file.";
 
