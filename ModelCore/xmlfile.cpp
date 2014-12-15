@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QDateTime>
 #include <QDomElement>
 #include <QXmlStreamWriter>
 #include "habitat_exception.h"
@@ -129,6 +130,10 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
     message = m_pDoc->createElement( "message" );
     message.setAttribute( "severity", nSeverity );
     message.setAttribute( "indent", indent );
+
+    // Timestamps are useful
+    QDateTime local(QDateTime::currentDateTime());
+    message.setAttribute("timestamp", local.toString(Qt::ISODate));
 
     // Now create the description of the message
     description = m_pDoc->createElement( "description" );
