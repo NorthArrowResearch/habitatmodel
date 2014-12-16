@@ -8,7 +8,8 @@ namespace HabitatModel{
 
 extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
                                       const char * psXMLInput,
-                                      const char * psXMLOutput)
+                                      const char * psXMLOutput,
+                                      char * sErr, unsigned int iBufferSize)
 {
     int eResult = PROCESS_OK;
     try{
@@ -16,6 +17,10 @@ extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
         eResult = theProject.Run();
     }
     catch (HabitatException& e){
+        const QByteArray qbErr = e.GetReturnMsgAsString().toLocal8Bit();
+        const char * pHabErr = qbErr.data();
+        strncpy(sErr, pHabErr, iBufferSize);
+        sErr[ iBufferSize - 1 ] = 0;
         return e.GetErrorCode();
     }
     catch (std::exception& e){
