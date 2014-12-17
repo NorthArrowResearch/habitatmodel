@@ -155,8 +155,16 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 void XMLFile::WriteDomToFile(){
 
     // Great. Now Write the domelement to the file.
-    if( !m_xmlFile->open( QIODevice::WriteOnly | QIODevice::Text ) )
-        throw HabitatException(FILE_WRITE_ERROR,  m_xmlFile->fileName());
+    // We're competing with the Desktop app for this file so we will try
+    // a bunch of times to open it.
+    int n = 0;
+    while ( !m_xmlFile->open( QIODevice::WriteOnly | QIODevice::Text ) ){
+        n++;
+        if (n=10)
+            throw HabitatException(FILE_WRITE_ERROR,  m_xmlFile->fileName());
+        mySleep(100);
+    }
+
 
     QTextStream stream( m_xmlFile );
     stream << m_pDoc->toString();
