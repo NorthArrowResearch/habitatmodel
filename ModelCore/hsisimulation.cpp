@@ -93,8 +93,10 @@ void HSISimulation::Run(){
      *  their curves along the way.
      *
      **/
+    Project::GetOutputXML()->Log("Starting Simulation Run: " + GetName() , 0);
 
     QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
+
 
     while (dSimHSCInputs.hasNext()) {
         dSimHSCInputs.next();
