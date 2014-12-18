@@ -17,6 +17,8 @@ enum ProjectErrorCodes {
     , DOM_NODE_MISSING
     , NO_RASTERS
 
+    , RASTERMAN_EXCEPTION
+
     , DEBUG
     , UNDEFINED_ERROR
 };
@@ -71,6 +73,9 @@ public:
             break;
         case NO_RASTERS:
             return "No Rasters found. Exiting";
+            break;
+        case RASTERMAN_EXCEPTION:
+            return "RasterMan Exception";
             break;
         default:
             return "Unhandled Raster Manager return code.";

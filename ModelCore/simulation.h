@@ -48,6 +48,8 @@ public:
 
     inline bool HasRasters(){ return m_HasRasters; }
 
+    inline QString GetFolder(){ return m_sfolder; }
+
     /**
      * @brief GetRasterExtentMeta
      * @return
@@ -55,6 +57,7 @@ public:
     inline RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
 
     bool InputBelongs(ProjectInput *pInput);
+
 
 
 protected:

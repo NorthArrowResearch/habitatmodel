@@ -10,6 +10,7 @@
 #include "projectinputcsv.h"
 #include "projectinputvector.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 #include "gdal_priv.h"
 
 
@@ -74,13 +75,19 @@ void HSISimulation::AddRastersToExtents(){
         ProjectInput * pInput = i.value()->GetProjectInput();
 
         if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
+            try {
+                Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
+                QString sRasterPath = pInput->GetSourceFilePath();
+                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
 
-            Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-            QString sRasterPath = pInput->GetSourceFilePath();
-            const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
-            RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
-            RasterUnion(pRasterMeta);
-            delete pRasterMeta;
+                RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
+                RasterUnion(pRasterMeta);
+                delete pRasterMeta;
+            }
+            catch (RasterManager::RasterManagerException e){
+                Project::GetOutputXML()->Log("ERROR:" + e.GetReturnMsgAsString() , 0);
+            }
+
         }
     }
 }
@@ -109,10 +116,14 @@ void HSISimulation::Run(){
 
         // Pure virtual function will decide if it's a categorical
         // or coordinate pair HSC
-        pHSC->ProcessRaster( pInput->GetPreparedRasterFileName(),
-                             pInput->GetHSOutputRasterFileName(),
-                             GetRasterExtentMeta() );
-
+        try{
+            pHSC->ProcessRaster( pInput->GetPreparedRasterFileName(),
+                                 pInput->GetHSOutputRasterFileName(),
+                                 GetRasterExtentMeta() );
+        }
+        catch (RasterManager::RasterManagerException e){
+            throw HabitatException(RASTERMAN_EXCEPTION, e.GetReturnMsgAsString());
+        }
     }
 
     /**
@@ -286,13 +297,17 @@ void HSISimulation::LoadInputs(){
         int nHSICurveID = elHSCInput.firstChildElement("HSICurveID").text().toInt();
         HSICurve * pHSICurve = m_hsiRef->GetCurve(nHSICurveID);
 
-        SimulationHSCInput * newHSCInput = new SimulationHSCInput(elHSCInput, pHSICurve);
+        // Test to see that our HSCInputs belong to this simulation.
+        int nHSISimulationID = elHSCInput.firstChildElement("SimulationID").text().toInt();
+        if (GetID() == nHSISimulationID){
+            SimulationHSCInput * newHSCInput = new SimulationHSCInput(elHSCInput, pHSICurve);
 
-        ProjectInput * pInput = newHSCInput->GetProjectInput();
-        if ( dynamic_cast <ProjectInputRaster *> ( pInput ))
-            m_HasRasters = true;
+            ProjectInput * pInput = newHSCInput->GetProjectInput();
+            if ( dynamic_cast <ProjectInputRaster *> ( pInput ))
+                m_HasRasters = true;
 
-        m_simulation_hsc_inputs.insert(n, newHSCInput);
+            m_simulation_hsc_inputs.insert(n, newHSCInput);
+        }
 
     }
 }
