@@ -13,8 +13,8 @@ namespace HabitatModel{
 
 HSCCategory::HSCCategory(QDomElement * elCategory)
 {
-    m_nCategoryID = elCategory->firstChildElement("HSValue").text().toInt();
-    m_nCategoryValue = elCategory->firstChildElement("HSValue").text().toInt();
+    m_nCategoryID = elCategory->firstChildElement("CategoryID").text().toInt();
+    m_nCategoryValue = elCategory->firstChildElement("CategoryValue").text().toInt();
     m_fHSVal = elCategory->firstChildElement("HSValue").text().toDouble();
 }
 

@@ -20,7 +20,7 @@ public:
      * @param nCategory
      * @return
      */
-    double GetHSValue(int nCategory, double dNoDataVal);
+    double GetHSValue(double nCategory, double dNoDataVal);
 
     /**
      * @brief AddCategory

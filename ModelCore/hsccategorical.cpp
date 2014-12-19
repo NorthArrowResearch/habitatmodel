@@ -23,7 +23,6 @@ HSCCategorical::~HSCCategorical()
     m_categories.clear();
 }
 
-
 void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
 
     Project::GetOutputXML()->Log("Processing Raster against Categorical HSC: " + sInput , 2);
@@ -42,7 +41,7 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
 
     // Allocate memory for reading from DEM
-    int * pReadBuffer = (int * ) CPLMalloc(sizeof(int)*sRasterCols);
+    double * pReadBuffer = (double * ) CPLMalloc(sizeof(double)*sRasterCols);
 
     // Loop through each DEM cell
     for (int i = 0; i < sOutputRasterMeta->GetRows(); i++)
@@ -54,7 +53,7 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
                             sRasterCols, 1,
                             pReadBuffer,
                             sRasterCols, 1,
-                            GDT_Byte, 0, 0 );
+                            GDT_Float64, 0, 0 );
 
         // Loop through columns
         for (int j = 0; j < sRasterCols; j++)
@@ -71,18 +70,23 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
                             0, 0 );
     }
 
-    //close datasets
+    //Close Datasets
     GDALClose(pInputDS);
     GDALClose(pOutputDS);
 
     CPLFree(pReadBuffer);
     pReadBuffer = NULL;
 
-
 }
 
-double HSCCategorical::GetHSValue(int nCategory, double dNoDataVal)
+double HSCCategorical::GetHSValue(double dCategory, double dNoDataVal)
 {
+    // This is not an integer.
+    if (floor(dCategory) != dCategory){
+        return dNoDataVal;
+    }
+    int nCategory = (int) dCategory;
+
     QHashIterator<int, HSCCategory *> m(m_categories);
     while (m.hasNext()) {
         m.next();
