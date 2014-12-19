@@ -59,8 +59,14 @@ void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManage
         for (int j = 0; j < sRasterCols; j++)
         {
             if (pReadBuffer[j] != pInputRB->GetNoDataValue()) {
-                pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pInputRB->GetNoDataValue());
+                double a = pReadBuffer[j];
+                pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pOutputRB->GetNoDataValue());
+                double b = pReadBuffer[j];
             }
+            else{
+                pReadBuffer[j] = pOutputRB->GetNoDataValue();
+            }
+
         }
         pOutputRB->RasterIO(GF_Write, 0, i,
                             sRasterCols, 1,

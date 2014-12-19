@@ -60,13 +60,12 @@ void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager
         // Loop through columns
         for (int j=0; j < sRasterCols; j++)
         {
-            pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pInputRB->GetNoDataValue() );
-            // DEBUG CHECKING
-//            if (pReadBuffer[j] != pInputRB->GetNoDataValue()){
-//                double input = pReadBuffer[j];
-//                double lookup = GetHSValue(pReadBuffer[j], pInputRB->GetNoDataValue() );
-//                qDebug("%lf :: %lf", input, lookup );
-//            }
+            if (pReadBuffer[j] != pInputRB->GetNoDataValue()){
+                pReadBuffer[j] =  GetHSValue(pReadBuffer[j], pOutputRB->GetNoDataValue() );
+            }
+            else {
+                pReadBuffer[j] = pOutputRB->GetNoDataValue();
+            }
         }
         pOutputRB->RasterIO(GF_Write, 0, i,
                             sRasterCols, 1,
