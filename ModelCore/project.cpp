@@ -288,8 +288,8 @@ void Project::LoadHSCs(){
         int nHSCID = elCategory.firstChildElement("HSCID").text().toInt();
 
         HSCCategorical * pHSCCategorical = (HSCCategorical*) LoadHSC(nHSCID, HSC_CATEGORICAL);
-        pHSCCategorical->AddCategory(nCatID, new HSCCategory(&elCategory));
-        pHSCCategorical = NULL;
+        HSCCategory CatVal(&elCategory);
+        pHSCCategorical->AddCategory(nCatID, &CatVal);
     }
 
 }
