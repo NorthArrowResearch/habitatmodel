@@ -151,6 +151,7 @@ void HSISimulation::Run(){
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
     dSimHSCInputs.toFront();
+
     while (dSimHSCInputs.hasNext()) {
         dSimHSCInputs.next();
 
@@ -267,11 +268,11 @@ int HSISimulation::DetermineMethod(){
 
     QString sMethod = m_hsiRef->GetMethod()->GetName();
 
-    if ( sMethod.compare("Product") == 0 ){ return HSI_PRODUCT; }
-    else if ( sMethod.compare("Arithmetic Mean") == 0 ){ return HSI_ARITHMETIC_MEAN; }
-    else if ( sMethod.compare("Geometric Mean") == 0 ){ return HSI_GEOMETRIC_MEAN; }
-    else if ( sMethod.compare("Minimum") == 0 ){ return HSI_MINIMUM; }
-    else if ( sMethod.compare("Weighted Mean") == 0 ){ return HSI_WEIGHTED_MEAN; }
+    if ( sMethod.compare("Product", Qt::CaseInsensitive ) == 0 ){ return HSI_PRODUCT; }
+    else if ( sMethod.compare("Arithmetic Mean", Qt::CaseInsensitive ) == 0 ){ return HSI_ARITHMETIC_MEAN; }
+    else if ( sMethod.compare("Geometric Mean", Qt::CaseInsensitive ) == 0 ){ return HSI_GEOMETRIC_MEAN; }
+    else if ( sMethod.compare("Minimum", Qt::CaseInsensitive) == 0 ){ return HSI_MINIMUM; }
+    else if ( sMethod.compare("Weighted Mean", Qt::CaseInsensitive) == 0 ){ return HSI_WEIGHTED_MEAN; }
 
     Project::ProjectError(SEVERITY_ERROR, "Could not determine Method for Raster combination in HSI Simulation");
     return -1;
@@ -313,7 +314,7 @@ void HSISimulation::LoadInputs(){
 }
 
 double HSISimulation::HSICombineProduct(QHash<int, double> dCellContents, double dNoDataVal){
-    double dSum = 0;
+    double dProd = 1;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
         x.next();
@@ -322,9 +323,9 @@ double HSISimulation::HSICombineProduct(QHash<int, double> dCellContents, double
         if (x.value() == dNoDataVal)
             return dNoDataVal;
 
-        dSum += x.value();
+        dProd *= x.value();
     }
-    return dSum;
+    return dProd;
 }
 
 double HSISimulation::HSIArithmeticMean(QHash<int, double> dCellContents, double dNoDataVal){
@@ -343,7 +344,7 @@ double HSISimulation::HSIArithmeticMean(QHash<int, double> dCellContents, double
 }
 
 double HSISimulation::HSIGeometricMean(QHash<int, double> dCellContents, double dNoDataVal){
-    double dProd = 0;
+    double dProd = 1;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
         x.next();
@@ -354,7 +355,7 @@ double HSISimulation::HSIGeometricMean(QHash<int, double> dCellContents, double 
 
         dProd *= x.value();
     }
-    return pow(dProd, 1 / dCellContents.size() );
+    return pow(dProd, (1 / (double) dCellContents.size()) );
 }
 
 double HSISimulation::HSIMinimum(QHash<int, double> dCellContents, double dNoDataVal){
@@ -379,13 +380,18 @@ double HSISimulation::HSIMinimum(QHash<int, double> dCellContents, double dNoDat
 }
 
 double HSISimulation::HSIWeightedMean(QHash<int, double> dCellContents, double dNoDataVal){
-    Project::GetOutputXML()->LogDebug("WEIGHTED MEAN NOT YET IMPLEMENTED!", 3);
+    double dWMean = 0;
     QHashIterator<int, double> x(dCellContents);
     while (x.hasNext()) {
-        return dNoDataVal;
         x.next();
+        // If anything is NoData then that's the return NoData
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
+        HSICurve * dCurve = m_simulation_hsc_inputs.value(x.key())->GetHSICurve();
+        dWMean += x.value() * dCurve->GetWeight();
     }
-    return dNoDataVal;
+    return dWMean / dCellContents.size();
 }
 
 HSISimulation::~HSISimulation(){
