@@ -177,6 +177,9 @@ void HSISimulation::Run(){
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
+    double cellSum = 0;
+    double usedCellCounter = 0;
+    double cellArea = fabs( GetRasterExtentMeta()->GetCellHeight() * GetRasterExtentMeta()->GetCellWidth() );
     //loop through each DEM cell and do the hillshade calculation, do not loop through edge cells
     for (int i=0; i < GetRasterExtentMeta()->GetRows(); i++)
     {
@@ -221,6 +224,10 @@ void HSISimulation::Run(){
             default:
                 break;
             }
+            if (pReadBuffer[j] != dNoDataVal){
+                cellSum += pReadBuffer[j];
+                usedCellCounter++;
+            }
 
         }
         pOutputRB->RasterIO(GF_Write, 0, i,
@@ -249,6 +256,15 @@ void HSISimulation::Run(){
         CPLFree(qhbuff.value());
     }
     dInBuffers.clear();
+
+    // Now write some results
+    double dWeightedUse = cellSum * cellArea;
+    double dNormWeightedUse = dWeightedUse / usedCellCounter;
+    double percentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
+
+    Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(dWeightedUse) );
+    Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(dNormWeightedUse) );
+    Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(percentUsage) );
 }
 
 void HSISimulation::PrepareInputs(){

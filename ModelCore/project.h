@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QDomElement>
 #include <QDir>
+#include <QTime>
 
 #include "habitatmodel_global.h"
 #include "namedobject.h"
@@ -215,6 +216,12 @@ public:
      * @param sFilePath
      */
     static void EnsureFile(QString sFilePath);
+
+    /**
+     * @brief s_executionTimer the time it takes to run the simulation (in ms)
+     */
+    static QTime m_totalTimer;
+    static QTime m_subprocessTimer;
 
 private:
 

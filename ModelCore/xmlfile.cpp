@@ -6,6 +6,7 @@
 #include <QDomElement>
 #include <QXmlStreamWriter>
 #include "habitat_exception.h"
+#include "simulation.h"
 
 namespace HabitatModel{
 
@@ -72,10 +73,12 @@ void XMLFile::Init(QString &sFilePath){
         throw HabitatException(FILE_READ_ONLY, m_xmlFile->fileName());
     else
     {
+        QDomElement results= m_pDoc->createElement("results");
         QDomElement log = m_pDoc->createElement("log");
         QDomElement meta = m_pDoc->createElement("meta_data");
         QDomElement messages = m_pDoc->createElement("messages");
 
+        log.appendChild(results);
         log.appendChild(meta);
         log.appendChild(messages);
         m_pDoc->appendChild(log);
@@ -88,6 +91,7 @@ void XMLFile::AddMeta(QString sTagName, QString sTagValue){
     QDomElement meta_data, meta_data_tag;
     QDomElement documentElement = m_pDoc->documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
+    QDomText sMsgTxt = m_pDoc->createTextNode(sTagValue.toHtmlEscaped());
 
     if( elements.size() == 0 )
     {
@@ -101,11 +105,67 @@ void XMLFile::AddMeta(QString sTagName, QString sTagValue){
 
     // Create the message itself
     meta_data_tag = m_pDoc->createElement( sTagName );
-    meta_data_tag.setNodeValue(sTagValue);
+    meta_data_tag.appendChild(sMsgTxt);
     meta_data.appendChild( meta_data_tag );
 
     WriteDomToFile();
 }
+
+void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue){
+    QDomElement report_data, sim_data, tagresult, report_data_tag;
+    QDomElement documentElement = m_pDoc->documentElement();
+
+    int nSimID = logSim->GetID();
+    QString simName = logSim->GetName();
+
+    // First search for (create if necessary) a results.
+    QDomNodeList reportEl = documentElement.elementsByTagName( "results" );
+
+    if( reportEl.size() == 0 )
+    {
+      report_data = m_pDoc->createElement( "results" );
+      documentElement.insertBefore( report_data, documentElement );
+    }
+    else if( reportEl.size() == 1 )
+    {
+      report_data = reportEl.at(0).toElement();
+    }
+
+    // Create the simulation node if it doesn't already exist
+    QDomNodeList simEl = report_data.childNodes();
+    QDomText sMsgTxt = m_pDoc->createTextNode(sTagValue.toHtmlEscaped());
+
+    bool bFound = false;
+    for(int n= 0; n < simEl.length(); n++){
+        QDomElement elSimulation = simEl.at(n).toElement();
+
+        QString sSimID = QString::number(nSimID);
+        QString simAttrID = elSimulation.attribute("id");
+
+        if (elSimulation.hasAttribute("id") && simAttrID.compare(sSimID, Qt::CaseInsensitive) == 0){
+            sim_data = elSimulation;
+            bFound = true;
+        }
+    }
+
+    if( !bFound )
+    {
+      sim_data = m_pDoc->createElement( "simulation" );
+      sim_data.setAttribute("id", QString::number(nSimID));
+      sim_data.setAttribute("name", simName);
+      report_data.appendChild(sim_data);
+    }
+
+    // Create the message itself
+    tagresult = m_pDoc->createElement( sTagName );
+    tagresult.appendChild(sMsgTxt);
+    tagresult.appendChild( report_data_tag );
+    sim_data.appendChild(tagresult);
+
+    WriteDomToFile();
+
+}
+
 
 void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 {

@@ -10,6 +10,7 @@
 
 #include <QFile>
 #include <QDomElement>
+#include "simulation.h"
 
 
 
@@ -74,6 +75,13 @@ public:
     void AddMeta(QString sTagName, QString sTagValue);
 
     /**
+     * @brief AddResult Add a <result> tag
+     * @param sTagName
+     * @param sTagValue
+     */
+    void AddResult(Simulation * logSim, QString sTagName, QString sTagValue);
+
+    /**
      * @brief WriteDomToFile
      */
     void WriteDomToFile();
@@ -83,6 +91,7 @@ public:
      * @return
      */
     inline QDomDocument * Document(){ return m_pDoc; }
+
 
 private:
     QFile * m_xmlFile;

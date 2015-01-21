@@ -7,6 +7,7 @@
 #include <QXmlStreamWriter>
 #include <QHash>
 #include <QDir>
+#include <QTime>
 
 #include "xmlfile.h"
 #include "simulation.h"
@@ -36,6 +37,8 @@ QHash<int, ProjectInput *> Project::m_raw_project_inputs_store;
 QHash<int, HSC *> Project::m_HSC_store;
 QHash<int, Simulation *> Project::m_simulation_store;
 
+QTime Project::m_totalTimer;
+QTime Project::m_subprocessTimer;
 XMLFile * Project::m_XMLInput;
 XMLFile * Project::m_XMLOutput;
 QDomDocument * Project::m_elConfig;
@@ -48,6 +51,8 @@ Project::Project(const char * psProjectRoot,
                  const char * psXMLInput,
                  const char * psXMLOutput)
 {
+
+    m_totalTimer.start();
 
     m_XMLInput = new XMLFile(psXMLInput, true);
 
@@ -78,6 +83,7 @@ Project::Project(const char * psProjectRoot,
     // Load the models necessary to that particular simulation: HSI Curves etc.
     LoadSimulations();
 
+    m_XMLOutput->AddMeta("LoadTime", QString::number(m_totalTimer.elapsed()/1000));
 }
 
 
@@ -91,7 +97,7 @@ int Project::Run()
         sim.value()->Run();
     }
     m_XMLOutput->Log("Simulations Completed Successfully.");
-
+    m_XMLOutput->AddMeta("TotalTime", QString::number(m_totalTimer.elapsed()/1000));
     return PROCESS_OK;
 }
 
@@ -295,12 +301,15 @@ void Project::LoadHSCs(){
 }
 
 
-void Project::ProjectError(int nErrorCode){ ProjectError(nErrorCode, ""); }
+void Project::ProjectError(int nErrorCode){
+    ProjectError(nErrorCode, "");
+}
 
 void Project::ProjectError(int nErrorCode, QString m_sEvidence){
     GetOutputXML()->Log(HabitatException::GetReturnCodeOnlyAsString(nErrorCode),  m_sEvidence, SEVERITY_ERROR, 1);
     throw HabitatException(nErrorCode, m_sEvidence);
 }
+
 
 QString Project::SanitizePath(QString sPath){
     // It's possible this will need to be more complicated
@@ -331,6 +340,8 @@ void Project::EnsureFile(QString sFilePath){
 }
 
 Project::~Project(){
+
+
 
     // Empty the survey store
     QHashIterator<int, HMVariable *> i(m_hmvariable_store);
