@@ -58,6 +58,9 @@ Project::Project(const char * psProjectRoot,
 
     m_XMLOutput = new XMLFile(psXMLOutput, false);
 
+    Project::GetOutputXML()->Log("Opened Input XML File: " + QString(psXMLInput) );
+    Project::GetOutputXML()->Log("Opened Output XML File: " + QString(psXMLOutput) );
+
     // This is mostly a convenience: a pointer to the
     // Entire input Configuration DOM
     m_elConfig = m_XMLInput->Document();
