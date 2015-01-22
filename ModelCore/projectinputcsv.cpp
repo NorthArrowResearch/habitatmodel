@@ -33,8 +33,17 @@ ProjectInputCSV::ProjectInputCSV( const ProjectInputCSV &source): ProjectInput(s
 
 void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){
 
+    if (sXFieldName.compare("") == 0){
+        Project::ProjectError(MISSING_FIELD, "the X field was not specified");
+    }
+    else if (sYFieldName.compare("") ==0){
+        Project::ProjectError(MISSING_FIELD, "the Y field was not specified");
+    }
+
     m_sXFieldName = sXFieldName;
     m_sYFieldName = sYFieldName;
+
+
     //NOte: m_sFieldName only gets set on prepare()
 }
 
@@ -57,6 +66,8 @@ void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
     const QByteArray qbDataFieldName = GetValueFieldName().toLocal8Bit();
 
     Project::GetOutputXML()->Log("Create Tif from CSV: " + sCSVFilePath , 3);
+
+
 
     RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
                                        qbFinalRaster.data(),
