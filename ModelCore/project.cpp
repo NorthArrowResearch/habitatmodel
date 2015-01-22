@@ -147,7 +147,7 @@ void Project::LoadSimulations(){
 void Project::LoadProjectDataSources(){
 
     QDomNodeList elProjectInputs = m_elConfig->elementsByTagName("ProjectDataSources");
-
+    bool hasRasters = false;
     for(int n= 0; n < elProjectInputs.length(); n++){
         ProjectInput * p_projectinput;
 
@@ -162,6 +162,7 @@ void Project::LoadProjectDataSources(){
         case PROJECT_INPUT_RASTER :
             p_projectinput = new ProjectInputRaster(&elProjectInput);
             m_raw_project_inputs_store.insert(nProjectInputID, p_projectinput);
+            hasRasters = true;
             break;
         case PROJECT_INPUT_VECTOR :
             p_projectinput = new ProjectInputVector(&elProjectInput);
@@ -176,6 +177,9 @@ void Project::LoadProjectDataSources(){
             break;
 
         }
+    }
+    if (!hasRasters){
+        ProjectError(NO_RASTERS, "For now you need at least one raster so that the CSV bounds get set properly.");
     }
 }
 
