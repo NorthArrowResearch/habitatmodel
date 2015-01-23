@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 0.1.0
+VERSION = 1.0.2
 DEFINES += VERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 
 TARGET = HabitatModel

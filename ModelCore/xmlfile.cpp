@@ -220,7 +220,7 @@ void XMLFile::WriteDomToFile(){
     int n = 0;
     while ( !m_xmlFile->open( QIODevice::WriteOnly | QIODevice::Text ) ){
         n++;
-        if (n=10)
+        if (n >= 50)
             throw HabitatException(FILE_WRITE_ERROR,  m_xmlFile->fileName());
         mySleep(100);
     }
