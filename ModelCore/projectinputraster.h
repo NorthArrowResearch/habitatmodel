@@ -21,7 +21,7 @@ public:
 
     inline ProjectInput * Clone(){ return new ProjectInputRaster(*this); }
 
-    void Prepare(RasterManager::RasterMeta *TemplateRasterMeta);
+    void Prepare(Simulation * pSimulation);
 
     inline void SetValueFieldName(QString sValueField){ return; }
 

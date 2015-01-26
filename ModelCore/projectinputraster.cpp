@@ -21,7 +21,7 @@ void ProjectInputRaster::Init(){
 
 }
 
-void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
+void ProjectInputRaster::Prepare(Simulation * pSimulation){
 
     QString sOriginalRaster = GetSourceFilePath();
 
@@ -31,6 +31,8 @@ void ProjectInputRaster::Prepare(RasterManager::RasterMeta * TemplateRasterMeta)
     Project::EnsureFile(sFinalPath);
 
     Project::GetOutputXML()->LogDebug("Copying file' : " + sOriginalRaster + " to:  " + sFinalPath , 3);
+
+    RasterManager::RasterMeta * TemplateRasterMeta = pSimulation->GetRasterExtentMeta();
 
     // Rasterman doesn't support Qstring so we have to step everything down to char*
     const QByteArray qbOriginalRaster = sOriginalRaster.toLocal8Bit();

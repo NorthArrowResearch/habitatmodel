@@ -18,6 +18,7 @@ enum ProjectErrorCodes {
     , NO_RASTERS
     , MISSING_FIELD
     , RASTERMAN_EXCEPTION
+    , XML_INPUT_ERROR
 
     , DEBUG
     , UNDEFINED_ERROR
@@ -73,6 +74,9 @@ public:
             break;
         case NO_RASTERS:
             return "No Rasters found. Exiting";
+            break;
+        case XML_INPUT_ERROR:
+            return "Problem with the input XML";
             break;
         case RASTERMAN_EXCEPTION:
             return "RasterMan Exception";

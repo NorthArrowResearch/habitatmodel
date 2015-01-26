@@ -47,34 +47,39 @@ void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){
     //NOte: m_sFieldName only gets set on prepare()
 }
 
-void ProjectInputCSV::Prepare(RasterManager::RasterMeta * TemplateRasterMeta){
+void ProjectInputCSV::Prepare(Simulation * pSimulation){
 
     Project::GetOutputXML()->Log("Preparing CSV Input: " + GetName() , 3);
 
-    QString sCSVFilePath = GetSourceFilePath();
-    QString sFinalRasterPath = GetPreparedRasterFileName();
+    // We only need a raster if one is requested.
+    if (pSimulation->HasOutputRaster()){
+        QString sCSVFilePath = GetSourceFilePath();
+        QString sFinalRasterPath = GetPreparedRasterFileName();
 
-    // Make sure there's a directory and delete any duplicate files.
-    Project::EnsureFile(sFinalRasterPath);
+        // Make sure there's a directory and delete any duplicate files.
+        Project::EnsureFile(sFinalRasterPath);
 
-    // Rasterman doesn't support Qstring so we have to step everything down to char*
-    const QByteArray qbCSVFilePath = sCSVFilePath.toLocal8Bit();
-    const QByteArray qbFinalRaster = sFinalRasterPath.toLocal8Bit();
+        // Rasterman doesn't support Qstring so we have to step everything down to char*
+        const QByteArray qbCSVFilePath = sCSVFilePath.toLocal8Bit();
+        const QByteArray qbFinalRaster = sFinalRasterPath.toLocal8Bit();
 
-    const QByteArray qbXFieldName = GetXFieldName().toLocal8Bit();
-    const QByteArray qbYFieldName = GetYFieldName().toLocal8Bit();
-    const QByteArray qbDataFieldName = GetValueFieldName().toLocal8Bit();
+        const QByteArray qbXFieldName = GetXFieldName().toLocal8Bit();
+        const QByteArray qbYFieldName = GetYFieldName().toLocal8Bit();
+        const QByteArray qbDataFieldName = GetValueFieldName().toLocal8Bit();
 
-    Project::GetOutputXML()->Log("Create Tif from CSV: " + sCSVFilePath , 3);
+        Project::GetOutputXML()->Log("Create Tif from CSV: " + sCSVFilePath , 3);
 
 
 
-    RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
-                                       qbFinalRaster.data(),
-                                       qbXFieldName.data(),
-                                       qbYFieldName.data(),
-                                       qbDataFieldName.data(),
-                                       TemplateRasterMeta );
+        RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
+                                           qbFinalRaster.data(),
+                                           qbXFieldName.data(),
+                                           qbYFieldName.data(),
+                                           qbDataFieldName.data(),
+                                           pSimulation->GetRasterExtentMeta());
+
+    }
+
 }
 
 

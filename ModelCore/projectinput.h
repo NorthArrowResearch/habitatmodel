@@ -18,12 +18,12 @@ enum ProjectInputTypeCodes {
     PROJECT_INPUT_VECTOR = 2,
     PROJECT_INPUT_CSV = 3
 };
-class RasterMeta;
 class ProjectInputVector;
 class ProjectInputRaster;
 class ProjectInputCSV;
 class Unit;
 class HMVariable;
+class Simulation;
 
 class ProjectInput : public NamedObjectWithID
 {
@@ -42,10 +42,9 @@ public:
 
     /**
      * @brief Prepare
-     * @param TemplateRaster
-     * @param NewPath
+     * @param pSimulation
      */
-    virtual void Prepare(RasterManager::RasterMeta * TemplateRasterMeta) = 0;
+    virtual void Prepare(Simulation * pSimulation) = 0;
 
     /**
      * @brief SetValueFieldName

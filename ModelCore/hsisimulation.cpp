@@ -12,10 +12,9 @@
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 #include "gdal_priv.h"
-
+#include "simulation.h"
 
 namespace HabitatModel{
-
 
 HSISimulation::HSISimulation(QDomElement *elSimulation)
     : Simulation(elSimulation)
@@ -54,18 +53,15 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 
     // Now, if this thing is a raster we need to add it to the ExtentRectangle
     // For this simulation
-    AddRastersToExtents();
-
+    if (HasOutputRaster()){
+        AddRastersToExtents();
+    }
     // Now that all the inputs are loaded we know the extent of the laoded
     // Rasters and we can prepare the inputs.
     PrepareInputs();
 }
 
 void HSISimulation::AddRastersToExtents(){
-
-    // No Rasters, no point
-    if (!HasRasters())
-        return;
 
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
 
@@ -102,8 +98,26 @@ void HSISimulation::Run(){
      **/
     Project::GetOutputXML()->Log("Starting Simulation Run: " + GetName() , 0);
 
-    QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
+    if (HasOutputRaster()){
+        RunRasterHSI();
+    }
 
+    if (HasOutputCSV()){
+        RunCSVHSI();
+    }
+
+    Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+    Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+    Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+}
+
+void HSISimulation::RunCSVHSI(){
+
+}
+
+void HSISimulation::RunRasterHSI(){
+
+    QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
 
     while (dSimHSCInputs.hasNext()) {
         dSimHSCInputs.next();
@@ -258,13 +272,11 @@ void HSISimulation::Run(){
     dInBuffers.clear();
 
     // Now write some results
-    double dWeightedUse = cellSum * cellArea;
-    double dNormWeightedUse = dWeightedUse / usedCellCounter;
-    double percentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
+    m_dWeightedUse = cellSum * cellArea;
+    m_dNormWeightedUse = m_dWeightedUse / usedCellCounter;
+    m_dPercentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
 
-    Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(dWeightedUse) );
-    Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(dNormWeightedUse) );
-    Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(percentUsage) );
+
 }
 
 void HSISimulation::PrepareInputs(){
@@ -274,7 +286,8 @@ void HSISimulation::PrepareInputs(){
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
     while (i.hasNext()) {
         i.next();
-        i.value()->GetProjectInput()->Prepare(GetRasterExtentMeta());
+        Simulation * pThisSim = this;
+        i.value()->GetProjectInput()->Prepare(pThisSim);
     }
 }
 

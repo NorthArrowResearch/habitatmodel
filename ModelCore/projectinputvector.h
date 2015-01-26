@@ -37,7 +37,7 @@ public:
      * @brief Prepare
      * @param TemplateRaster
      */
-    void Prepare(RasterManager::RasterMeta * TemplateRaster);
+    void Prepare(Simulation * pSimulation);
 
 
     /**

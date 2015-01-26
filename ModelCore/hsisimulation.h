@@ -53,11 +53,14 @@ public:
      */
     inline SimulationHSCInput * GetSimulationHSCInput(int nIndex) const { return m_simulation_hsc_inputs.value(nIndex); }
 
+
     /**
      * @brief AddRastersToExtents
      */
     void AddRastersToExtents();
 
+    void RunRasterHSI();
+    void RunCSVHSI();
 private:
 
     void PrepareVectorRasters();
@@ -66,6 +69,9 @@ private:
 
     HSI * m_hsiRef;
     QString m_HSISourcePath;
+
+
+
 
     // Hash store of simulationhsc inputs related to this sim.
     QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;

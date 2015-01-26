@@ -50,6 +50,10 @@ public:
 
     inline QString GetFolder(){ return m_sfolder; }
 
+    inline bool HasOutputRaster(){ return m_bOutputRaster; }
+    inline bool HasOutputCSV(){ return m_bOutputCSV; }
+
+
     /**
      * @brief GetRasterExtentMeta
      * @return
@@ -67,12 +71,20 @@ protected:
     QString m_OutputRasterFileName;
     bool m_HasRasters;
 
+    // Results Variables
+    double m_dWeightedUse;
+    double m_dNormWeightedUse;
+    double m_dPercentUsage;
+
+
 private:
     /**
      * @brief m_sfolder the simulation folder relative to project root
      */
     QString m_sfolder;
     QString m_screated_by;
+    bool m_bOutputRaster;
+    bool m_bOutputCSV;
 
     QString m_screated_on;
 

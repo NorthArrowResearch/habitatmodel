@@ -59,7 +59,7 @@ public:
      * @brief Prepare
      * @param csvRasterMeta
      */
-    void Prepare(RasterManager::RasterMeta * TemplateRaster);
+    void Prepare(Simulation * pSimulation);
 
     /**
      * @brief Init

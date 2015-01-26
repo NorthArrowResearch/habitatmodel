@@ -47,6 +47,23 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_screated_on = elSimulation->firstChildElement("CreatedOn").text();
     m_screated_by = elSimulation->firstChildElement("CreatedBy").text();
 
+    QString OutputRaster = elSimulation->firstChildElement("OutputRaster").text();
+    QString OutputCSV = elSimulation->firstChildElement("OutputCSV").text();
+
+    m_bOutputRaster = false;
+    m_bOutputCSV = false;
+
+    if (OutputRaster == "true" || OutputRaster == "1")
+        m_bOutputRaster = true;
+
+    if (OutputCSV == "true" || OutputCSV == "1")
+        m_bOutputCSV = true;
+
+
+    if (!m_bOutputCSV && !m_bOutputCSV){
+        throw HabitatException(XML_INPUT_ERROR, "OutputRaster and OutputCSV cannot both be false");
+    }
+
     Init();
 
 }
