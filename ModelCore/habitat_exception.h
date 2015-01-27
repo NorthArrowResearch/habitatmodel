@@ -19,6 +19,7 @@ enum ProjectErrorCodes {
     , MISSING_FIELD
     , RASTERMAN_EXCEPTION
     , XML_INPUT_ERROR
+    , CSV_INPUT_ERROR
 
     , DEBUG
     , UNDEFINED_ERROR
@@ -80,6 +81,9 @@ public:
             break;
         case RASTERMAN_EXCEPTION:
             return "RasterMan Exception";
+            break;
+        case CSV_INPUT_ERROR:
+            return "Input CSV Error";
             break;
         case MISSING_FIELD:
             return "Field missing";

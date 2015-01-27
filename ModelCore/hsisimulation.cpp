@@ -21,8 +21,6 @@ namespace HabitatModel{
 HSISimulation::HSISimulation(QDomElement *elSimulation)
     : Simulation(elSimulation)
 {
-    m_NumRasters = 0;
-    m_NumCSVs = 0;
 
     QDomElement * elHSI = NULL;
     // Now Create our HSI object if there is one.
@@ -116,137 +114,169 @@ void HSISimulation::Run(){
     Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
 }
 
-void HSISimulation::RunCSVHSI(int nmethod){
+void HSISimulation::RunCSVHSI(int nMethod){
     Project::GetOutputXML()->Log("Beginning CSV input processing: " + m_bOutputCSV , 2);
 
-    QString sXField;
-    QString sYField;
-    QString sInputCSVFile;
-    QList<ProjectInputCSV * > qlInputList;
-    QList<int> nKeepCols;
-    QStringList qlKeepColNames;
-    QHash<QString, double> qhInputValues;
-    int nlinenumber = 0;
-
-    // Find all the Inputs that come from a single CSV and collect them
+    QString sXField, sYField, sInputCSVFile;
+    QHash<int, HSC * > qhHSCs;
     QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
+    double dNoDataVal = std::numeric_limits<double>::min();
 
-    // Get all the CSV inputs and parse out the columns we need.
+    // We need the name of the CSV file and the X and Y field so we do one
+    // Loop to find the first instance.
     while (dSimHSCInputs.hasNext()) {
         dSimHSCInputs.next();
         SimulationHSCInput * pSimHSCInput= dSimHSCInputs.value();
-        // Here is the curve we want
         HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
         ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
         if ( ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput )){
-            qlInputList.append(InputCSV);
-            if (sXField.isEmpty()){
-                sXField == InputCSV->GetXFieldName();
-            }
-            if (sYField.isEmpty()){
-                sYField == InputCSV->GetYFieldName();
-            }
-            if (sInputCSVFile.isEmpty()){
-                sInputCSVFile == InputCSV->GetInputFileName();
-            }
+            // Set X,Y and file field from the first input with valid values
+            sXField == InputCSV->GetXFieldName();
+            sYField == InputCSV->GetYFieldName();
+            sInputCSVFile == InputCSV->GetInputFileName();
+            break; // Not ideal
         }
     }
 
+
     if (sXField.isEmpty()){
-        Project::ProjectError(MISSING_FIELD, "the X field could not be determined.");
+        Project::ProjectError(CSV_INPUT_ERROR, "the X field could not be determined.");
     }
     if (sInputCSVFile.isEmpty()){
-        Project::ProjectError(MISSING_FIELD, "the CSV input path could not be determined.");
+        Project::ProjectError(CSV_INPUT_ERROR, "the CSV input path could not be determined.");
     }
 
     // Open the input CSV file as ReadOnly
+    // --------------------------------------------
     QFile InputCSVFile(m_bOutputCSV);
-    if (!InputCSVFile.open(QFile::ReadOnly)){{
+    if (!InputCSVFile.open(QFile::ReadOnly)){
         throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
     }
 
     // Create and open a new CSV file for writing
+    // --------------------------------------------
     QFile outputCSVFile(m_bOutputCSV);
     if (!outputCSVFile.open(QFile::WriteOnly|QFile::Truncate)){
         throw HabitatException(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + m_bOutputCSV  );
     }
-    QTextStream qtsOutputStream(outputCSVFile);
+    QTextStream qtsOutputStream(&outputCSVFile);
 
     // --------------------------------------------
     // Go line-by-line in the CSV file, calculating HSI values
     // --------------------------------------------
-    int xcol=-1, ycol=-1, zcol=-1;
+    int xcol=-1, ycol=-1;
+    int nlinenumber = 0;
 
-    while (line = InputCSVFile.readLine()) {
-        QString line = file.readLine();
-        QStringList slCSVcells = line.split(",");
+    while ( !InputCSVFile.atEnd() ){
 
-        QListIterator<QString> nCSVCol(slCSVcells);
+        QString CSVline = InputCSVFile.readLine();
+        //        "X", "Y", "Depth", "Velocity";
+        QStringList slCSVcells = CSVline.split(","); //Note: this will fail if headers items contain commans
+        QStringList slCSVInputs;
+        QStringList slCSVOutputs;
 
-         // First line is the header and is where we decide what fields are what
-        if (nlinenumber == 0){
-            while (nCSVCol.hasNext()){
-                nCSVCol.next();
-                int idx = nCSVCol-slCSVcells.begin();
-                slCSVcells.append("HSI Output");
+        // Line 1: This is a special case
+        // this is where we decide what to keep and what to lose
+        // --------------------------------------------------------
+        double cellSum = 0;
+        double usedCellCounter = 0;
+        int nColNumber = 0;
+        if ( nlinenumber == 0 ){
+            // First we have to decide which columns to keep
+            foreach (QString sCSVCol, slCSVcells){
+
+                ProjectInputCSV::CSVCellClean(sCSVCol);
+
                 // Keep it if its the X Field
-                if (csvItem.compare(sXField, Qt::CaseInsensitive) == 0 ){
-                    xcol = idx;
-                    nKeepCols.append(idx);
+                if (sCSVCol.compare(sXField, Qt::CaseInsensitive) == 0 ){
+                    xcol = nColNumber;
+                    slCSVInputs.append(sCSVCol);
                 }
                 // Keep it if its the Y Field
-                if (csvItem.compare(sYField, Qt::CaseInsensitive) == 0 ){
-                    ycol = idx;
-                    nKeepCols.append(idx);
+                else if (sCSVCol.compare(sYField, Qt::CaseInsensitive) == 0 ){
+                    ycol = nColNumber;
+                    slCSVInputs.append(sCSVCol);
                 }
-                // Keep it if its a data field. Also append a column on the header
-                else if (LISTOFCOLNAMES.contains(csvItem)  ){
-                    nKeepCols.append(idx);
-                    slCSVcells.append("HS_" + csvItem);
-                }
-                // Throw away anything else
                 else {
-                    slCSVcells.removeAt(idx);
+                    // Find all the Inputs that come from a single CSV and collect them
+                    dSimHSCInputs.toFront();
+                    while (dSimHSCInputs.hasNext()) {
+                        dSimHSCInputs.next();
+                        SimulationHSCInput * pSimHSCInput= dSimHSCInputs.value();
+                        HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
+
+                        // Here is the corresponding input raster
+                        ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
+                        ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput );
+                        if ( sCSVCol.compare(InputCSV->GetValueFieldName(), Qt::CaseInsensitive) == 0 ){
+                            // add this input to our list
+                            qhHSCs.insert(nColNumber, pHSC);
+                            slCSVInputs.append(sCSVCol);
+                            slCSVOutputs.append("\"HS_" + sCSVCol + "\"");
+                        }
+                    }
                 }
+                nColNumber++;
             }
+            // This is the final, combined output column
+            slCSVOutputs.append("\"HSI Output\"");
         }
-        else {
-            while (nCSVCol.hasNext()){
-                nCSVCol.next();
-                int idx = nCSVCol-slCSVcells.begin();
+        else{
+            QHashIterator<int, HSC *> qhiHSCs(qhHSCs);
+            QHash<int, double> dCellContents;
 
-                QString csvItem = ProjectInputCSV::CSVCellClean(sCSVcell);
-                else if (!nKeepCols.contains(idx)){
-                    slCSVcells.removeAt(idx);
+
+            // Add X and Y first without altering them
+            if (xcol >= 0){
+                QString xVal = slCSVcells.at(xcol);
+                ProjectInputCSV::CSVCellClean( xVal );
+                slCSVInputs.append(xVal);
+            }
+            else
+            Project::ProjectError(CSV_INPUT_ERROR, "Could not find X-col" + sXField + " in CSV file.");
+
+            if (ycol >= 0){
+                QString yVal = slCSVcells.at(ycol);
+                ProjectInputCSV::CSVCellClean( yVal );
+                slCSVInputs.append(yVal);
+            }
+
+            // Now loop through all cols and add the ones we need.
+            foreach (QString sCSVCol, slCSVcells){
+                if (qhHSCs.contains(nColNumber)){
+                    // Now add the HSI value
+                    ProjectInputCSV::CSVCellClean( sCSVCol );
+                    slCSVInputs.append(sCSVCol);
+                    if (double dCSVItem = sCSVCol.toDouble()){
+                        HSC * cellHSC = qhHSCs.find(nColNumber).value();
+                        double dProcessedCSVItem = cellHSC->ProcessValue(dCSVItem);
+
+                        if (dProcessedCSVItem != dNoDataVal){
+                            cellSum += dProcessedCSVItem;
+                            usedCellCounter++;
+                            dCellContents.insert(nColNumber, dProcessedCSVItem);
+                            slCSVOutputs.append(QString::number(dProcessedCSVItem));
+                        }
+                        else{
+                            slCSVOutputs.append(" ");
+                        }
+                    }
+                    // Could not make a double. Just insert a blank space
+                    else {
+                        slCSVOutputs.append(" ");
+                    }
+
                 }
+                nColNumber++;
             }
-
-            // Now add the HSI value
-            switch (nMethod) {
-            case HSI_PRODUCT:
-                slCSVcells.append(HSICombineProduct(dCellContents, dNoDataVal) );
-                break;
-            case HSI_ARITHMETIC_MEAN:
-                slCSVcells.append( HSIArithmeticMean(dCellContents, dNoDataVal) );
-                break;
-            case HSI_GEOMETRIC_MEAN:
-                slCSVcells.append( HSIGeometricMean(dCellContents, dNoDataVal) );
-                break;
-            case HSI_MINIMUM:
-                slCSVcells.append( HSIMinimum(dCellContents, dNoDataVal) );
-                break;
-            case HSI_WEIGHTED_MEAN:
-                slCSVcells.append( HSIWeightedMean(dCellContents, dNoDataVal) );
-                break;
-            default:
-                break;
-            }
+            double dCombinedVal = CombineValues(nMethod, dCellContents, dNoDataVal);
+            slCSVOutputs.append(QString::number(  dCombinedVal ));
         }
 
         // here's where we need to get the correct row of the output. Replace
-        qtsOutputStream << slCSVcells.join(", ") << "\n"; // this writes first line with two columns
+        qtsOutputStream << slCSVInputs.join(", ") << ", " << slCSVOutputs.join(", ")  << "\n"; // this writes first line with two columns
         nlinenumber++;
     }
 
@@ -255,7 +285,7 @@ void HSISimulation::RunCSVHSI(int nmethod){
 
 }
 
-void HSISimulation::RunRasterHSI(int nmethod){
+void HSISimulation::RunRasterHSI(int nMethod){
 
     QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
 
@@ -285,8 +315,7 @@ void HSISimulation::RunRasterHSI(int nmethod){
      *  Combine Output Rasters using HSIMethodID in HSI
      *
      **/
-
-    Project::GetOutputXML()->Log("Combining all output rasters into one: " + GetHSISourcePath() , 2);
+    Project::GetOutputXML()->Log("Combining all output rasters into one: " + m_bOutputRaster , 2);
 
 
     // Our final output Raster file name and path:
@@ -355,26 +384,8 @@ void HSISimulation::RunRasterHSI(int nmethod){
                 QHIBIterator.next();
                 dCellContents.insert(QHIBIterator.key(), QHIBIterator.value()[j]);
             }
+            pReadBuffer[j] = CombineValues(nMethod, dCellContents, dNoDataVal);
 
-            switch (nMethod) {
-            case HSI_PRODUCT:
-                pReadBuffer[j] = HSICombineProduct(dCellContents, dNoDataVal);
-                break;
-            case HSI_ARITHMETIC_MEAN:
-                pReadBuffer[j] = HSIArithmeticMean(dCellContents, dNoDataVal);
-                break;
-            case HSI_GEOMETRIC_MEAN:
-                pReadBuffer[j] = HSIGeometricMean(dCellContents, dNoDataVal);
-                break;
-            case HSI_MINIMUM:
-                pReadBuffer[j] = HSIMinimum(dCellContents, dNoDataVal);
-                break;
-            case HSI_WEIGHTED_MEAN:
-                pReadBuffer[j] = HSIWeightedMean(dCellContents, dNoDataVal);
-                break;
-            default:
-                break;
-            }
             if (pReadBuffer[j] != dNoDataVal){
                 cellSum += pReadBuffer[j];
                 usedCellCounter++;
@@ -414,6 +425,29 @@ void HSISimulation::RunRasterHSI(int nmethod){
     m_dPercentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
 
 
+}
+
+double HSISimulation::CombineValues(int nMethod, QHash<int, double> dCellContents, double dNoDataVal){
+    switch (nMethod) {
+    case HSI_PRODUCT:
+        return HSICombineProduct(dCellContents, dNoDataVal);
+        break;
+    case HSI_ARITHMETIC_MEAN:
+        return HSIArithmeticMean(dCellContents, dNoDataVal);
+        break;
+    case HSI_GEOMETRIC_MEAN:
+        return HSIGeometricMean(dCellContents, dNoDataVal);
+        break;
+    case HSI_MINIMUM:
+        return HSIMinimum(dCellContents, dNoDataVal);
+        break;
+    case HSI_WEIGHTED_MEAN:
+        return  HSIWeightedMean(dCellContents, dNoDataVal);
+        break;
+    default:
+        return dNoDataVal;
+        break;
+    }
 }
 
 void HSISimulation::PrepareInputs(){
@@ -471,7 +505,11 @@ void HSISimulation::LoadInputs(){
 
             ProjectInput * pInput = newHSCInput->GetProjectInput();
             if ( dynamic_cast <ProjectInputRaster *> ( pInput ))
-                m_HasRasters = true;
+                m_NumRasters++;
+            else if ( dynamic_cast <ProjectInputCSV *> ( pInput ))
+                m_NumCSVs++;
+            else if ( dynamic_cast <ProjectInputCSV *> ( pInput ))
+                m_NumVectors++;
 
             m_simulation_hsc_inputs.insert(n, newHSCInput);
         }

@@ -47,6 +47,10 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_screated_on = elSimulation->firstChildElement("CreatedOn").text();
     m_screated_by = elSimulation->firstChildElement("CreatedBy").text();
 
+    m_NumRasters = 0;
+    m_NumCSVs = 0;
+    m_NumVectors = 0;
+
     m_bOutputRaster = elSimulation->firstChildElement("OutputRaster").text();
     m_bOutputCSV = elSimulation->firstChildElement("OutputCSV").text();
 

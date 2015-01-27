@@ -68,6 +68,7 @@ protected:
 
     int m_NumRasters;
     int m_NumCSVs;
+    int m_NumVectors;
 
     // Results Variables
     double m_dWeightedUse;

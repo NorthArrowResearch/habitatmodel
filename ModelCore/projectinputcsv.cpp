@@ -93,13 +93,4 @@ void ProjectInputCSV::CSVCellClean(QString & value){
 }
 
 
-QStringList ProjectInputCSV::processLineFromCSV(QString line)
-{
-    QStringList strings = line.split(",");
-    tempQRecord.setValue("City",strings.value(1));
-    tempQRecord.setValue("Region",strings.value(2));
-    MyModel->insertRecord(-1,tempQRecord);
-}
-
-
 }

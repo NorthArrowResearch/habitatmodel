@@ -52,9 +52,23 @@ public:
      * @brief AddRastersToExtents
      */
     void AddRastersToExtents();
-
-    void RunRasterHSI(int nmethod);
+    /**
+     * @brief RunRasterHSI
+     * @param nmethod
+     */
+    void RunRasterHSI(int nMethod);
+    /**
+     * @brief RunCSVHSI
+     * @param nmethod
+     */
     void RunCSVHSI(int nmethod);
+    /**
+     * @brief CombineValues
+     * @param nMethod
+     * @param dCellContents
+     * @param dNoDataVal
+     */
+    double CombineValues(int nMethod, QHash<int, double> dCellContents, double dNoDataVal);
 private:
 
     void PrepareVectorRasters();
