@@ -23,6 +23,10 @@ HSCCategorical::~HSCCategorical()
     m_categories.clear();
 }
 
+double HSCCategorical::ProcessValue(double sInput){
+    return GetHSValue(sInput, std::numeric_limits<double>::min());
+}
+
 void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
 
     Project::GetOutputXML()->Log("Processing Raster against Categorical HSC: " + sInput , 2);

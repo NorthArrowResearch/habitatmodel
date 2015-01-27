@@ -34,6 +34,14 @@ public:
      * @param sOutputRasterMeta
      */
     void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta *sOutputRasterMeta);
+
+    /**
+     * @brief ProcessValue
+     * @param sInput
+     * @return
+     */
+    double ProcessValue(double sInput);
+
 private:
 
     // We have some stores of objects related to this

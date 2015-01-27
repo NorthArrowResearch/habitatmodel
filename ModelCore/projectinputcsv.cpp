@@ -37,7 +37,7 @@ void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){
         Project::ProjectError(MISSING_FIELD, "the X field was not specified");
     }
     else if (sYFieldName.compare("") ==0){
-        Project::ProjectError(MISSING_FIELD, "the Y field was not specified");
+        Project::GetOutputXML()->Log("the Y field was not specified. Continuing as if X is an index field.", 3);
     }
 
     m_sXFieldName = sXFieldName;
@@ -69,8 +69,6 @@ void ProjectInputCSV::Prepare(Simulation * pSimulation){
 
         Project::GetOutputXML()->Log("Create Tif from CSV: " + sCSVFilePath , 3);
 
-
-
         RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
                                            qbFinalRaster.data(),
                                            qbXFieldName.data(),
@@ -80,6 +78,27 @@ void ProjectInputCSV::Prepare(Simulation * pSimulation){
 
     }
 
+}
+
+/**
+ * @brief ProjectInputCSV::CSVCellClean -- Helper function to clean CSV cells
+ * @param value
+ */
+void ProjectInputCSV::CSVCellClean(QString & value){
+
+    value = value.trimmed();
+    value.remove(QChar('"'), Qt::CaseInsensitive);
+    // Trim again in case there's whitespace inside the quotes
+    value = value.trimmed();
+}
+
+
+QStringList ProjectInputCSV::processLineFromCSV(QString line)
+{
+    QStringList strings = line.split(",");
+    tempQRecord.setValue("City",strings.value(1));
+    tempQRecord.setValue("Region",strings.value(2));
+    MyModel->insertRecord(-1,tempQRecord);
 }
 
 

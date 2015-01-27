@@ -26,6 +26,10 @@ void HSCInflection::AddCoordinatePair(int nHSCID, HSCCoordinatePair *pHSCCoordPa
     m_coordinate_pairs.insert(nHSCID, new HSCCoordinatePair(pHSCCoordPair));
 }
 
+double HSCInflection::ProcessValue(double sInput){
+    return GetHSValue(sInput, std::numeric_limits<double>::min());
+}
+
 void HSCInflection::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
 
     Project::GetOutputXML()->Log("Processing Raster against HSC Inflection Curve: " + sInput , 2);

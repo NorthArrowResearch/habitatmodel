@@ -13,13 +13,16 @@
 #include "rastermanager_exception.h"
 #include "gdal_priv.h"
 #include "simulation.h"
+#include <QTextStream>
+#include <QList>
 
 namespace HabitatModel{
 
 HSISimulation::HSISimulation(QDomElement *elSimulation)
     : Simulation(elSimulation)
 {
-    m_HasRasters = false;
+    m_NumRasters = 0;
+    m_NumCSVs = 0;
 
     QDomElement * elHSI = NULL;
     // Now Create our HSI object if there is one.
@@ -43,9 +46,6 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     m_hsiRef = new HSI(elHSI);
 
     delete elHSI;
-
-    QString sRawHSISourcePath = QDir::fromNativeSeparators(elSimulation->firstChildElement("HSISourcePath").text());
-    m_HSISourcePath = Project::GetProjectRootPath()->filePath(Project::SanitizePath(sRawHSISourcePath));
 
     // Make a local copy of each data source as a local simulation object,
     // ready for preparation.
@@ -98,12 +98,17 @@ void HSISimulation::Run(){
      **/
     Project::GetOutputXML()->Log("Starting Simulation Run: " + GetName() , 0);
 
+    //Method of combination
+    int nMethod = DetermineMethod();
+
+    // This will work for Raster  and CSV+Raster output cases
     if (HasOutputRaster()){
-        RunRasterHSI();
+        RunRasterHSI(nMethod);
     }
 
-    if (HasOutputCSV()){
-        RunCSVHSI();
+    // The above will work for both Raster or CSV+Raster but not for CSV only.
+    if (HasOutputCSV() && !HasOutputRaster()){
+        RunCSVHSI(nMethod);
     }
 
     Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
@@ -111,11 +116,146 @@ void HSISimulation::Run(){
     Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
 }
 
-void HSISimulation::RunCSVHSI(){
+void HSISimulation::RunCSVHSI(int nmethod){
+    Project::GetOutputXML()->Log("Beginning CSV input processing: " + m_bOutputCSV , 2);
+
+    QString sXField;
+    QString sYField;
+    QString sInputCSVFile;
+    QList<ProjectInputCSV * > qlInputList;
+    QList<int> nKeepCols;
+    QStringList qlKeepColNames;
+    QHash<QString, double> qhInputValues;
+    int nlinenumber = 0;
+
+    // Find all the Inputs that come from a single CSV and collect them
+    QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
+
+    // Get all the CSV inputs and parse out the columns we need.
+    while (dSimHSCInputs.hasNext()) {
+        dSimHSCInputs.next();
+        SimulationHSCInput * pSimHSCInput= dSimHSCInputs.value();
+        // Here is the curve we want
+        HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
+
+        // Here is the corresponding input raster
+        ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
+        if ( ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput )){
+            qlInputList.append(InputCSV);
+            if (sXField.isEmpty()){
+                sXField == InputCSV->GetXFieldName();
+            }
+            if (sYField.isEmpty()){
+                sYField == InputCSV->GetYFieldName();
+            }
+            if (sInputCSVFile.isEmpty()){
+                sInputCSVFile == InputCSV->GetInputFileName();
+            }
+        }
+    }
+
+    if (sXField.isEmpty()){
+        Project::ProjectError(MISSING_FIELD, "the X field could not be determined.");
+    }
+    if (sInputCSVFile.isEmpty()){
+        Project::ProjectError(MISSING_FIELD, "the CSV input path could not be determined.");
+    }
+
+    // Open the input CSV file as ReadOnly
+    QFile InputCSVFile(m_bOutputCSV);
+    if (!InputCSVFile.open(QFile::ReadOnly)){{
+        throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
+    }
+
+    // Create and open a new CSV file for writing
+    QFile outputCSVFile(m_bOutputCSV);
+    if (!outputCSVFile.open(QFile::WriteOnly|QFile::Truncate)){
+        throw HabitatException(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + m_bOutputCSV  );
+    }
+    QTextStream qtsOutputStream(outputCSVFile);
+
+    // --------------------------------------------
+    // Go line-by-line in the CSV file, calculating HSI values
+    // --------------------------------------------
+    int xcol=-1, ycol=-1, zcol=-1;
+
+    while (line = InputCSVFile.readLine()) {
+        QString line = file.readLine();
+        QStringList slCSVcells = line.split(",");
+
+        QListIterator<QString> nCSVCol(slCSVcells);
+
+         // First line is the header and is where we decide what fields are what
+        if (nlinenumber == 0){
+            while (nCSVCol.hasNext()){
+                nCSVCol.next();
+                int idx = nCSVCol-slCSVcells.begin();
+                slCSVcells.append("HSI Output");
+                // Keep it if its the X Field
+                if (csvItem.compare(sXField, Qt::CaseInsensitive) == 0 ){
+                    xcol = idx;
+                    nKeepCols.append(idx);
+                }
+                // Keep it if its the Y Field
+                if (csvItem.compare(sYField, Qt::CaseInsensitive) == 0 ){
+                    ycol = idx;
+                    nKeepCols.append(idx);
+                }
+                // Keep it if its a data field. Also append a column on the header
+                else if (LISTOFCOLNAMES.contains(csvItem)  ){
+                    nKeepCols.append(idx);
+                    slCSVcells.append("HS_" + csvItem);
+                }
+                // Throw away anything else
+                else {
+                    slCSVcells.removeAt(idx);
+                }
+            }
+        }
+        else {
+            while (nCSVCol.hasNext()){
+                nCSVCol.next();
+                int idx = nCSVCol-slCSVcells.begin();
+
+                QString csvItem = ProjectInputCSV::CSVCellClean(sCSVcell);
+                else if (!nKeepCols.contains(idx)){
+                    slCSVcells.removeAt(idx);
+                }
+            }
+
+            // Now add the HSI value
+            switch (nMethod) {
+            case HSI_PRODUCT:
+                slCSVcells.append(HSICombineProduct(dCellContents, dNoDataVal) );
+                break;
+            case HSI_ARITHMETIC_MEAN:
+                slCSVcells.append( HSIArithmeticMean(dCellContents, dNoDataVal) );
+                break;
+            case HSI_GEOMETRIC_MEAN:
+                slCSVcells.append( HSIGeometricMean(dCellContents, dNoDataVal) );
+                break;
+            case HSI_MINIMUM:
+                slCSVcells.append( HSIMinimum(dCellContents, dNoDataVal) );
+                break;
+            case HSI_WEIGHTED_MEAN:
+                slCSVcells.append( HSIWeightedMean(dCellContents, dNoDataVal) );
+                break;
+            default:
+                break;
+            }
+        }
+
+        // here's where we need to get the correct row of the output. Replace
+        qtsOutputStream << slCSVcells.join(", ") << "\n"; // this writes first line with two columns
+        nlinenumber++;
+    }
+
+    InputCSVFile.close();
+    outputCSVFile.close();
 
 }
 
-void HSISimulation::RunRasterHSI(){
+void HSISimulation::RunRasterHSI(int nmethod){
 
     QHashIterator<int, SimulationHSCInput *> dSimHSCInputs(m_simulation_hsc_inputs);
 
@@ -148,19 +288,16 @@ void HSISimulation::RunRasterHSI(){
 
     Project::GetOutputXML()->Log("Combining all output rasters into one: " + GetHSISourcePath() , 2);
 
-    //Method of combination
-    int nMethod = DetermineMethod();
 
     // Our final output Raster file name and path:
-    QString sHSIOutputFile = GetHSISourcePath();
-    Project::EnsureFile(sHSIOutputFile);
+    Project::EnsureFile(m_bOutputRaster);
 
     QHash<int, GDALRasterBand *> dDatasets;
     QHash<int, double *> dInBuffers;
 
-    if (HasRasters() == false) {
-        throw HabitatException(NO_RASTERS, "For now you need to have at least one raster in your inputs.");
-    }
+    //    if (HasRasters() == false) {
+    //        throw HabitatException(NO_RASTERS, "For now if you want a raster output you need to have at least one raster in your inputs.");
+    //    }
     int sRasterCols = GetRasterExtentMeta()->GetCols();
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
@@ -186,7 +323,7 @@ void HSISimulation::RunRasterHSI(){
     double dNoDataVal = GetRasterExtentMeta()->GetNoDataValue();
 
     // Step it down to char* for Rasterman and create+open an output file
-    const QByteArray sHSIOutputQB = GetHSISourcePath().toLocal8Bit();
+    const QByteArray sHSIOutputQB = m_bOutputRaster.toLocal8Bit();
     GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sHSIOutputQB.data(), GetRasterExtentMeta());
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
@@ -436,6 +573,9 @@ HSISimulation::~HSISimulation(){
     delete m_hsiRef;
 
 }
+
+
+
 
 
 }

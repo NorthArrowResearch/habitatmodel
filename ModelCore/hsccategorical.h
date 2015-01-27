@@ -36,6 +36,13 @@ public:
      * @param sOutputRasterMeta
      */
     void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta *sOutputRasterMeta);
+    /**
+     * @brief ProcessValue
+     * @param sInput
+     * @return
+     */
+    double ProcessValue(double sInput);
+
 private:
 
     QHash<int, HSCCategory *> m_categories;

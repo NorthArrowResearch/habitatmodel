@@ -41,6 +41,8 @@ public:
      */
     inline QString GetYFieldName() const { return m_sYFieldName; }
 
+    inline bool HasYField(){ return m_sYFieldName.compare("",Qt::CaseInsensitive) == 0; }
+
     /**
      * @brief getValueField
      * @return
@@ -67,6 +69,8 @@ public:
      * @param sYFieldName
      */
     void Init(QString sXFieldName, QString sYFieldName);
+
+    static void CSVCellClean(QString &value);
 private:
 
     QString m_sXFieldName;

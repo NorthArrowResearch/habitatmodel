@@ -46,13 +46,10 @@ public:
      */
     void Init();
 
-    inline bool HasRasters(){ return m_HasRasters; }
+    inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") == 0;}
+    inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") == 0;  }
 
     inline QString GetFolder(){ return m_sfolder; }
-
-    inline bool HasOutputRaster(){ return m_bOutputRaster; }
-    inline bool HasOutputCSV(){ return m_bOutputCSV; }
-
 
     /**
      * @brief GetRasterExtentMeta
@@ -62,14 +59,15 @@ public:
 
     bool InputBelongs(ProjectInput *pInput);
 
-
-
 protected:
 
     void RasterUnion(RasterManager::RasterMeta *pMeta);
 
-    QString m_OutputRasterFileName;
-    bool m_HasRasters;
+    QString m_bOutputRaster;
+    QString m_bOutputCSV;
+
+    int m_NumRasters;
+    int m_NumCSVs;
 
     // Results Variables
     double m_dWeightedUse;
@@ -83,8 +81,6 @@ private:
      */
     QString m_sfolder;
     QString m_screated_by;
-    bool m_bOutputRaster;
-    bool m_bOutputCSV;
 
     QString m_screated_on;
 
