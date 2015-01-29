@@ -86,9 +86,6 @@ Be sure to use different paths for `debug` and `release` libraries so you can de
 * [Philip Bailey](https://github.com/philipbaileynar)
 * [Matt Reimer](https://github.com/MattReimer)
 
-### Contributors
-
-* Konrad Hafen
 
 ## License
 
