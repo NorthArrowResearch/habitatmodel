@@ -89,4 +89,4 @@ Be sure to use different paths for `debug` and `release` libraries so you can de
 
 ## License
 
-[GPL V3](./LICENSE.txt)
+[GPL V3](LICENSE.txt)

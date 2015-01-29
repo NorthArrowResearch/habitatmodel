@@ -500,7 +500,7 @@ void HSISimulation::LoadInputs(){
 
     Project::GetOutputXML()->Log("Loading Inputs for HSI Simulation: " + GetName() , 2);
 
-    QDomNodeList elHSCInputs = Project::GetDefDom()->elementsByTagName("SimulationHSCInputs");
+    QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
 
     for(int n= 0; n < elHSCInputs.length(); n++){
         QDomElement elHSCInput = elHSCInputs.at(n).toElement();

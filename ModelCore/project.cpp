@@ -39,15 +39,17 @@ QHash<int, Simulation *> Project::m_simulation_store;
 
 QTime Project::m_totalTimer;
 QTime Project::m_subprocessTimer;
+
 XMLFile * Project::m_XMLInputDef;
 XMLFile * Project::m_XMLInputConf;
 XMLFile * Project::m_XMLOutput;
+
 QDomDocument * Project::m_elConf;
 QDomDocument * Project::m_elDef;
+
 QDir * Project::m_ProjectRootDir;
 
 /* --------------------------------------------------------------- */
-
 
 Project::Project(const char * psProjectRoot,
                  const char * psXMLInputDef,
@@ -353,8 +355,6 @@ void Project::EnsureFile(QString sFilePath){
 }
 
 Project::~Project(){
-
-
 
     // Empty the survey store
     QHashIterator<int, HMVariable *> i(m_hmvariable_store);
