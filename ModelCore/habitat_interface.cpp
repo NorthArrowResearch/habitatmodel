@@ -7,13 +7,14 @@
 namespace HabitatModel{
 
 extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
-                                      const char * psXMLInput,
+                                      const char * psXMLInputDef,
+                                      const char * psXMLInputConf,
                                       const char * psXMLOutput,
                                       char * sErr, unsigned int iBufferSize)
 {
     int eResult = PROCESS_OK;
     try{
-        HabitatModel::Project theProject(psProjectRoot, psXMLInput, psXMLOutput);
+        HabitatModel::Project theProject(psProjectRoot, psXMLInputDef, psXMLInputConf, psXMLOutput);
         eResult = theProject.Run();
     }
     catch (HabitatException& e){

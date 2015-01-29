@@ -39,31 +39,37 @@ QHash<int, Simulation *> Project::m_simulation_store;
 
 QTime Project::m_totalTimer;
 QTime Project::m_subprocessTimer;
-XMLFile * Project::m_XMLInput;
+XMLFile * Project::m_XMLInputDef;
+XMLFile * Project::m_XMLInputConf;
 XMLFile * Project::m_XMLOutput;
-QDomDocument * Project::m_elConfig;
+QDomDocument * Project::m_elConf;
+QDomDocument * Project::m_elDef;
 QDir * Project::m_ProjectRootDir;
 
 /* --------------------------------------------------------------- */
 
 
 Project::Project(const char * psProjectRoot,
-                 const char * psXMLInput,
+                 const char * psXMLInputDef,
+                 const char * psXMLInputConf,
                  const char * psXMLOutput)
 {
 
     m_totalTimer.start();
 
-    m_XMLInput = new XMLFile(psXMLInput, true);
+    m_XMLInputDef = new XMLFile(psXMLInputDef, true);
+    m_XMLInputConf = new XMLFile(psXMLInputConf, true);
 
     m_XMLOutput = new XMLFile(psXMLOutput, false);
 
-    Project::GetOutputXML()->Log("Opened Input XML File: " + QString(psXMLInput) );
+    Project::GetOutputXML()->Log("Opened Input Definitions XML File: " + QString(psXMLInputDef) );
+    Project::GetOutputXML()->Log("Opened Input Configurations XML File: " + QString(psXMLInputConf) );
     Project::GetOutputXML()->Log("Opened Output XML File: " + QString(psXMLOutput) );
 
     // This is mostly a convenience: a pointer to the
     // Entire input Configuration DOM
-    m_elConfig = m_XMLInput->Document();
+    m_elConf = m_XMLInputConf->Document();
+    m_elDef = m_XMLInputDef->Document();
 
     m_ProjectRootDir = new QDir(SanitizePath(psProjectRoot));
     if (!m_ProjectRootDir->exists())
@@ -108,7 +114,7 @@ int Project::Run()
 void Project::LoadSimulations(){
 
     m_XMLOutput->Log("Loading Simulations...",1);
-    QDomNodeList elSimulations =  m_elConfig->elementsByTagName("Simulations");
+    QDomNodeList elSimulations =  m_elConf->elementsByTagName("Simulations");
 
     if (elSimulations.count() == 0)
         ProjectError(DOM_NODE_MISSING, "There are no <Simulations> in the configuration XML file.");
@@ -149,7 +155,7 @@ void Project::LoadSimulations(){
 
 void Project::LoadProjectDataSources(){
 
-    QDomNodeList elProjectInputs = m_elConfig->elementsByTagName("ProjectDataSources");
+    QDomNodeList elProjectInputs = m_elConf->elementsByTagName("ProjectDataSources");
     bool hasRasters = false;
     for(int n= 0; n < elProjectInputs.length(); n++){
         ProjectInput * p_projectinput;
@@ -204,7 +210,7 @@ HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath
 void Project::LoadLookupTable(){
 
     m_XMLOutput->Log("Loading Lookup Table", 2);
-    QDomNodeList elListItems = m_elConfig->elementsByTagName("LookupListItems");
+    QDomNodeList elListItems = m_elDef->elementsByTagName("LookupListItems");
 
     //Loop through the LookipListItems nodes and load them into the hasj store
     for(int n= 0; n < elListItems.length(); n++){
@@ -220,7 +226,7 @@ void Project::LoadLookupTable(){
 void Project::LoadUnits(){
 
     m_XMLOutput->Log("Loading Units", 2);
-    QDomNodeList elUnits = m_elConfig->elementsByTagName("Units");
+    QDomNodeList elUnits = m_elDef->elementsByTagName("Units");
 
     // Loop over all Unit elements in the XML file.
     for(int n= 0; n < elUnits.length(); n++){
@@ -233,7 +239,7 @@ void Project::LoadUnits(){
 void Project::LoadHMVariables(){
 
     m_XMLOutput->Log("Loading HMVariables", 2);
-    QDomNodeList elvars = m_elConfig->elementsByTagName("Variables");
+    QDomNodeList elvars = m_elDef->elementsByTagName("Variables");
 
     // Loop over all HMVariable elements in the XML file
     for(int n= 0; n < elvars.length(); n++){
@@ -247,7 +253,7 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
     // Create one if it doesn't exist.
     if ( !GetHSC(nNewHSCID) ){
 
-        QDomNodeList elHSCs = m_elConfig->elementsByTagName("HSC");
+        QDomNodeList elHSCs = m_elDef->elementsByTagName("HSC");
 
         for(int nc= 0; nc < elHSCs.length(); nc++){
             QDomElement elHSC = elHSCs.at(nc).toElement();
@@ -277,7 +283,7 @@ void Project::LoadHSCs(){
 
      // Load first the coordinate pairs and then the HSC categories. If the parent
     // HSC doesn't exist it is created.
-    QDomNodeList elHSCCoordPairs = m_elConfig->elementsByTagName("HSCCoordinatePairs");
+    QDomNodeList elHSCCoordPairs = m_elDef->elementsByTagName("HSCCoordinatePairs");
 
     for(int ncp= 0; ncp < elHSCCoordPairs.length(); ncp++){
 
@@ -292,7 +298,7 @@ void Project::LoadHSCs(){
 
 
     // Now process the HSC Categories
-    QDomNodeList elHSCCategories = m_elConfig->elementsByTagName("HSCCategories");
+    QDomNodeList elHSCCategories = m_elDef->elementsByTagName("HSCCategories");
 
     for(int ncat= 0; ncat < elHSCCategories.length(); ncat++){
 
@@ -399,7 +405,8 @@ Project::~Project(){
     m_simulation_store.clear();
 
     delete m_ProjectRootDir;
-    delete m_XMLInput;
+    delete m_XMLInputDef;
+    delete m_XMLInputConf;
     delete m_XMLOutput;
 }
 

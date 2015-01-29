@@ -29,7 +29,9 @@ public:
      * @param psXMLInput
      * @param psXMLOutput
      */
-    Project(const char * psProjectRoot, const char *psXMLInput,
+    Project(const char * psProjectRoot,
+            const char *psXMLInputDef,
+            const char *psXMLInputConf,
             const char * psXMLOutput);
 
     ~Project();
@@ -66,7 +68,13 @@ public:
      * @brief GetConfigDom
      * @return
      */
-    inline static QDomDocument * GetConfigDom() { return m_elConfig; }
+    inline static QDomDocument * GetConfigDom() { return m_elConf; }
+
+    /**
+     * @brief GetConfigDom
+     * @return
+     */
+    inline static QDomDocument * GetDefDom() { return m_elDef; }
 
     /**
      * @brief GetOutputXML
@@ -238,9 +246,11 @@ private:
     static QDir * m_ProjectRootDir;
 
     // Our input XML and OUTput log file
-    static XMLFile * m_XMLInput;
+    static XMLFile * m_XMLInputDef;
+    static XMLFile * m_XMLInputConf;
     static XMLFile * m_XMLOutput;
-    static QDomDocument * m_elConfig;
+    static QDomDocument * m_elConf;
+    static QDomDocument * m_elDef;
 
     // Stores of objects related to projects that we will
     // need to be able to lookup

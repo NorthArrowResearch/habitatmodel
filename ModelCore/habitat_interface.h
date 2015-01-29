@@ -13,7 +13,7 @@ namespace HabitatModel{
  * @return
  */
 extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
-                                      const char *psXMLInput,
+                                      const char *psXMLInputDef, const char *psXMLInputConf,
                                       const char * psXMLOutput, char *sErr, unsigned int iBufferSize);
 
 

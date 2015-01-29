@@ -26,7 +26,7 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     // Now Create our HSI object if there is one.
     int nSimulationHSIID = elSimulation->firstChildElement("HSIID").text().toInt();
 
-    QDomNodeList elConfigHSIs = Project::GetConfigDom()->elementsByTagName("HSI");
+    QDomNodeList elConfigHSIs = Project::GetDefDom()->elementsByTagName("HSI");
 
     bool bHSIFound = false;
     for(int n= 0; n < elConfigHSIs.length(); n++){
@@ -500,7 +500,7 @@ void HSISimulation::LoadInputs(){
 
     Project::GetOutputXML()->Log("Loading Inputs for HSI Simulation: " + GetName() , 2);
 
-    QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
+    QDomNodeList elHSCInputs = Project::GetDefDom()->elementsByTagName("SimulationHSCInputs");
 
     for(int n= 0; n < elHSCInputs.length(); n++){
         QDomElement elHSCInput = elHSCInputs.at(n).toElement();
