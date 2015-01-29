@@ -189,9 +189,7 @@ void Project::LoadProjectDataSources(){
 
         }
     }
-    if (!hasRasters){
-        ProjectError(NO_RASTERS, "For now you need at least one raster so that the CSV bounds get set properly.");
-    }
+
 }
 
 HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath){
