@@ -41,7 +41,7 @@ public:
      * @param sInput
      * @return
      */
-    double ProcessValue(double sInput);
+    double ProcessValue(double sInput, double dNoDataValue);
 
 private:
 

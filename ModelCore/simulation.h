@@ -46,8 +46,8 @@ public:
      */
     void Init();
 
-    inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") == 0;}
-    inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") == 0;  }
+    inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") != 0;}
+    inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") != 0;  }
 
     inline QString GetFolder(){ return m_sfolder; }
 

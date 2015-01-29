@@ -31,7 +31,7 @@ public:
 
     virtual void ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta) = 0;
 
-    virtual double ProcessValue(double sInput) = 0;
+    virtual double ProcessValue(double sInput,  double dNoDataValue) = 0;
 
 private:
     NamedObjectWithID * m_source;

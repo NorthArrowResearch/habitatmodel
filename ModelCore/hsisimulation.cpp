@@ -133,9 +133,9 @@ void HSISimulation::RunCSVHSI(int nMethod){
         ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
         if ( ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput )){
             // Set X,Y and file field from the first input with valid values
-            sXField == InputCSV->GetXFieldName();
-            sYField == InputCSV->GetYFieldName();
-            sInputCSVFile == InputCSV->GetInputFileName();
+            sXField = InputCSV->GetXFieldName();
+            sYField = InputCSV->GetYFieldName();
+            sInputCSVFile = InputCSV->GetSourceFilePath();
             break; // Not ideal
         }
     }
@@ -150,10 +150,13 @@ void HSISimulation::RunCSVHSI(int nMethod){
 
     // Open the input CSV file as ReadOnly
     // --------------------------------------------
-    QFile InputCSVFile(m_bOutputCSV);
+    QFile InputCSVFile(sInputCSVFile);
     if (!InputCSVFile.open(QFile::ReadOnly)){
         throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
     }
+
+    // Our final output Raster file name and path:
+    Project::EnsureFile(m_bOutputCSV);
 
     // Create and open a new CSV file for writing
     // --------------------------------------------
@@ -205,16 +208,16 @@ void HSISimulation::RunCSVHSI(int nMethod){
                     while (dSimHSCInputs.hasNext()) {
                         dSimHSCInputs.next();
                         SimulationHSCInput * pSimHSCInput= dSimHSCInputs.value();
-                        HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
 
                         // Here is the corresponding input raster
                         ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
                         ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput );
-                        if ( sCSVCol.compare(InputCSV->GetValueFieldName(), Qt::CaseInsensitive) == 0 ){
+                        if ( InputCSV && sCSVCol.compare(InputCSV->GetValueFieldName(), Qt::CaseInsensitive) == 0 ){
                             // add this input to our list
-                            qhHSCs.insert(nColNumber, pHSC);
                             slCSVInputs.append(sCSVCol);
                             slCSVOutputs.append("\"HS_" + sCSVCol + "\"");
+                            HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
+                            qhHSCs.insert(nColNumber, pHSC);
                         }
                     }
                 }
@@ -235,7 +238,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
                 slCSVInputs.append(xVal);
             }
             else
-            Project::ProjectError(CSV_INPUT_ERROR, "Could not find X-col" + sXField + " in CSV file.");
+                Project::ProjectError(CSV_INPUT_ERROR, "Could not find X-col" + sXField + " in CSV file.");
 
             if (ycol >= 0){
                 QString yVal = slCSVcells.at(ycol);
@@ -251,7 +254,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
                     slCSVInputs.append(sCSVCol);
                     if (double dCSVItem = sCSVCol.toDouble()){
                         HSC * cellHSC = qhHSCs.find(nColNumber).value();
-                        double dProcessedCSVItem = cellHSC->ProcessValue(dCSVItem);
+                        double dProcessedCSVItem = cellHSC->ProcessValue(dCSVItem, dNoDataVal);
 
                         if (dProcessedCSVItem != dNoDataVal){
                             cellSum += dProcessedCSVItem;
@@ -272,7 +275,10 @@ void HSISimulation::RunCSVHSI(int nMethod){
                 nColNumber++;
             }
             double dCombinedVal = CombineValues(nMethod, dCellContents, dNoDataVal);
-            slCSVOutputs.append(QString::number(  dCombinedVal ));
+            if (dCombinedVal == dNoDataVal)
+                slCSVOutputs.append(" ");
+            else
+                slCSVOutputs.append(QString::number(  dCombinedVal ));
         }
 
         // here's where we need to get the correct row of the output. Replace
@@ -428,6 +434,9 @@ void HSISimulation::RunRasterHSI(int nMethod){
 }
 
 double HSISimulation::CombineValues(int nMethod, QHash<int, double> dCellContents, double dNoDataVal){
+    if (dCellContents.size() == 0)
+        return dNoDataVal;
+
     switch (nMethod) {
     case HSI_PRODUCT:
         return HSICombineProduct(dCellContents, dNoDataVal);
@@ -458,7 +467,9 @@ void HSISimulation::PrepareInputs(){
     while (i.hasNext()) {
         i.next();
         Simulation * pThisSim = this;
-        i.value()->GetProjectInput()->Prepare(pThisSim);
+        // A purely CSV output request needs no preparing of outputs
+        if (HasOutputRaster())
+            i.value()->GetProjectInput()->Prepare(pThisSim);
     }
 }
 

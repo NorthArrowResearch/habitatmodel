@@ -28,7 +28,7 @@ Simulation::Simulation(QDomElement * elSimulation)
     Project::GetOutputXML()->Log("Loading simulation: " + GetName() , 2);
 
     // First set all the member variables according to what's in the XML
-    QString mSimRootFolder = Project::SanitizePath((elSimulation->firstChildElement("Folder").text()));
+    QString mSimRootFolder = Project::SanitizePath( (elSimulation->firstChildElement("Folder").text()) );
 
     m_sfolder =  Project::GetProjectRootPath()->filePath(mSimRootFolder);
 
@@ -51,8 +51,17 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_NumCSVs = 0;
     m_NumVectors = 0;
 
-    m_bOutputRaster = elSimulation->firstChildElement("OutputRaster").text();
-    m_bOutputCSV = elSimulation->firstChildElement("OutputCSV").text();
+    QString OutputRasterPath = Project::SanitizePath(elSimulation->firstChildElement("HSIOutputRaster").text());
+    QString OutputCSVPath = Project::SanitizePath(elSimulation->firstChildElement("HSIOutputCSV").text());
+
+    m_bOutputRaster = "";
+    if (OutputRasterPath.compare("",Qt::CaseInsensitive) != 0){
+        m_bOutputRaster = Project::GetProjectRootPath()->filePath( OutputRasterPath );
+    }
+    m_bOutputCSV = "";
+    if (OutputCSVPath.compare("",Qt::CaseInsensitive) != 0){
+        m_bOutputCSV = Project::GetProjectRootPath()->filePath( OutputCSVPath );
+    }
 
     if (!HasOutputRaster() && !HasOutputCSV()){
         throw HabitatException(XML_INPUT_ERROR, "OutputRaster and OutputCSV cannot both be empty");

@@ -23,8 +23,8 @@ HSCCategorical::~HSCCategorical()
     m_categories.clear();
 }
 
-double HSCCategorical::ProcessValue(double sInput){
-    return GetHSValue(sInput, std::numeric_limits<double>::min());
+double HSCCategorical::ProcessValue(double sInput, double dNoDataValue){
+    return GetHSValue(sInput, dNoDataValue);
 }
 
 void HSCCategorical::ProcessRaster(QString sInput, QString sOutput, RasterManager::RasterMeta * sOutputRasterMeta){
