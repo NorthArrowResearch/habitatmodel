@@ -76,6 +76,9 @@ unix:!macx {
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
+    target.path = /usr/bin
+    INSTALLS += target
+
     # GDAL is required
     LIBS += -L/usr/lib -lgdal
     INCLUDEPATH += /usr/include/gdal
