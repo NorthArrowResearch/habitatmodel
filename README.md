@@ -15,7 +15,7 @@ Habitat Model Console is a C++ tool created by [North Arrow Research](http://nor
 
 ```
 
-## Prerequisites: Qt5 and GDal > 1.10
+## Prerequisites: Qt5, GDal > 1.10 and RasterManager
 
 ### Qt5
 
@@ -35,7 +35,7 @@ Please make sure you have GDaL 1.10 or greater installed on your system.
 
 ### RasterMan
 
-In order to build this you need the [RasterMan](https://bitbucket.org/northarrowresearch/rasterman) library alongside this one in a specific way:
+In order to build this you need the [RasterMan](https://github.com/NorthArrowResearch/rasterman) library alongside this one in a specific way:
 
 
 ```
@@ -47,10 +47,15 @@ In order to build this you need the [RasterMan](https://bitbucket.org/northarrow
 
 ## Compiling:
 
+Once Qt5, GDaL and RasterManager are installed it should just be a matter of running the following:
+
 ```
 qmake -r HabitatModelCPP.pro
-sudo make
+make
+sudo make install
 ```
+
+Now you should have `HabitatModel` in your `/usr/bin` an the `libModelCore.*` files in `/usr/lib`
 
 ## Debugging in OSX
 
