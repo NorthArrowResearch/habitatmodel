@@ -115,6 +115,7 @@ unix:!macx {
 }
 
 INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+message($$INCLUDEPATH)
 DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 
 LIBS += -L$$DESTDIR -lRasterManager
