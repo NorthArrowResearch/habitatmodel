@@ -75,6 +75,8 @@ protected:
     double m_dNormWeightedUse;
     double m_dPercentUsage;
 
+    // On CSV runs we need to know cell size
+    double m_dCellSize;
 
 private:
     /**

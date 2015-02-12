@@ -109,9 +109,12 @@ void HSISimulation::Run(){
         RunCSVHSI(nMethod);
     }
 
-    Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
-    Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
-    Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+    if (m_dWeightedUse >= 0)
+        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+    if (m_dNormWeightedUse >= 0)
+        Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+    if (m_dPercentUsage >= 0)
+        Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
 }
 
 void HSISimulation::RunCSVHSI(int nMethod){
@@ -172,6 +175,9 @@ void HSISimulation::RunCSVHSI(int nMethod){
     int xcol=-1, ycol=-1;
     int nlinenumber = 0;
 
+    double cellSum = 0;
+    double usedCellCounter = 0;
+
     while ( !InputCSVFile.atEnd() ){
 
         QString CSVline = InputCSVFile.readLine();
@@ -183,8 +189,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
         // Line 1: This is a special case
         // this is where we decide what to keep and what to lose
         // --------------------------------------------------------
-        double cellSum = 0;
-        double usedCellCounter = 0;
+
         int nColNumber = 0;
         if ( nlinenumber == 0 ){
             // First we have to decide which columns to keep
@@ -285,6 +290,13 @@ void HSISimulation::RunCSVHSI(int nMethod){
         qtsOutputStream << slCSVInputs.join(", ") << ", " << slCSVOutputs.join(", ")  << "\n"; // this writes first line with two columns
         nlinenumber++;
     }
+
+    // Now write some results
+    m_dWeightedUse = cellSum * m_dCellSize * m_dCellSize;
+    m_dNormWeightedUse = m_dWeightedUse / usedCellCounter;
+    // Note: Percent usage is not a useful stat here so it is not written.
+
+
 
     InputCSVFile.close();
     outputCSVFile.close();

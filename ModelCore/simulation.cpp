@@ -70,6 +70,16 @@ Simulation::Simulation(QDomElement * elSimulation)
         throw HabitatException(XML_INPUT_ERROR, "CSV-only method does not support multiple CSVs at this time.");
     }
 
+    m_dWeightedUse = -1;
+    m_dNormWeightedUse = -1;
+    m_dPercentUsage = -1;
+
+    // For CSV runs we need to know the cell size.
+    double dCellSize = elSimulation->firstChildElement("CellSize").text().toDouble();
+    if (dCellSize > 0)
+        m_dCellSize = dCellSize;
+    else
+        m_dCellSize = -1;
 
     Init();
 
