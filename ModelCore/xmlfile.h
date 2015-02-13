@@ -92,6 +92,11 @@ public:
      */
     inline QDomDocument * Document(){ return m_pDoc; }
 
+    /**
+     * @brief GetTmpFileName
+     * @return
+     */
+    static QString GetTmpFileName(QString xmlOutputFile);
 
 private:
     QFile * m_xmlFile;

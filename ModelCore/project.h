@@ -249,6 +249,7 @@ private:
     static XMLFile * m_XMLInputDef;
     static XMLFile * m_XMLInputConf;
     static XMLFile * m_XMLOutput;
+    static XMLFile * m_XMLTemp;
     static QDomDocument * m_elConf;
     static QDomDocument * m_elDef;
 

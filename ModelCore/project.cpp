@@ -62,6 +62,7 @@ Project::Project(const char * psProjectRoot,
     m_XMLInputDef = new XMLFile(psXMLInputDef, true);
     m_XMLInputConf = new XMLFile(psXMLInputConf, true);
 
+    m_XMLTemp = new XMLFile(XMLFile::GetTmpFileName(psXMLOutput), false);
     m_XMLOutput = new XMLFile(psXMLOutput, false);
 
     Project::GetOutputXML()->Log("Opened Input Definitions XML File: " + QString(psXMLInputDef) );

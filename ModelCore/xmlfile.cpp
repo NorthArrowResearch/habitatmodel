@@ -166,6 +166,25 @@ void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue
 
 }
 
+QString XMLFile::GetTmpFileName(QString xmlOutputFile)
+{
+
+   const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-");
+   const int randomStringLength = 16; // assuming you want random strings of 12 characters
+
+   QString randomString;
+   for(int i=0; i<randomStringLength; ++i)
+   {
+       int index = qrand() % possibleCharacters.length();
+       QChar nextChar = possibleCharacters.at(index);
+       randomString.append(nextChar);
+   }
+
+   XMLFile::GetTmpFileName(psXMLOutput);
+
+   return "_TMP_OUT_" + randomString + ".xml";
+}
+
 
 void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 {
