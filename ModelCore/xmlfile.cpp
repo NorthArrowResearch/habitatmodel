@@ -66,12 +66,17 @@ void XMLFile::Load(QString &sFilePath)
 
 
 void XMLFile::CopyTmpToOutput(){
-    if (QFile::exists(m_sXMLFilePath))
-    {
-        QFile::remove(m_sXMLFilePath);
-    }
+    try{
+        if (QFile::exists(m_sXMLFilePath))
+        {
+            QFile::remove(m_sXMLFilePath);
+        }
 
-    QFile::copy(m_sTMPFilePath, m_sXMLFilePath);
+        QFile::copy(m_sTMPFilePath, m_sXMLFilePath);
+    }catch(std::exception e)
+    {
+         //Do nothing. We don't care that it can't write.
+    }
 }
 
 // Create the file with the base skeleton we need. Then close it.
@@ -81,7 +86,10 @@ void XMLFile::Init(QString &sFilePath){
 
     m_sXMLFilePath = sFilePath;
 
-    m_sTMPFilePath = GetTmpFileName(sFilePath);
+    QFileInfo sNewFileInfo(sFilePath);
+    QDir sNewDir = QDir(sNewFileInfo.absolutePath());
+
+    m_sTMPFilePath = QDir(sNewDir).filePath( GetTmpFileName(sFilePath) );
 
     // If the file was already there remove it
     if (QFile::exists(m_sTMPFilePath))
@@ -267,6 +275,7 @@ void XMLFile::WriteDomToFile(){
     QTextStream stream( m_xmlFile );
     stream << m_pDoc->toString();
     m_xmlFile->close();
+    CopyTmpToOutput();
 
 }
 
