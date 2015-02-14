@@ -98,8 +98,17 @@ public:
      */
     static QString GetTmpFileName(QString xmlOutputFile);
 
+    /**
+     * @brief CopyTmpToOutput update the real file with a copy of the tmp file
+     */
+    void CopyTmpToOutput();
+
 private:
     QFile * m_xmlFile;
+
+    QString m_sXMLFilePath;
+    QString m_sTMPFilePath;
+
     QDomDocument * m_pDoc;
 
     inline void mySleep(int sleepMs)

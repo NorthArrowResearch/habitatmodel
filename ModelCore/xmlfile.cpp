@@ -34,6 +34,14 @@ XMLFile::~XMLFile(){
 
         delete m_xmlFile;
     }
+    // Now clean up the temparary file.
+    if (QFile::exists(m_sTMPFilePath))
+    {
+        QFile::remove(m_sTMPFilePath);
+    }
+
+    // Delete the TMP file
+
     delete m_pDoc;
 }
 
@@ -57,16 +65,29 @@ void XMLFile::Load(QString &sFilePath)
 }
 
 
+void XMLFile::CopyTmpToOutput(){
+    if (QFile::exists(m_sXMLFilePath))
+    {
+        QFile::remove(m_sXMLFilePath);
+    }
+
+    QFile::copy(m_sTMPFilePath, m_sXMLFilePath);
+}
+
 // Create the file with the base skeleton we need. Then close it.
 void XMLFile::Init(QString &sFilePath){
 
     m_pDoc = new QDomDocument;
 
-    // If the file was already there remove it
-    if (QFile::exists(sFilePath))
-        QFile::remove(sFilePath);
+    m_sXMLFilePath = sFilePath;
 
-    m_xmlFile = new QFile(sFilePath);
+    m_sTMPFilePath = GetTmpFileName(sFilePath);
+
+    // If the file was already there remove it
+    if (QFile::exists(m_sTMPFilePath))
+        QFile::remove(m_sTMPFilePath);
+
+    m_xmlFile = new QFile(m_sTMPFilePath);
 
     /*open a file */
     if (!m_xmlFile->open(QIODevice::WriteOnly))
@@ -180,8 +201,6 @@ QString XMLFile::GetTmpFileName(QString xmlOutputFile)
        randomString.append(nextChar);
    }
 
-   XMLFile::GetTmpFileName(psXMLOutput);
-
    return "_TMP_OUT_" + randomString + ".xml";
 }
 
@@ -239,9 +258,9 @@ void XMLFile::WriteDomToFile(){
     int n = 0;
     while ( !m_xmlFile->open( QIODevice::WriteOnly | QIODevice::Text ) ){
         n++;
-        if (n >= 50)
+        if (n >= 100)
             throw HabitatException(FILE_WRITE_ERROR,  m_xmlFile->fileName());
-        mySleep(100);
+        mySleep(50);
     }
 
 
