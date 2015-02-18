@@ -11,6 +11,7 @@
 
 namespace HabitatModel{
 
+QString sTmpPrefix = "_TMP_OUT_";
 
 XMLFile::XMLFile(QString sXmlFile, bool bInput)
 {
@@ -96,11 +97,22 @@ void XMLFile::Init(QString &sFilePath){
     QFileInfo sNewFileInfo(sFilePath);
     QDir sNewDir = QDir(sNewFileInfo.absolutePath());
 
-    m_sTMPFilePath = QDir(sNewDir).filePath( GetTmpFileName(sFilePath) );
+    // Clean up all older TMP files
+    QStringList slTmpFiles;
 
-    // If the file was already there remove it
-    if (QFile::exists(m_sTMPFilePath))
-        QFile::remove(m_sTMPFilePath);
+    QString fileName = sTmpPrefix + "*.xml";
+    slTmpFiles = sNewDir.entryList(QStringList(fileName),
+                                 QDir::Files | QDir::NoSymLinks);
+
+    foreach(QString sTmpFile, slTmpFiles){
+        // If the file was already there remove it
+        QString sTmpFilePath = QDir(sNewDir).filePath( sTmpFile );
+        if (QFile::exists(sTmpFilePath))
+            QFile::remove(sTmpFilePath);
+    }
+
+
+    m_sTMPFilePath = QDir(sNewDir).filePath( GetTmpFileName(sFilePath) );
 
     m_xmlFile = new QFile(m_sTMPFilePath);
 
@@ -229,7 +241,7 @@ QString XMLFile::GetTmpFileName(QString xmlOutputFile)
        randomString.append(nextChar);
    }
 
-   return "_TMP_OUT_" + randomString + ".xml";
+   return sTmpPrefix + randomString + ".xml";
 }
 
 
