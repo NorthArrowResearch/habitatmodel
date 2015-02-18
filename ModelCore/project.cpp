@@ -130,6 +130,12 @@ void Project::LoadSimulations(){
     // ----------------------------------------------------------------------
     for(int n= 0; n < elSimulations.length(); n++){
         QDomElement elSimulation = elSimulations.at(n).toElement();
+        QString sSimName = elSimulation.firstChildElement("Title").text();
+        m_XMLOutput->AddStatus( sSimName, STATUS_INITIALIZED, STATUSTYPE_SIMULATION, 0 );
+    }
+
+    for(int n= 0; n < elSimulations.length(); n++){
+        QDomElement elSimulation = elSimulations.at(n).toElement();
 
         int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
 
