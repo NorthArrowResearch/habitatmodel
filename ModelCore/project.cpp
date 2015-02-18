@@ -79,6 +79,7 @@ Project::Project(const char * psProjectRoot,
 
 
     m_XMLOutput->Log("Starting Simulation Run...");
+    m_XMLOutput->AddStatus("Project", STATUS_INITIALIZED ,STATUSTYPE_PROJECT, m_totalTimer.elapsed()/1000);
 
     // Populate our lookup table hashes with values that every simulation
     // Will need access to.
@@ -88,6 +89,8 @@ Project::Project(const char * psProjectRoot,
     LoadUnits();
     LoadHSCs();
     LoadProjectDataSources();
+
+    m_XMLOutput->AddStatus("Project", STATUES_LOADED ,STATUSTYPE_PROJECT, 0);
 
     // Now load the simulations. This instantiates new Simulation objects
     // Based on the simulation type (HSI, FIS, etc) and each of those will
@@ -109,6 +112,8 @@ int Project::Run()
     }
     m_XMLOutput->Log("Simulations Completed Successfully.");
     m_XMLOutput->AddMeta("TotalTime", QString::number(m_totalTimer.elapsed()/1000));
+
+    m_XMLOutput->AddStatus("Project", STATUS_COMPLETE ,STATUSTYPE_PROJECT, m_totalTimer.elapsed()/1000);
     return PROCESS_OK;
 }
 

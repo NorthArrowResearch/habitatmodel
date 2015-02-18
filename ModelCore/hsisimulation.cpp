@@ -56,7 +56,11 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     }
     // Now that all the inputs are loaded we know the extent of the laoded
     // Rasters and we can prepare the inputs.
+    QTime qtPrepTime;
+    qtPrepTime.start();
     PrepareInputs();
+    Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_PREPARED, STATUSTYPE_SIMULATION, qtPrepTime.elapsed()/1000 );
+
 }
 
 void HSISimulation::AddRastersToExtents(){
@@ -94,6 +98,9 @@ void HSISimulation::Run(){
      *  their curves along the way.
      *
      **/
+    QTime qtRunTime;
+    qtRunTime.start();
+
     Project::GetOutputXML()->Log("Starting Simulation Run: " + GetName() , 0);
 
     //Method of combination
@@ -115,6 +122,10 @@ void HSISimulation::Run(){
         Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
     if (m_dPercentUsage >= 0)
         Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+
+    Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
+
+    Project::GetOutputXML()->Log("Simulation Complete", 1);
 }
 
 void HSISimulation::RunCSVHSI(int nMethod){

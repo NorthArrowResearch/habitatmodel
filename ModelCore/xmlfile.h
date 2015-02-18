@@ -23,8 +23,40 @@ enum XML_LOG_SEVERITY {
     SEVERITY_VERBOSE = 3,
 };
 
+enum StatusCode {
+    STATUS_INITIALIZED
+    , STATUES_LOADED
+    , STATUS_PREPARED
+    , STATUS_COMPLETE
+};
+
+enum StatusType {
+    STATUSTYPE_PROJECT
+    , STATUSTYPE_SIMULATION
+};
+
+
+inline QString enumToString(StatusCode eCode){
+    switch (eCode){
+    case STATUS_INITIALIZED: return "Initialized";
+    case STATUES_LOADED: return "Loaded";
+    case STATUS_PREPARED: return "Prepared Inputs";
+    case STATUS_COMPLETE: return "Complete";
+    default: return "Unknown Status Code";
+    }
+}
+
+inline QString enumToString(StatusType eCode){
+    switch (eCode){
+    case STATUSTYPE_PROJECT: return "Project";
+    case STATUSTYPE_SIMULATION: return "Simulation";
+    default: return "unknown";
+    }
+}
+
 class XMLFile
 {
+
 public:
     XMLFile(QString sXmlFile, bool bInput);
     ~XMLFile();
@@ -103,6 +135,22 @@ public:
      */
     void CopyTmpToOutput();
 
+    /**
+     * @brief AddStatus
+     * @param sID
+     * @param nCode
+     * @param nType
+     * @param time
+     */
+    void AddStatus(QString sID, StatusCode nCode, StatusType nType, int nTime);
+    /**
+     * @brief QueueStatus
+     * @param sID
+     * @param nCode
+     * @param nType
+     * @param nTime
+     */
+    void QueueStatus(QString sID, StatusCode nCode, StatusType nType, int nTime);
 private:
     QFile * m_xmlFile;
 
@@ -123,6 +171,7 @@ private:
 
 
 };
+
 
 }
 #endif // XMLLOGGER_H

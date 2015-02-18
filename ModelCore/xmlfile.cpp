@@ -5,10 +5,12 @@
 #include <QDateTime>
 #include <QDomElement>
 #include <QXmlStreamWriter>
+
 #include "habitat_exception.h"
 #include "simulation.h"
 
 namespace HabitatModel{
+
 
 XMLFile::XMLFile(QString sXmlFile, bool bInput)
 {
@@ -41,7 +43,6 @@ XMLFile::~XMLFile(){
     }
 
     // Delete the TMP file
-
     delete m_pDoc;
 }
 
@@ -84,6 +85,12 @@ void XMLFile::Init(QString &sFilePath){
 
     m_pDoc = new QDomDocument;
 
+    // Clean up the status items
+    QDomElement documentElement = m_pDoc->documentElement();
+    QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
+
+
+
     m_sXMLFilePath = sFilePath;
 
     QFileInfo sNewFileInfo(sFilePath);
@@ -102,14 +109,23 @@ void XMLFile::Init(QString &sFilePath){
         throw HabitatException(FILE_READ_ONLY, m_xmlFile->fileName());
     else
     {
-        QDomElement results= m_pDoc->createElement("results");
+
+
         QDomElement log = m_pDoc->createElement("log");
+        QDomElement status = m_pDoc->createElement("status");
+        QDomElement results = m_pDoc->createElement("results");
         QDomElement meta = m_pDoc->createElement("meta_data");
         QDomElement messages = m_pDoc->createElement("messages");
 
         log.appendChild(results);
         log.appendChild(meta);
         log.appendChild(messages);
+        log.appendChild(status);
+
+        QDomNode xmlNode = m_pDoc->createProcessingInstruction("xml",
+                                     "version=\"1.0\" encoding=\"ISO-8859-1\"");
+
+        m_pDoc->appendChild(xmlNode);
         m_pDoc->appendChild(log);
 
     }
@@ -197,12 +213,16 @@ void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue
 
 QString XMLFile::GetTmpFileName(QString xmlOutputFile)
 {
+    QTime time = QTime::currentTime();
+    qsrand((uint)time.msec());
+
 
    const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-");
    const int randomStringLength = 16; // assuming you want random strings of 12 characters
 
    QString randomString;
-   for(int i=0; i<randomStringLength; ++i)
+
+   for(int i=0; i < randomStringLength; ++i)
    {
        int index = qrand() % possibleCharacters.length();
        QChar nextChar = possibleCharacters.at(index);
@@ -258,6 +278,42 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 }
 
 
+void XMLFile::QueueStatus(QString sID, StatusCode nCode, StatusType nType, int nTime)
+{
+    QDomElement statusEl, statusNode;
+    QDomElement documentElement = m_pDoc->documentElement();
+    QDomNodeList statusNL = documentElement.elementsByTagName( "status" );
+
+    if( statusNL.size() == 0 )
+    {
+      statusEl = m_pDoc->createElement( "status" );
+      documentElement.insertBefore( statusEl, documentElement );
+    }
+    else if( statusNL.size() == 1 )
+    {
+      statusEl = statusNL.at(0).toElement();
+    }
+
+    // Create the message itself
+    statusNode = m_pDoc->createElement( enumToString( nType ) );
+    statusNode.setAttribute( "value", enumToString( nCode ) );
+    statusNode.setAttribute( "time", QString::number( nTime ) );
+    statusNode.setAttribute( "id", sID );
+
+    // Timestamps are useful
+    QDateTime local(QDateTime::currentDateTime());
+    statusNode.setAttribute("timestamp", local.toString(Qt::ISODate));
+
+    statusEl.appendChild( statusNode );
+
+    WriteDomToFile();
+}
+
+void XMLFile::AddStatus(QString sID, StatusCode nCode, StatusType nType, int nTime){
+    QueueStatus(sID, nCode, nType, nTime);
+    WriteDomToFile();
+}
+
 void XMLFile::WriteDomToFile(){
 
     // Great. Now Write the domelement to the file.
@@ -271,9 +327,10 @@ void XMLFile::WriteDomToFile(){
         mySleep(50);
     }
 
+    const int Indent = 4;
 
-    QTextStream stream( m_xmlFile );
-    stream << m_pDoc->toString();
+    QTextStream out(m_xmlFile);
+    m_pDoc->save(out, Indent);
     m_xmlFile->close();
     CopyTmpToOutput();
 
