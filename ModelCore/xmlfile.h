@@ -128,7 +128,7 @@ public:
      * @brief GetTmpFileName
      * @return
      */
-    static QString GetTmpFileName(QString xmlOutputFile);
+    QString GetTmpFileName(QString xmlOutputFile);
 
     /**
      * @brief CopyTmpToOutput update the real file with a copy of the tmp file

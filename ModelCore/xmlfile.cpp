@@ -90,8 +90,6 @@ void XMLFile::Init(QString &sFilePath){
     QDomElement documentElement = m_pDoc->documentElement();
     QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
 
-
-
     m_sXMLFilePath = sFilePath;
 
     QFileInfo sNewFileInfo(sFilePath);
