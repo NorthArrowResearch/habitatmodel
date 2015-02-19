@@ -274,7 +274,6 @@ void HSISimulation::RunCSVHSI(int nMethod){
 
                         if (dProcessedCSVItem != dNoDataVal){
                             cellSum += dProcessedCSVItem;
-                            usedCellCounter++;
                             dCellContents.insert(nColNumber, dProcessedCSVItem);
                             slCSVOutputs.append(QString::number(dProcessedCSVItem));
                         }
@@ -293,8 +292,10 @@ void HSISimulation::RunCSVHSI(int nMethod){
             double dCombinedVal = CombineValues(nMethod, dCellContents, dNoDataVal);
             if (dCombinedVal == dNoDataVal)
                 slCSVOutputs.append(" ");
-            else
-                slCSVOutputs.append(QString::number(  dCombinedVal ));
+            else {
+                slCSVOutputs.append( QString::number(  dCombinedVal ) );
+                usedCellCounter++;
+            }
         }
 
         // here's where we need to get the correct row of the output. Replace
