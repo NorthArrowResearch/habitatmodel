@@ -73,6 +73,10 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_dWeightedUse = -1;
     m_dNormWeightedUse = -1;
     m_dPercentUsage = -1;
+    m_nOccupiedCells = -1;
+    m_nTotalCells = -1;
+    m_nCSVLines = -1;
+    m_dCellArea = -1;
 
     // For CSV runs we need to know the cell size.
     double dCellSize = elSimulation->firstChildElement("CellSize").text().toDouble();

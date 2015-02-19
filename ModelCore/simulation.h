@@ -74,6 +74,10 @@ protected:
     double m_dWeightedUse;
     double m_dNormWeightedUse;
     double m_dPercentUsage;
+    int m_nOccupiedCells;
+    int m_nTotalCells;
+    int m_nCSVLines;
+    double m_dCellArea;
 
     // On CSV runs we need to know cell size
     double m_dCellSize;

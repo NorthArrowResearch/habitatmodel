@@ -120,7 +120,6 @@ void XMLFile::Init(QString &sFilePath){
     else
     {
 
-
         QDomElement log = m_pDoc->createElement("log");
         QDomElement status = m_pDoc->createElement("status");
         QDomElement results = m_pDoc->createElement("results");
