@@ -281,7 +281,6 @@ void HSISimulation::RunCSVHSI(int nMethod){
                         double dProcessedCSVItem = cellHSC->ProcessValue(dCSVItem, dNoDataVal);
 
                         if (dProcessedCSVItem != dNoDataVal){
-                            cellSum += dProcessedCSVItem;
                             dCellContents.insert(nColNumber, dProcessedCSVItem);
                             slCSVOutputs.append(QString::number(dProcessedCSVItem));
                         }
@@ -301,8 +300,9 @@ void HSISimulation::RunCSVHSI(int nMethod){
             if (dCombinedVal == dNoDataVal)
                 slCSVOutputs.append(" ");
             else {
-                slCSVOutputs.append( QString::number(  dCombinedVal ) );
+                cellSum += dCombinedVal;
                 usedCellCounter++;
+                slCSVOutputs.append( QString::number(  dCombinedVal ) );
             }
         }
 
