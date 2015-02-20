@@ -312,11 +312,12 @@ void HSISimulation::RunCSVHSI(int nMethod){
     }
 
     // Now write some results
-    m_dWeightedUse = cellSum * m_dCellSize * m_dCellSize;
-    m_dNormWeightedUse = m_dWeightedUse / usedCellCounter;
+    m_dCellArea = m_dCellSize * m_dCellSize;
+    m_dWeightedUse = cellSum * m_dCellArea;
+    m_dNormWeightedUse = m_dWeightedUse / (usedCellCounter * m_dCellArea);
     m_nOccupiedCells = usedCellCounter;
     m_nCSVLines = nlinenumber;
-    m_dCellArea = m_dCellSize * m_dCellSize;
+
 
     // Note: Percent usage is not a useful stat here so it is not written.
     InputCSVFile.close();
@@ -459,11 +460,12 @@ void HSISimulation::RunRasterHSI(int nMethod){
     dInBuffers.clear();
 
     // Now write some results
+    m_dCellArea = cellArea;
     m_dWeightedUse = cellSum * cellArea;
-    m_dNormWeightedUse = m_dWeightedUse / usedCellCounter;
+    m_dNormWeightedUse = m_dWeightedUse / (usedCellCounter * cellArea);
     m_dPercentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
     m_nOccupiedCells = usedCellCounter;
-    m_dCellArea = cellArea;
+
 
 }
 
