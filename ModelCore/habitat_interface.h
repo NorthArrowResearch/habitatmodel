@@ -6,6 +6,8 @@
 
 namespace HabitatModel{
 
+const int ERRBUFFERSIZE = 1024;
+
 /**
  * @brief RunSimulations
  * @param psXMLInput

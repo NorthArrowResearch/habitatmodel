@@ -38,13 +38,15 @@ void ProjectInputRaster::Prepare(Simulation * pSimulation){
     const QByteArray qbOriginalRaster = sOriginalRaster.toLocal8Bit();
     const QByteArray qbFinalRaster = sFinalPath.toLocal8Bit();
 
+    char* sErr = new char[ERRBUFFERSIZE];
     RasterManager::Copy( qbOriginalRaster.data(),
                          qbFinalRaster.data(),
                          TemplateRasterMeta->GetCellWidth(),
                          TemplateRasterMeta->GetLeft(),
                          TemplateRasterMeta->GetTop(),
                          TemplateRasterMeta->GetRows(),
-                         TemplateRasterMeta->GetCols());
+                         TemplateRasterMeta->GetCols(), sErr);
+    delete [] sErr;
 }
 
 

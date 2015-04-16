@@ -5,9 +5,8 @@
 #-------------------------------------------------
 
 QT       -= core gui
-
+CONFIG += ordered
 TEMPLATE = subdirs
-
 SUBDIRS += \
     ModelCore \
     HabitatModel
