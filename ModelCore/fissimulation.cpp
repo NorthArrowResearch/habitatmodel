@@ -108,7 +108,16 @@ void FISSimulation::Clean()
 
 void FISSimulation::PrepareInputs()
 {
+    Project::GetOutputXML()->Log("Preparing inputs for FIS Simulation: " + GetName() , 2);
 
+    QHashIterator<int, SimulationFISInput *> i(m_simulation_fis_inputs);
+    while (i.hasNext()) {
+        i.next();
+        Simulation * pThisSim = this;
+        // A purely CSV output request needs no preparing of outputs
+        if (HasOutputRaster())
+            i.value()->GetProjectInput()->Prepare(pThisSim);
+    }
 }
 
 }
