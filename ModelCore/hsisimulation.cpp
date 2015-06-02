@@ -4,15 +4,7 @@
 #include <QHash>
 #include "hsi.h"
 #include "math.h"
-#include "project.h"
-#include "projectinput.h"
-#include "projectinputraster.h"
-#include "projectinputcsv.h"
-#include "projectinputvector.h"
-#include "rastermanager_interface.h"
-#include "rastermanager_exception.h"
 #include "gdal_priv.h"
-#include "simulation.h"
 #include <QTextStream>
 #include <QList>
 

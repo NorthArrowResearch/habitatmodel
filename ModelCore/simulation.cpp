@@ -51,16 +51,24 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_NumCSVs = 0;
     m_NumVectors = 0;
 
-    QString OutputRasterPath = Project::SanitizePath(elSimulation->firstChildElement("HSIOutputRaster").text());
-    QString OutputCSVPath = Project::SanitizePath(elSimulation->firstChildElement("HSIOutputCSV").text());
+    QString HSIOutputRasterPath = Project::SanitizePath(elSimulation->firstChildElement("HSIOutputRaster").text());
+    QString HSIOutputCSVPath = Project::SanitizePath(elSimulation->firstChildElement("HSIOutputCSV").text());
+    QString FISOutputRasterPath = Project::SanitizePath(elSimulation->firstChildElement("FISOutputRaster").text());
+    //    QString FISOutputCSVPath = Project::SanitizePath(elSimulation->firstChildElement("FISOutputCSV").text());
 
     m_bOutputRaster = "";
-    if (OutputRasterPath.compare("",Qt::CaseInsensitive) != 0){
-        m_bOutputRaster = Project::GetProjectRootPath()->filePath( OutputRasterPath );
-    }
     m_bOutputCSV = "";
-    if (OutputCSVPath.compare("",Qt::CaseInsensitive) != 0){
-        m_bOutputCSV = Project::GetProjectRootPath()->filePath( OutputCSVPath );
+
+    if (HSIOutputRasterPath.compare("",Qt::CaseInsensitive) != 0){
+        m_bOutputRaster = Project::GetProjectRootPath()->filePath( HSIOutputRasterPath );
+    }
+    else if(FISOutputRasterPath.compare("",Qt::CaseInsensitive) != 0){
+        m_bOutputRaster = Project::GetProjectRootPath()->filePath( FISOutputRasterPath );
+    }
+
+
+    if (HSIOutputCSVPath.compare("",Qt::CaseInsensitive) != 0){
+        m_bOutputCSV = Project::GetProjectRootPath()->filePath( HSIOutputCSVPath );
     }
 
     if (!HasOutputRaster() && !HasOutputCSV()){
