@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 1.0.3
+VERSION = 1.0.4
 TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
@@ -37,7 +37,10 @@ SOURCES += \
     hscinflection.cpp \
     hsccategory.cpp \
     habitat_interface.cpp \
-    xmlfile.cpp
+    xmlfile.cpp \
+    fissimulation.cpp \
+    fis.cpp \
+    simulationfisinput.cpp
 
 HEADERS +=\
     simulation.h \
@@ -61,7 +64,10 @@ HEADERS +=\
     hsccategory.h \
     habitat_interface.h \
     xmlfile.h \
-    habitat_exception.h
+    habitat_exception.h \
+    fissimulation.h \
+    fis.h \
+    simulationfisinput.h
 
 
 CONFIG(release, debug|release): BUILD_TYPE = release

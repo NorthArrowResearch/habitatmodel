@@ -9,20 +9,16 @@
 #include <QDir>
 #include <QTime>
 
-#include "xmlfile.h"
-#include "simulation.h"
 #include "hsisimulation.h"
+#include "fissimulation.h"
 #include "hmvariable.h"
 #include "unit.h"
-#include "hsc.h"
 #include "hsccategorical.h"
 #include "hscinflection.h"
 #include "hmvariable.h"
 #include "projectinputcsv.h"
 #include "projectinputraster.h"
 #include "projectinputvector.h"
-#include "habitat_exception.h"
-
 
 namespace HabitatModel{
 
@@ -156,7 +152,8 @@ void Project::LoadSimulations(){
             m_simulation_store.insert(nSimulationID, newSim);
         }
         else if(bFISID){
-            // m_simulation_store.insert(nSimulationID, new HSISimulation(&elSimulation));
+            newSim = new FISSimulation(&elSimulation);
+            m_simulation_store.insert(nSimulationID, newSim);
         }
         else{
             GetOutputXML()->Log("Missing HSI, FIS", "Simulation with ID '"+QString::number(nSimulationID) +"' has no valid <HSI> or <FIS> nodes found in the config file. Skipping Simulation", SEVERITY_WARNING, 1);
