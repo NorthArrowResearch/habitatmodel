@@ -21,6 +21,8 @@ enum ProjectErrorCodes {
     , XML_INPUT_ERROR
     , CSV_INPUT_ERROR
 
+    , FIS_ERROR
+
     , DEBUG
     , UNDEFINED_ERROR
 };
@@ -87,6 +89,9 @@ public:
             break;
         case MISSING_FIELD:
             return "Field missing";
+            break;
+        case FIS_ERROR:
+            return "FIS Error";
             break;
         default:
             return "Unhandled Raster Manager return code.";

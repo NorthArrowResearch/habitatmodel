@@ -40,7 +40,8 @@ SOURCES += \
     xmlfile.cpp \
     fissimulation.cpp \
     fis.cpp \
-    simulationfisinput.cpp
+    simulationfisinput.cpp \
+    fiscore.cpp
 
 HEADERS +=\
     simulation.h \
@@ -67,7 +68,9 @@ HEADERS +=\
     habitat_exception.h \
     fissimulation.h \
     fis.h \
-    simulationfisinput.h
+    simulationfisinput.h \
+    fiscore.h \
+    habitat_misc.h
 
 
 CONFIG(release, debug|release): BUILD_TYPE = release

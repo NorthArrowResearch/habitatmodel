@@ -8,7 +8,7 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
     // Now Create our FIS object if there is one.
     int nSimulationFISID = elSimulation->firstChildElement("FISID").text().toInt();
 
-    QDomNodeList elConfigFISs = Project::GetDefDom()->elementsByTagName("FIS");
+    QDomNodeList elConfigFISs = Project::GetConfigDom()->elementsByTagName("FIS");
 
     bool bFISFound = false;
     for(int n= 0; n < elConfigFISs.length(); n++){
