@@ -23,7 +23,7 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
     if (elFIS == NULL)
         Project::ProjectError(SEVERITY_ERROR, "Project is missing a <FIS>.");
 
-    m_fis = new FIS(elFIS);
+    m_fis = new FIS(elFIS, &m_simulation_fis_inputs, GetRasterExtentMeta() );
     delete elFIS;
 
     // Make a local copy of each data source as a local simulation object,

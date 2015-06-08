@@ -1,7 +1,6 @@
 #include "fiscore.h"
 
 namespace HabitatModel {
-namespace FIS {
 
 /****************************************************************************************************/
 /********************************     FISMemberFunction Private     *********************************/
@@ -1094,12 +1093,12 @@ void FISRuleSet::initFuzzy(void)
      * @param noData The NoData value to use in the output.
      * @param data The DoDData object that contains references to the data sets to use.
      */
-double FISRuleSet::calculate(std::vector<float*>& dataArrays, int n, bool checkNoData,
-                             std::vector<float>& noDataValues, float noData) {
+double FISRuleSet::calculate(std::vector<double*>& dataArrays, int n, bool checkNoData,
+                             std::vector<double>& noDataValues, double noData) {
     FISMemberFunction impMf, aggMf;
     FISRule* rule;
     double impValue;
-    float v;
+    double v;
     if (checkNoData)
     {
         bool ok = true;
@@ -1188,14 +1187,15 @@ int FISRuleSet::numInputs() {
      * @param fn The filename of the file to parse.
      * @return True if successful, false otherwise.
      */
-bool FISRuleSet::parseFile(const char* fn) {
+bool FISRuleSet::parseFile(QString fn) {
     bool systemOK = false;
     bool inputOK = false;
     bool outputOK = false;
     bool rulesOK = false;
-    std::ifstream fisFile(fn);
+    const QByteArray qbFn = fn.toLocal8Bit();
+    std::ifstream fisFile(qbFn.data());
     if (!fisFile.good())
-        return setError(QString("Could not open %1").arg(fn));
+        return setError(QString("Could not open %1").arg(qbFn.data()));
     std::string line;
     getline(fisFile, line);
     while (!fisFile.eof()) {
@@ -1350,8 +1350,5 @@ double FISOpProbor(double n1, double n2) {
 double FISOpProduct(double n1, double n2) {
     return n1 * n2;
 }
-
-}
-
 
 }

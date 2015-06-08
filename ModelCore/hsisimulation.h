@@ -31,7 +31,6 @@ public:
      * simulation
      */
     HSISimulation(QDomElement *elSimulation);
-
     ~HSISimulation();
 
     void LoadInputs();

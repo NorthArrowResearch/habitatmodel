@@ -11,7 +11,6 @@
 #include "habitat_misc.h"
 
 namespace HabitatModel {
-namespace FIS {
 
 enum FISOperatorAnd {FISOpAnd_Min, FISOpAnd_Product, FISOpAnd_None};
 enum FISOperatorOr {FISOpOr_Max, FISOpOr_Probor, FISOpOr_None};
@@ -524,8 +523,8 @@ public:
      * @param noData
      * @return double
      */
-    double calculate(std::vector<float*>& dataArrays, int n, bool checkNoData,
-                       std::vector<float>& noDataValues, float noData);
+    double calculate(std::vector<double *> &dataArrays, int n, bool checkNoData,
+                       std::vector<double> &noDataValues, double noData);
     /**
      * @brief
      *
@@ -551,7 +550,7 @@ public:
      * @param fn
      * @return bool
      */
-    bool parseFile(const char* fn);
+    bool parseFile(QString fn);
     /**
      * @brief
      *
@@ -570,7 +569,6 @@ public:
 
 };
 
-}
 }
 
 #endif // FISCORE_H
