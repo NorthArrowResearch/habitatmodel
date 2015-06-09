@@ -6,6 +6,7 @@
 #include "projectinputraster.h"
 #include "projectinputcsv.h"
 #include "projectinputvector.h"
+#include "rastermanager.h"
 #include "fis.h"
 #include <QDomElement>
 #include <QHash>
@@ -29,11 +30,15 @@ public:
 
 private:
 
+    // Hash store of simulationhsc inputs related to this sim.
+    QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
+
     FIS * m_fis;
 
      // Hash store of simulationFIS inputs related to this sim.
     QHash<int, SimulationFISInput *> m_simulation_fis_inputs;
 
+    void AddRastersToExtents();
 };
 
 }

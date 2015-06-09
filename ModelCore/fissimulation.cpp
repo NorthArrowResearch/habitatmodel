@@ -32,9 +32,9 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
 
     // Now, if this thing is a raster we need to add it to the ExtentRectangle
     // For this simulation
-//    if (HasOutputRaster()){
-//        AddRastersToExtents();
-//    }
+    if (HasOutputRaster()){
+        AddRastersToExtents();
+    }
 
     QTime qtPrepTime;
     qtPrepTime.start();
@@ -47,6 +47,35 @@ FISSimulation::~FISSimulation()
 {
 
 }
+
+
+void FISSimulation::AddRastersToExtents(){
+
+    QHashIterator<int, SimulationFISInput *> i(m_simulation_fis_inputs);
+
+    while (i.hasNext()) {
+        i.next();
+        // Here is the curve we want
+        ProjectInput * pInput = i.value()->GetProjectInput();
+
+        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
+            try {
+                Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
+                QString sRasterPath = pInput->GetSourceFilePath();
+                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
+
+                RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
+                RasterUnion(pRasterMeta);
+                delete pRasterMeta;
+            }
+            catch (RasterManager::RasterManagerException e){
+                Project::GetOutputXML()->Log("ERROR:" + e.GetReturnMsgAsString() , 0);
+            }
+
+        }
+    }
+}
+
 
 void FISSimulation::LoadInputs()
 {
