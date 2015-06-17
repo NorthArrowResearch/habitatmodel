@@ -14,8 +14,6 @@ TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
-CONFIG += c++11
-
 DEFINES += MODELCORE_LIBRARY
 
 SOURCES += \

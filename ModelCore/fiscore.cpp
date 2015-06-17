@@ -48,6 +48,7 @@ bool FISMemberFunction::init(double x1, double x2, double x3, double yMax) {
         y_[2] = 0;
         return true;
     }
+
 }
 
 /**

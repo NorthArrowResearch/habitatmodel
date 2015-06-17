@@ -116,13 +116,13 @@ public:
      * @brief GetHSOutputRasterFileName
      * @return
      */
-    inline QString GetHSOutputRasterFileName() const { return m_hsoutputfilepath; }
+    inline QString GetOutputRasterFileName() const { return m_outputfilepath; }
 
     /**
      * @brief SetHSOutputRasterFileName
      * @param sOutputFile
      */
-    inline void SetHSOutputRasterFileName(QString sOutputFile) {  m_hsoutputfilepath = sOutputFile; }
+    inline void SetOutputRasterFileName(QString sOutputFile) {  m_outputfilepath = sOutputFile; }
 
 private:
 
@@ -132,7 +132,7 @@ private:
 
     // Absolute path to source file
     QString m_sourcefilepath;
-    QString m_hsoutputfilepath;
+    QString m_outputfilepath;
     QString m_preparedrasterfilename;
 
 

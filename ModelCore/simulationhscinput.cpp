@@ -81,7 +81,7 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
 
             // The prepeared file path is explicitly given to us in the XML
             QString sHSOutputPath = Project::SanitizePath(elHSCInput.firstChildElement("HSOutputPath").text());
-            m_project_input->SetHSOutputRasterFileName(Project::GetProjectRootPath()->filePath(sHSOutputPath));
+            m_project_input->SetOutputRasterFileName(Project::GetProjectRootPath()->filePath(sHSOutputPath));
 
         }
      }

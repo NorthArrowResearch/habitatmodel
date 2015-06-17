@@ -32,6 +32,7 @@ class HabitatException :public std::exception
 public:
     inline HabitatException(int nErrorCode){ Init(nErrorCode, "");}
     inline HabitatException(int nErrorCode, QString sMsg){ Init(nErrorCode, sMsg); }
+    inline ~HabitatException() throw(){}
     /**
      * @brief init
      */

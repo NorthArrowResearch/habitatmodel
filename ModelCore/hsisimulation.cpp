@@ -334,7 +334,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
         // or coordinate pair HSC
         try{
             pHSC->ProcessRaster( pInput->GetPreparedRasterFileName(),
-                                 pInput->GetHSOutputRasterFileName(),
+                                 pInput->GetOutputRasterFileName(),
                                  GetRasterExtentMeta() );
         }
         catch (RasterManager::RasterManagerException e){
@@ -369,7 +369,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
 
         // Here is the corresponding input raster, added as a hash to a dataset
         ProjectInput * pSimHSCHSOutput = dSimHSCInputs.value()->GetProjectInput();
-        const QByteArray sHSIOutputQB = pSimHSCHSOutput->GetHSOutputRasterFileName().toLocal8Bit();
+        const QByteArray sHSIOutputQB = pSimHSCHSOutput->GetOutputRasterFileName().toLocal8Bit();
         GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
         GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 

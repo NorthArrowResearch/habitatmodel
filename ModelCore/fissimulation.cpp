@@ -21,14 +21,14 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
     }
 
     if (elFIS == NULL)
-        Project::ProjectError(SEVERITY_ERROR, "Project is missing a <FIS>.");
-
-    m_fis = new FIS(elFIS, &m_simulation_fis_inputs, GetRasterExtentMeta() );
-    delete elFIS;
+        Project::ProjectError(SEVERITY_ERROR, "Project is missing a <FIS> tag.");
 
     // Make a local copy of each data source as a local simulation object,
     // ready for preparation.
     LoadInputs();
+
+    m_fis = new FIS(elFIS, &m_simulation_fis_inputs, GetRasterExtentMeta() );
+    delete elFIS;
 
     // Now, if this thing is a raster we need to add it to the ExtentRectangle
     // For this simulation
@@ -117,8 +117,11 @@ void FISSimulation::Run()
     qtRunTime.start();
     Project::GetOutputXML()->Log("Starting FIS Simulation Run: " + GetName() , 0);
 
+    // Our final output Raster file name and path:
+    Project::EnsureFile(m_bOutputRaster);
 
-    // HERE'S WHERE FIS GETS RUN
+    m_fis->init();
+    m_fis->RunRasterFis(m_bOutputRaster);
 
 //    if (m_dWeightedUse >= 0)
 //        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );

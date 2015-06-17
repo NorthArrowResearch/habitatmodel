@@ -31,11 +31,12 @@ void FIS::init(){
     if (m_pfis_inputs->count() % 2 != 0)
         throw HabitatException(FIS_ERROR, "Must be an even number of FIS inputs");
 
+    rules = new FISRuleSet();
     // Load the FIS rule file
     rules->parseFile(m_sFISRuleFile);
 
     // Confirm that the number of inputs specified matches the number in the rule file
-    if (rules->numInputs() * 2 != m_pfis_inputs->count())
+    if (rules->numInputs() != m_pfis_inputs->count())
         throw HabitatException(FIS_ERROR, "Number of FIS inputs must match the number in the rule file.");
 
 }
@@ -51,7 +52,6 @@ void FIS::init(){
 void FIS::RunRasterFis(QString sOutputFile)
 {
 
-
     QHashIterator<int, SimulationFISInput *> dSimFISInputs( * m_pfis_inputs);
     QHash<int, GDALRasterBand *> dDatasets;
     QHash<int, double *> dInBuffers;
@@ -62,30 +62,46 @@ void FIS::RunRasterFis(QString sOutputFile)
     int sRasterCols = m_RasterExtents->GetCols();
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
-    dSimFISInputs.toFront();
 
-    while (dSimFISInputs.hasNext()) {
-        dSimFISInputs.next();
+    if (rules->numInputs() != m_pfis_inputs->count())
+        throw new HabitatException(FIS_ERROR, "Number of inputs does not match number of FIS inputs.");
 
-        // Here is the corresponding input raster, added as a hash to a dataset
-        ProjectInput * pSimFISHSOutput = dSimFISInputs.value()->GetProjectInput();
-        const QByteArray sHSIOutputQB = pSimFISHSOutput->GetHSOutputRasterFileName().toLocal8Bit();
-        GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
-        GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
+    for (int i=0; i<rules->numInputs(); i++)
+    {
+        QString sInputname = QString::fromUtf8( rules->getInputName(i) );
+        dSimFISInputs.toFront();
+        bool found = false;
+        while (dSimFISInputs.hasNext()) {
+            dSimFISInputs.next();
 
-        // Add a buffer for reading this input
-        double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
+            QString sFISInputName = dSimFISInputs.value()->GetFISInputName();
+            if (sFISInputName.compare(sInputname, Qt::CaseInsensitive) == 0){
+                found = true;
+                // Here is the corresponding input raster, added as a hash to a dataset
+                ProjectInput * pSimFISOutput = dSimFISInputs.value()->GetProjectInput();
+                const QByteArray sHSIOutputQB = pSimFISOutput->GetOutputRasterFileName().toLocal8Bit();
+                GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
+                GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 
-        // Notice these get the same keys.
-        dDatasets.insert(dSimFISInputs.key(), pInputRB);
-        dInBuffers.insert(dSimFISInputs.key(), pReadBuffer);
+                // Add a buffer for reading this input
+                double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
-        int hasnodata = false;
-        double nodataval = pInputRB->GetNoDataValue(&hasnodata);
-        inputNoDataValues[dSimFISInputs.key()] = nodataval;
-        if (nodataval > 0)
-            checkNoData = true;
+                // Notice these get the same keys.
+                dDatasets.insert(dSimFISInputs.key(), pInputRB);
+                dInBuffers.insert(dSimFISInputs.key(), pReadBuffer);
+
+                int hasnodata = false;
+                double nodataval = pInputRB->GetNoDataValue(&hasnodata);
+                inputNoDataValues[dSimFISInputs.key()] = nodataval;
+                if (nodataval > 0)
+                    checkNoData = true;
+            }
+
+        }
+        if (!found)
+            throw new HabitatException(FIS_ERROR, QString( "Could not find FIS input named: %1").arg(sInputname) );
     }
+
 
     // Open the output dataset for writing and get its band.
     const QByteArray sFISOutputQB = sOutputFile.toLocal8Bit();

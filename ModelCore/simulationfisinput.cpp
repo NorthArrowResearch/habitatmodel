@@ -5,6 +5,7 @@ namespace HabitatModel{
 //<SimulationFISInputs>
 //  <ProjectInputID>2</ProjectInputID>
 //  <SimulationID>1</SimulationID>
+//  <FISInputName>Depth</FISInputName>
 //  <FISOutputPath>Simulations\SAMPLE_FIS\Outputs\FISOutputs\Water Depth.tif</FISOutputPath>
 //  <FISPreparedPath>Simulations\SAMPLE_FIS\PreparedInputs\Water Depth.tif</FISPreparedPath>
 //</SimulationFISInputs>
@@ -13,7 +14,6 @@ SimulationFISInput::SimulationFISInput(QDomElement elFISInput)
     : NamedObjectWithID("temp", 999)
 {
     bool bProjectVariableFound = false;
-
     int nProjectInputID = elFISInput.firstChildElement("ProjectInputID").text().toInt();
 
     // Since ProjectVariables are sort of part of this model
@@ -47,13 +47,15 @@ SimulationFISInput::SimulationFISInput(QDomElement elFISInput)
             //            }
 
             // The prepeared file path is explicitly given to us in the XML
-            QString sHSPreparedPath = Project::SanitizePath(elFISInput.firstChildElement("HSPreparedPath").text());
-            m_project_input->SetUtilizationRasterFileName(Project::GetProjectRootPath()->filePath(sHSPreparedPath));
-
+            QString sFISPreparedPath = Project::SanitizePath(elFISInput.firstChildElement("FISPreparedPath").text());
+            m_project_input->SetUtilizationRasterFileName(Project::GetProjectRootPath()->filePath(sFISPreparedPath));
 
             // The prepeared file path is explicitly given to us in the XML
-            QString sHSOutputPath = Project::SanitizePath(elFISInput.firstChildElement("HSOutputPath").text());
-            m_project_input->SetHSOutputRasterFileName(Project::GetProjectRootPath()->filePath(sHSOutputPath));
+            m_sFISInputName = Project::SanitizePath(elFISInput.firstChildElement("FISInputName").text());
+
+            // The prepeared file path is explicitly given to us in the XML
+            QString sFISOutputPath = Project::SanitizePath(elFISInput.firstChildElement("FISOutputPath").text());
+            m_project_input->SetOutputRasterFileName(Project::GetProjectRootPath()->filePath(sFISOutputPath));
 
         }
     }

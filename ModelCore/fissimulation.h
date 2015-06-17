@@ -30,9 +30,6 @@ public:
 
 private:
 
-    // Hash store of simulationhsc inputs related to this sim.
-    QHash<int, SimulationHSCInput *> m_simulation_hsc_inputs;
-
     FIS * m_fis;
 
      // Hash store of simulationFIS inputs related to this sim.

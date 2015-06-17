@@ -24,7 +24,7 @@ ProjectInput::ProjectInput(const ProjectInput &source)
          source.GetSourceFilePath(),
          source.GetSourceType(),
          source.GetPreparedRasterFileName(),
-         source.GetHSOutputRasterFileName());
+         source.GetOutputRasterFileName());
 }
 
 
@@ -38,7 +38,7 @@ void ProjectInput::Init(QString sCreatedOn,
     m_sourcefilepath = sProjectPath;
     m_source_type = pSourceType;
     m_preparedrasterfilename = sUtilizationRasterFileName;
-    m_hsoutputfilepath = sHSOutputFileName;
+    m_outputfilepath = sHSOutputFileName;
 
 }
 
