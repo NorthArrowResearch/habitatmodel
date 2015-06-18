@@ -51,11 +51,12 @@ SimulationFISInput::SimulationFISInput(QDomElement elFISInput)
             m_project_input->SetUtilizationRasterFileName(Project::GetProjectRootPath()->filePath(sFISPreparedPath));
 
             // The prepeared file path is explicitly given to us in the XML
-            m_sFISInputName = Project::SanitizePath(elFISInput.firstChildElement("FISInputName").text());
+            QString sFisInputName = elFISInput.firstChildElement("FISInputName").text();
+            m_sFISInputName = Project::SanitizePath(sFisInputName);
 
             // The prepeared file path is explicitly given to us in the XML
-            QString sFISOutputPath = Project::SanitizePath(elFISInput.firstChildElement("FISOutputPath").text());
-            m_project_input->SetOutputRasterFileName(Project::GetProjectRootPath()->filePath(sFISOutputPath));
+//            QString sFISOutputPath = Project::SanitizePath(elFISInput.firstChildElement("FISOutputPath").text());
+//            m_project_input->SetOutputRasterFileName(Project::GetProjectRootPath()->filePath(sFISOutputPath));
 
         }
     }

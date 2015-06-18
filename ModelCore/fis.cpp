@@ -27,10 +27,6 @@ FIS::~FIS()
 
 void FIS::init(){
 
-    // Must be an even number of FIS inputs (names and rasters)
-    if (m_pfis_inputs->count() % 2 != 0)
-        throw HabitatException(FIS_ERROR, "Must be an even number of FIS inputs");
-
     rules = new FISRuleSet();
     // Load the FIS rule file
     rules->parseFile(m_sFISRuleFile);
@@ -79,7 +75,7 @@ void FIS::RunRasterFis(QString sOutputFile)
                 found = true;
                 // Here is the corresponding input raster, added as a hash to a dataset
                 ProjectInput * pSimFISOutput = dSimFISInputs.value()->GetProjectInput();
-                const QByteArray sHSIOutputQB = pSimFISOutput->GetOutputRasterFileName().toLocal8Bit();
+                const QByteArray sHSIOutputQB = pSimFISOutput->GetPreparedRasterFileName().toLocal8Bit();
                 GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
                 GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 
@@ -146,7 +142,7 @@ void FIS::RunRasterFis(QString sOutputFile)
 
         pOutputRB->RasterIO(GF_Write, 0, i,
                             sRasterCols, 1,
-                            pReadBuffer,
+                            pOutputBuffer,
                             sRasterCols, 1,
                             GDT_Float64,
                             0, 0 );

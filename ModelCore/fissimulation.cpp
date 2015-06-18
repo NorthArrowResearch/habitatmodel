@@ -27,14 +27,15 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
     // ready for preparation.
     LoadInputs();
 
-    m_fis = new FIS(elFIS, &m_simulation_fis_inputs, GetRasterExtentMeta() );
-    delete elFIS;
 
     // Now, if this thing is a raster we need to add it to the ExtentRectangle
     // For this simulation
     if (HasOutputRaster()){
         AddRastersToExtents();
     }
+
+    m_fis = new FIS(elFIS, &m_simulation_fis_inputs, GetRasterExtentMeta() );
+    delete elFIS;
 
     QTime qtPrepTime;
     qtPrepTime.start();
