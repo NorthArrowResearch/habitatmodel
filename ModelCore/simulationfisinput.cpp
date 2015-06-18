@@ -40,11 +40,11 @@ SimulationFISInput::SimulationFISInput(QDomElement elFISInput)
 
             // Now we need a copy of the project input (both an object copy and a copy of the file)
             m_project_input = pOriginalInput->Clone();
-            // CSVs need a data field added to them
-            //            if ( dynamic_cast <ProjectInputCSV *> ( m_project_input )){
-            //                QString sValueField = elProjectVariable.firstChildElement("ValueField").text();
-            //                m_project_input->SetValueFieldName(sValueField);
-            //            }
+            //             CSVs need a data field added to them
+            if ( dynamic_cast <ProjectInputCSV *> ( m_project_input )){
+                QString sValueField = elProjectVariable.firstChildElement("ValueField").text();
+                m_project_input->SetValueFieldName(sValueField);
+            }
 
             // The prepeared file path is explicitly given to us in the XML
             QString sFISPreparedPath = Project::SanitizePath(elFISInput.firstChildElement("FISPreparedPath").text());

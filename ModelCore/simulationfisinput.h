@@ -4,6 +4,7 @@
 #include "project.h"
 #include "namedobject.h"
 #include "projectinput.h"
+#include "projectinputcsv.h"
 #include <QDomElement>
 
 namespace HabitatModel{
