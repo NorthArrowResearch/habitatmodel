@@ -1,4 +1,5 @@
 #include "fis.h"
+#include "benchmark.h"
 
 namespace HabitatModel{
 
@@ -110,6 +111,9 @@ void FIS::RunRasterFis(QString sOutputFile)
 
     rules->initFuzzy();
 
+    LoopTimer lineLoop("Process Line");  //DEBUG Only
+    LoopTimer cellLoop("Process Cell");  //DEBUG Only
+
     // Loop over the rows and columns. DO FIS!!
     for (int i=0; i < m_RasterExtents->GetRows(); i++)
     {
@@ -129,15 +133,19 @@ void FIS::RunRasterFis(QString sOutputFile)
 
         for (int j=0; j < sRasterCols; j++)
         {
+
             QHashIterator<int, GDALRasterBand *> dDatasetIterator(dDatasets);
             while (dDatasetIterator.hasNext()) {
                 dDatasetIterator.next();
-                inputData[dDatasetIterator.key()] = &dInBuffers.value(dDatasetIterator.key())[j];
+                int nDataKey = dDatasetIterator.key();
+                inputData[nDataKey] = dInBuffers.value(nDataKey);
             }
 
             pOutputBuffer[j] = rules->calculate(inputData, j, checkNoData,
                                                 inputNoDataValues,
                                                 m_RasterExtents->GetNoDataValue());
+
+            cellLoop.Tick();
         }
 
         pOutputRB->RasterIO(GF_Write, 0, i,
@@ -146,8 +154,12 @@ void FIS::RunRasterFis(QString sOutputFile)
                             sRasterCols, 1,
                             GDT_Float64,
                             0, 0 );
+        lineLoop.Tick();
 
     }
+
+    lineLoop.Output(); // DEBUG only
+    cellLoop.Output(); // DEBUG only
 
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);

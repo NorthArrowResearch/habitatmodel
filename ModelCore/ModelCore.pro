@@ -68,7 +68,8 @@ HEADERS +=\
     fis.h \
     simulationfisinput.h \
     fiscore.h \
-    habitat_misc.h
+    habitat_misc.h \
+    benchmark.h
 
 
 CONFIG(release, debug|release): BUILD_TYPE = release

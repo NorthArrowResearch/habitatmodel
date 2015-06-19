@@ -1096,6 +1096,7 @@ void FISRuleSet::initFuzzy(void)
      */
 double FISRuleSet::calculate(std::vector<double*>& dataArrays, int n, bool checkNoData,
                              std::vector<double>& noDataValues, double noData) {
+
     FISMemberFunction impMf, aggMf;
     FISRule* rule;
     double impValue;
