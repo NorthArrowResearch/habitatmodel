@@ -523,8 +523,9 @@ public:
      * @param noData
      * @return double
      */
-    double calculate(std::vector<double *> &dataArrays, int n, bool checkNoData,
-                       std::vector<double> &noDataValues, double noData);
+    double calculate(std::vector<double> &dataArrays, bool checkNoData,
+                     std::vector<double> &noDataValues, double noData);
+
     /**
      * @brief
      *

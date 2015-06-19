@@ -23,7 +23,9 @@ public:
 
     void init();
     void init(const char *fisFilename, const char *driver, float noData, const char *dodFilename, FISRuleSet *rules);
+
     void RunRasterFis(QString sOutputFile);
+    void RunCSVFis(QString sOutputFile);
 private:
 
     QString m_sFISRuleFile;

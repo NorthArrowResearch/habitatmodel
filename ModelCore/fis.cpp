@@ -48,14 +48,17 @@ void FIS::init(){
  */
 void FIS::RunRasterFis(QString sOutputFile)
 {
+    Project::GetOutputXML()->Log("Beginning Raster FIS Simulation run: " + sOutputFile , 2);
 
     QHashIterator<int, SimulationFISInput *> dSimFISInputs( * m_pfis_inputs);
     QHash<int, GDALRasterBand *> dDatasets;
     QHash<int, double *> dInBuffers;
     std::vector<double> inputNoDataValues = std::vector<double>(m_pfis_inputs->count());
-    std::vector<double*> inputData = std::vector<double*>(m_pfis_inputs->count());
+    std::vector<double> inputData = std::vector<double>(m_pfis_inputs->count());
 
-    bool checkNoData = false;
+    bool checkNoData = m_RasterExtents->HasNoDataValue();
+    double dNodataVal = m_RasterExtents->GetNoDataValue();
+
     int sRasterCols = m_RasterExtents->GetCols();
 
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
@@ -63,6 +66,7 @@ void FIS::RunRasterFis(QString sOutputFile)
     if (rules->numInputs() != m_pfis_inputs->count())
         throw new HabitatException(FIS_ERROR, "Number of inputs does not match number of FIS inputs.");
 
+    Project::GetOutputXML()->Log(QString("Preparing %1 inputs for FIS.").arg(m_pfis_inputs->count()), 3 );
     for (int i=0; i<rules->numInputs(); i++)
     {
         QString sInputname = QString::fromUtf8( rules->getInputName(i) );
@@ -84,12 +88,12 @@ void FIS::RunRasterFis(QString sOutputFile)
                 double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
                 // Notice these get the same keys.
-                dDatasets.insert(dSimFISInputs.key(), pInputRB);
-                dInBuffers.insert(dSimFISInputs.key(), pReadBuffer);
+                dDatasets.insert(i, pInputRB);
+                dInBuffers.insert(i, pReadBuffer);
 
                 int hasnodata = false;
                 double nodataval = pInputRB->GetNoDataValue(&hasnodata);
-                inputNoDataValues[dSimFISInputs.key()] = nodataval;
+                inputNoDataValues[i] = nodataval;
                 if (nodataval > 0)
                     checkNoData = true;
             }
@@ -111,10 +115,13 @@ void FIS::RunRasterFis(QString sOutputFile)
 
     rules->initFuzzy();
 
+    ProcessTimer FISTimer("Doing FIS");
     LoopTimer lineLoop("Process Line");  //DEBUG Only
-    LoopTimer cellLoop("Process Cell");  //DEBUG Only
+    LoopTimer valLoop("Cells with Value");  //DEBUG Only
+    LoopTimer nodataLoop("Cells with NoDATA");  //DEBUG Only
 
     // Loop over the rows and columns. DO FIS!!
+
     for (int i=0; i < m_RasterExtents->GetRows(); i++)
     {
 
@@ -138,14 +145,18 @@ void FIS::RunRasterFis(QString sOutputFile)
             while (dDatasetIterator.hasNext()) {
                 dDatasetIterator.next();
                 int nDataKey = dDatasetIterator.key();
-                inputData[nDataKey] = dInBuffers.value(nDataKey);
+                inputData[nDataKey] = dInBuffers.value(nDataKey)[j];
             }
 
-            pOutputBuffer[j] = rules->calculate(inputData, j, checkNoData,
+            pOutputBuffer[j] = rules->calculate(inputData, checkNoData,
                                                 inputNoDataValues,
-                                                m_RasterExtents->GetNoDataValue());
+                                                dNodataVal);
 
-            cellLoop.Tick();
+            if (pOutputBuffer[j] == dNodataVal)
+                valLoop.Tick();
+            else
+                nodataLoop.Tick();
+
         }
 
         pOutputRB->RasterIO(GF_Write, 0, i,
@@ -157,9 +168,11 @@ void FIS::RunRasterFis(QString sOutputFile)
         lineLoop.Tick();
 
     }
+    FISTimer.Output();
 
     lineLoop.Output(); // DEBUG only
-    cellLoop.Output(); // DEBUG only
+    nodataLoop.Output(); // DEBUG only
+    valLoop.Output(); //DEBUG only
 
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);
@@ -181,6 +194,204 @@ void FIS::RunRasterFis(QString sOutputFile)
     dInBuffers.clear();
 
 }
+
+void FIS::RunCSVFis(QString sOutputFile)
+{
+    Project::GetOutputXML()->Log("Beginning CSV input FIS Run: " + sOutputFile , 2);
+
+    QString sXField, sYField, sInputCSVFile;
+    QHashIterator<int, SimulationFISInput *> dSimFISInputs( * m_pfis_inputs);
+
+    // The first in tis the rule file index. The second int is the csv column index
+    QHash<int, int> qhFISInputOrder;
+    double dNoDataVal = std::numeric_limits<double>::min();
+    std::vector<double> inputNoDataValues = std::vector<double>(m_pfis_inputs->count());
+    std::fill (inputNoDataValues.begin(),inputNoDataValues.end(),dNoDataVal);
+    std::vector<double> inputData = std::vector<double>(m_pfis_inputs->count());
+
+    Project::GetOutputXML()->Log(QString("Preparing %1 inputs for FIS.").arg(m_pfis_inputs->count()), 3 );
+
+    dSimFISInputs.toFront();
+
+    // We need the name of the CSV file and the X and Y field so we do one
+    // Loop to find the first instance.
+    while (dSimFISInputs.hasNext()) {
+        dSimFISInputs.next();
+        SimulationFISInput * pSimFISInput = dSimFISInputs.value();
+
+        // Here is the corresponding input raster
+        ProjectInput * pInput = dSimFISInputs.value()->GetProjectInput();
+        if ( ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput )){
+            // Set X,Y and file field from the first input with valid values
+            sXField = InputCSV->GetXFieldName();
+            sYField = InputCSV->GetYFieldName();
+            sInputCSVFile = InputCSV->GetSourceFilePath();
+            break; // Not ideal
+        }
+    }
+
+    if (sXField.isEmpty()){
+        Project::ProjectError(CSV_INPUT_ERROR, "the X field could not be determined.");
+    }
+    if (sInputCSVFile.isEmpty()){
+        Project::ProjectError(CSV_INPUT_ERROR, "the CSV input path could not be determined.");
+    }
+
+
+    // Open the input CSV file as ReadOnly
+    // --------------------------------------------
+    QFile InputCSVFile(sInputCSVFile);
+    if (!InputCSVFile.open(QFile::ReadOnly)){
+        throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
+    }
+
+    // Our final output CSV file name and path:
+    Project::EnsureFile(sOutputFile);
+
+    // Create and open a new CSV file for writing
+    // --------------------------------------------
+    QFile outputCSVFile(sOutputFile);
+    if (!outputCSVFile.open(QFile::WriteOnly|QFile::Truncate)){
+        throw HabitatException(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + sOutputFile  );
+    }
+    QTextStream qtsOutputStream(&outputCSVFile);
+
+
+    // --------------------------------------------
+    // Go line-by-line in the CSV file, calculating HSI values
+    // --------------------------------------------
+    int xcol=-1, ycol=-1;
+    int nlinenumber = 0;
+
+    double cellSum = 0;
+    double usedCellCounter = 0;
+
+    while ( !InputCSVFile.atEnd() ){
+        QString CSVline = InputCSVFile.readLine();
+        //        "X", "Y", "Depth", "Velocity";
+        QStringList slCSVcells = CSVline.split(","); //Note: this will fail if headers items contain commans
+        QStringList slCSVInputs;
+        QStringList slCSVOutputs;
+
+
+        // Line 1: This is a special case
+        // this is where we decide what to keep and what to lose
+        // --------------------------------------------------------
+
+        int nColNumber = 0;
+        if ( nlinenumber == 0 ){
+            // First we have to decide which columns to keep
+            foreach (QString sCSVCol, slCSVcells){
+
+                ProjectInputCSV::CSVCellClean(sCSVCol);
+
+                // Keep it if its the X Field
+                if (sCSVCol.compare(sXField, Qt::CaseInsensitive) == 0 ){
+                    xcol = nColNumber;
+                    slCSVInputs.append(sCSVCol);
+                }
+                // Keep it if its the Y Field
+                else if (sCSVCol.compare(sYField, Qt::CaseInsensitive) == 0 ){
+                    ycol = nColNumber;
+                    slCSVInputs.append(sCSVCol);
+                }
+                else {
+                    // Find all the Inputs that come from a single CSV and collect them
+                    dSimFISInputs.toFront();
+                    while (dSimFISInputs.hasNext()) {
+                        dSimFISInputs.next();
+
+                        // Here is the corresponding input raster
+                        ProjectInput * pInput = dSimFISInputs.value()->GetProjectInput();
+                        ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput );
+                        if ( InputCSV && sCSVCol.compare(InputCSV->GetValueFieldName(), Qt::CaseInsensitive) == 0 ){
+
+                            // add this input to our list
+                            slCSVInputs.append(sCSVCol);
+                            for (int i=0; i < rules->numInputs(); i++){
+                                qhFISInputOrder.insert(i, nColNumber);
+                            }
+
+                        }
+                    }
+                }
+                nColNumber++;
+            }
+            // This is the final, combined output column
+            slCSVOutputs.append("\"FIS Output\"");
+        }
+
+        else{
+
+            // Add X and Y first without altering them
+            if (xcol >= 0){
+                QString xVal = slCSVcells.at(xcol);
+                ProjectInputCSV::CSVCellClean( xVal );
+                slCSVInputs.append(xVal);
+            }
+            else
+                Project::ProjectError(CSV_INPUT_ERROR, "Could not find X-col" + sXField + " in CSV file.");
+
+            if (ycol >= 0){
+                QString yVal = slCSVcells.at(ycol);
+                ProjectInputCSV::CSVCellClean( yVal );
+                slCSVInputs.append(yVal);
+            }
+
+            // Now loop through all cols and add the ones we need.
+            for (int i=0; i < rules->numInputs(); i++){
+                foreach (QString sCSVCol, slCSVcells){
+
+                    int nColForRule = qhFISInputOrder.find(i).value();
+                    if (nColForRule == nColNumber){
+                        // Now add the Data input value
+                        ProjectInputCSV::CSVCellClean( sCSVCol );
+                        slCSVInputs.append(sCSVCol);
+                        if (double dCSVItem = sCSVCol.toDouble()){
+
+                            if (dCSVItem != dNoDataVal){
+                                inputData[i] =  dCSVItem;
+                            }
+                            else{
+                                slCSVOutputs.append(" ");
+                            }
+                        }
+                        // Could not make a double. Just insert a blank space
+                        else {
+                            slCSVOutputs.append(" ");
+                        }
+
+                    }
+
+                    nColNumber++;
+                }
+            }
+
+            double dCombinedVal = rules->calculate(inputData, false,
+                                                   inputNoDataValues,
+                                                   dNoDataVal);
+
+            if (dCombinedVal == dNoDataVal)
+                slCSVOutputs.append(" ");
+            else {
+                cellSum += dCombinedVal;
+                usedCellCounter++;
+                slCSVOutputs.append( QString::number(  dCombinedVal ) );
+            }
+        }
+
+        // here's where we need to get the correct row of the output. Replace
+        qtsOutputStream << slCSVInputs.join(", ") << ", " << slCSVOutputs.join(", ")  << "\n"; // this writes first line with two columns
+        nlinenumber++;
+    }
+
+    // Now write some results
+
+    // Note: Percent usage is not a useful stat here so it is not written.
+    InputCSVFile.close();
+    outputCSVFile.close();
+}
+
 
 
 }

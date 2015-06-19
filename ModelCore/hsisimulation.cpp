@@ -140,8 +140,6 @@ void HSISimulation::RunCSVHSI(int nMethod){
     // Loop to find the first instance.
     while (dSimHSCInputs.hasNext()) {
         dSimHSCInputs.next();
-        SimulationHSCInput * pSimHSCInput= dSimHSCInputs.value();
-        HSC * pHSC = pSimHSCInput->GetHSICurve()->GetHSC();
 
         // Here is the corresponding input raster
         ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
@@ -169,7 +167,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
         throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
     }
 
-    // Our final output Raster file name and path:
+    // Our final output CSV file name and path:
     Project::EnsureFile(m_bOutputCSV);
 
     // Create and open a new CSV file for writing
@@ -243,7 +241,6 @@ void HSISimulation::RunCSVHSI(int nMethod){
             slCSVOutputs.append("\"HSI Output\"");
         }
         else{
-            QHashIterator<int, HSC *> qhiHSCs(qhHSCs);
             QHash<int, double> dCellContents;
 
 
@@ -272,9 +269,9 @@ void HSISimulation::RunCSVHSI(int nMethod){
                         HSC * cellHSC = qhHSCs.find(nColNumber).value();
                         double dProcessedCSVItem = cellHSC->ProcessValue(dCSVItem, dNoDataVal);
 
-                        if (dProcessedCSVItem != dNoDataVal){
-                            dCellContents.insert(nColNumber, dProcessedCSVItem);
-                            slCSVOutputs.append(QString::number(dProcessedCSVItem));
+                        if ( dProcessedCSVItem != dNoDataVal ){
+                            dCellContents.insert( nColNumber, dProcessedCSVItem );
+                            slCSVOutputs.append( QString::number(dProcessedCSVItem) );
                         }
                         else{
                             slCSVOutputs.append(" ");

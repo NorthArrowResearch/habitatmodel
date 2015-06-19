@@ -1,4 +1,5 @@
 #include "fiscore.h"
+#include "benchmark.h"
 
 namespace HabitatModel {
 
@@ -1094,19 +1095,21 @@ void FISRuleSet::initFuzzy(void)
      * @param noData The NoData value to use in the output.
      * @param data The DoDData object that contains references to the data sets to use.
      */
-double FISRuleSet::calculate(std::vector<double*>& dataArrays, int n, bool checkNoData,
+double FISRuleSet::calculate(std::vector<double>& dataArrays, bool checkNoData,
                              std::vector<double>& noDataValues, double noData) {
 
     FISMemberFunction impMf, aggMf;
     FISRule* rule;
     double impValue;
     double v;
+
     if (checkNoData)
     {
+
         bool ok = true;
         for (int i=0; i<nInputs_; i++)
         {
-            v = dataArrays[i][n];
+            v = dataArrays[i];
             if (v == noDataValues[i])
             {
                 ok = false;
@@ -1126,6 +1129,7 @@ double FISRuleSet::calculate(std::vector<double*>& dataArrays, int n, bool check
                 implicator_(rule->output_, &impMf, impValue, rule->weight_);
                 aggregator_(&impMf, &aggMf);
             }
+
             return defuzzifier_(&aggMf);
         }
         else
@@ -1137,7 +1141,7 @@ double FISRuleSet::calculate(std::vector<double*>& dataArrays, int n, bool check
     {
         for (int i=0; i<nInputs_; i++)
         {
-            v = dataArrays[i][n];
+            v = dataArrays[i];
             for (int j=0; j<inputs_[i].n_; j++)
                 fuzzyInputs_[i][j] = inputs_[i].mfs_[j].fuzzify(v);
         }

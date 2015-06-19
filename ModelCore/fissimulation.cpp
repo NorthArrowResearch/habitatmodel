@@ -119,11 +119,19 @@ void FISSimulation::Run()
     Project::GetOutputXML()->Log("Starting FIS Simulation Run: " + GetName() , 0);
 
     // Our final output Raster file name and path:
-    Project::EnsureFile(m_bOutputRaster);
+
 
     m_fis->init();
-    m_fis->RunRasterFis(m_bOutputRaster);
 
+    if (HasOutputRaster()){
+        Project::EnsureFile(m_bOutputRaster);
+        m_fis->RunRasterFis(m_bOutputRaster);
+    }
+
+    if (HasOutputCSV() && !HasOutputRaster()){
+        Project::EnsureFile(m_bOutputCSV);
+        m_fis->RunCSVFis(m_bOutputCSV);
+    }
 //    if (m_dWeightedUse >= 0)
 //        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
 
