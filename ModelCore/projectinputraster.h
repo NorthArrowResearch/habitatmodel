@@ -23,7 +23,7 @@ public:
 
     void Prepare(Simulation * pSimulation);
 
-    inline void SetValueFieldName(QString sValueField){ return; }
+    inline void SetValueFieldName(QString sValueField){ sValueField.append(""); return; }
 
     /**
      * @brief ProjectInputCSV

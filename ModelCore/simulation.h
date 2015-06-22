@@ -25,7 +25,7 @@ public:
      */
     Simulation(QDomElement *elSimulation);
 
-    virtual inline ~Simulation();
+    virtual ~Simulation();
 
     /**
      * @brief run

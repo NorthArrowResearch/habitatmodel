@@ -30,7 +30,7 @@ XMLFile::XMLFile(QString sXmlFile, bool bInput)
 
 XMLFile::~XMLFile(){
 
-    if (!m_xmlFile == NULL)
+    if (m_xmlFile != NULL)
     {
         if (m_xmlFile->isOpen())
             m_xmlFile->close();
@@ -110,7 +110,7 @@ void XMLFile::Init(QString &sFilePath){
     }
 
 
-    m_sTMPFilePath = QDir(sNewDir).filePath( GetTmpFileName(sFilePath) );
+    m_sTMPFilePath = QDir(sNewDir).filePath( GetTmpFileName() );
 
     m_xmlFile = new QFile(m_sTMPFilePath);
 
@@ -220,7 +220,7 @@ void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue
 
 }
 
-QString XMLFile::GetTmpFileName(QString xmlOutputFile)
+QString XMLFile::GetTmpFileName()
 {
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());

@@ -233,7 +233,7 @@ void FISMemberFunction::FISImpMin(FISMemberFunction* inMf, FISMemberFunction* ou
     outMf->clear();
     outMf->x_.push_back(inMf->x_[0]);
     outMf->y_.push_back(inMf->y_[0] * weight);
-    int i;
+    int i,j;
     for (i=1; i< inMf->n_-1; i++) {
         if (inMf->y_[i] > n) {
             outMf->x_.push_back(inMf->getX(i-1, i, n));
@@ -244,12 +244,12 @@ void FISMemberFunction::FISImpMin(FISMemberFunction* inMf, FISMemberFunction* ou
             outMf->y_.push_back(inMf->y_[i] * weight);
         }
     }
-    for (i=i; i<inMf->n_; i++) {
-        if (inMf->y_[i] < n) {
-            outMf->x_.push_back(inMf->getX(i-1, i, n));
+    for (j=i; j<inMf->n_; j++) {
+        if (inMf->y_[j] < n) {
+            outMf->x_.push_back(inMf->getX(j-1, j, n));
             outMf->y_.push_back(n * weight);
-            outMf->x_.push_back(inMf->x_[i]);
-            outMf->y_.push_back(inMf->y_[i] * weight);
+            outMf->x_.push_back(inMf->x_[j]);
+            outMf->y_.push_back(inMf->y_[j] * weight);
         }
     }
     outMf->n_ = outMf->x_.size();

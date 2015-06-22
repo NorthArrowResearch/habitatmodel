@@ -217,7 +217,6 @@ void FIS::RunCSVFis(QString sOutputFile)
     // Loop to find the first instance.
     while (dSimFISInputs.hasNext()) {
         dSimFISInputs.next();
-        SimulationFISInput * pSimFISInput = dSimFISInputs.value();
 
         // Here is the corresponding input raster
         ProjectInput * pInput = dSimFISInputs.value()->GetProjectInput();

@@ -88,7 +88,7 @@ SimulationHSCInput::SimulationHSCInput(QDomElement elHSCInput, HSICurve * pHSICu
 
     // No project variable found for this HSC input. We must fail
     if (!bProjectVariableFound)
-        Project::ProjectError(DOM_NODE_MISSING, "Missing <ProjectVariables> node for HSC input with ID:" + nProjectInputID );
+        Project::ProjectError(DOM_NODE_MISSING, QString("Missing <ProjectVariables> node for HSC input with ID: %1").arg(nProjectInputID) );
 
 
 }

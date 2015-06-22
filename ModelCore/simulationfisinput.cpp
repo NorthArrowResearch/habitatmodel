@@ -63,7 +63,7 @@ SimulationFISInput::SimulationFISInput(QDomElement elFISInput)
 
     // No project variable found for this FIS input. We must fail
     if (!bProjectVariableFound)
-        Project::ProjectError(DOM_NODE_MISSING, "Missing <ProjectVariables> node for FIS input with ID:" + nProjectInputID );
+        Project::ProjectError(DOM_NODE_MISSING, QString("Missing <ProjectVariables> node for FIS input with ID:").arg(nProjectInputID) );
 
 }
 

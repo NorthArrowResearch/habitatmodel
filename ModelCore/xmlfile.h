@@ -128,7 +128,7 @@ public:
      * @brief GetTmpFileName
      * @return
      */
-    QString GetTmpFileName(QString xmlOutputFile);
+    QString GetTmpFileName();
 
     /**
      * @brief CopyTmpToOutput update the real file with a copy of the tmp file
@@ -161,6 +161,7 @@ private:
 
     inline void mySleep(int sleepMs)
     {
+    sleepMs += 0;
     #ifdef LINUX
         usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
     #endif

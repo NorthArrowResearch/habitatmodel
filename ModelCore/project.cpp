@@ -136,7 +136,7 @@ void Project::LoadSimulations(){
         int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
 
         int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
-        int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
+        // int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
 
         bool bHSIID=false, bFISID=false;
 

@@ -2,10 +2,10 @@
 
 namespace HabitatModel {
 
-void ProjectInputVector::operator =(ProjectInputVector &source)
-{
+//void ProjectInputVector::operator =(ProjectInputVector &source)
+//{
 
-}
+//}
 
 ProjectInputVector::ProjectInputVector(ProjectInputVector &source): ProjectInput(source)
 {
@@ -27,7 +27,7 @@ void ProjectInputVector::Init(QString sValueField){
 }
 
 void ProjectInputVector::Prepare(Simulation * pSimulation){
-
+    pSimulation->GetRasterExtentMeta();
 }
 
 QString ProjectInputVector::getValueField()

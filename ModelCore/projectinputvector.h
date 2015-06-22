@@ -2,9 +2,13 @@
 #define PROJECTINPUTVECTOR_H
 
 #include <QString>
+#include "project.h"
+#include "rastermanager_interface.h"
 #include "projectinput.h"
 
 namespace HabitatModel {
+
+class ProjectInput;
 
 class ProjectInputVector : public ProjectInput
 {
@@ -31,7 +35,7 @@ public:
      * @brief SetValueFieldName
      * @param sValueField
      */
-    inline void SetValueFieldName(QString sValueField){ return; }
+    inline void SetValueFieldName(QString sValueField){ sValueField.append(""); return; }
 
     /**
      * @brief Prepare

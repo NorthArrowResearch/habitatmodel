@@ -6,7 +6,8 @@ namespace HabitatModel{
 Unit::Unit(const char * sName, int nID, QString sAbbrev, NamedObjectWithID * p_dimension)
     : NamedObjectWithID(sName, nID)
 {
-
+    s_abbreviation = sAbbrev;
+    m_dimension = p_dimension;
 }
 Unit::Unit(QDomElement * elUnit) : NamedObjectWithID(elUnit, "Title", "UnitID")
 {
