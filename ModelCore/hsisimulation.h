@@ -4,12 +4,6 @@
 #include "simulation.h"
 #include "hsi.h"
 #include "gdal_priv.h"
-#include "projectinputraster.h"
-#include "projectinputcsv.h"
-#include "projectinputvector.h"
-#include "project.h"
-#include "rastermanager_interface.h"
-#include "rastermanager_exception.h"
 
 namespace HabitatModel{
 

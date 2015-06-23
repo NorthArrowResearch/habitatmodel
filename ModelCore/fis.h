@@ -9,7 +9,7 @@
 #include "namedobject.h"
 #include "project.h"
 #include "simulation.h"
-#include "rastermanager_interface.h"
+
 #include "habitat_exception.h"
 #include "simulationfisinput.h"
 

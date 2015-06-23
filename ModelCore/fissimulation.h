@@ -6,11 +6,9 @@
 #include "projectinputraster.h"
 #include "projectinputcsv.h"
 #include "projectinputvector.h"
-#include "rastermanager.h"
 #include "fis.h"
 #include <QDomElement>
 #include <QHash>
-
 
 namespace HabitatModel{
 

@@ -38,7 +38,7 @@ double FISOpProduct(double n1, double n2);
  */
 class FISException : public std::runtime_error {
 public:
-    FISException(QString const& msg) : std::runtime_error(msg.toStdString()) {};
+    FISException(QString const& msg) : std::runtime_error(msg.toStdString()) {}
 };
 
 

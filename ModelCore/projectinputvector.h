@@ -2,8 +2,6 @@
 #define PROJECTINPUTVECTOR_H
 
 #include <QString>
-#include "project.h"
-#include "rastermanager_interface.h"
 #include "projectinput.h"
 
 namespace HabitatModel {

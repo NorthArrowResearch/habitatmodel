@@ -1,11 +1,8 @@
 #include "projectinputvector.h"
+#include "project.h"
+#include "rastermanager_interface.h"
 
 namespace HabitatModel {
-
-//void ProjectInputVector::operator =(ProjectInputVector &source)
-//{
-
-//}
 
 ProjectInputVector::ProjectInputVector(ProjectInputVector &source): ProjectInput(source)
 {
