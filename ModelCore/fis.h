@@ -7,13 +7,13 @@
 #include <vector>
 #include "gdal_priv.h"
 #include "namedobject.h"
-#include "project.h"
 #include "simulation.h"
 
 #include "habitat_exception.h"
 #include "simulationfisinput.h"
 
 namespace HabitatModel{
+
 
 class FIS : public NamedObjectWithID
 {
@@ -34,8 +34,6 @@ private:
 
     GDALDataset * m_outputDataset;
     RasterManager::RasterMeta * m_RasterExtents;
-
-    //GDALDataset* fisDataset; /**< TODO */
 
 };
 

@@ -1,5 +1,7 @@
 #include "fis.h"
 #include "benchmark.h"
+#include "project.h"
+
 #include "rastermanager_interface.h"
 
 namespace HabitatModel{

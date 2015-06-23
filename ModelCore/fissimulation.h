@@ -1,11 +1,7 @@
 #ifndef FISSIMULATION_H
 #define FISSIMULATION_H
 
-#include "simulation.h"
 #include "simulationfisinput.h"
-#include "projectinputraster.h"
-#include "projectinputcsv.h"
-#include "projectinputvector.h"
 #include "fis.h"
 #include <QDomElement>
 #include <QHash>

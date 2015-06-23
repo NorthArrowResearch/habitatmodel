@@ -92,7 +92,7 @@ bool FISMemberFunction::init(double x1, double x2, double x3, double x4, double 
      * Blank constructor.
      * @throw FISException
      */
-FISMemberFunction::FISMemberFunction() throw (FISException) : n_(0), msg_("") {}
+FISMemberFunction::FISMemberFunction() : n_(0), msg_("") {}
 
 /**
      * Constructor, using a triangle membership function.
@@ -104,8 +104,7 @@ FISMemberFunction::FISMemberFunction() throw (FISException) : n_(0), msg_("") {}
      * @param yMax The y value at x2. Must be in the interval (0,1].
      * @throw FISException
      */
-FISMemberFunction::FISMemberFunction(double x1, double x2, double x3, double yMax)
-throw (FISException) : n_(3), msg_("") {
+FISMemberFunction::FISMemberFunction(double x1, double x2, double x3, double yMax) : n_(3), msg_("") {
     if (!init(x1, x2, x3, yMax))
         throw FISException(msg_);
 }
@@ -121,8 +120,7 @@ throw (FISException) : n_(3), msg_("") {
      * @param yMax The y value at x2 and x3. Must be in the interval (0,1].
      * @throw FISException
      */
-FISMemberFunction::FISMemberFunction(double x1, double x2, double x3, double x4, double yMax)
-throw (FISException) : n_(4), msg_("") {
+FISMemberFunction::FISMemberFunction(double x1, double x2, double x3, double x4, double yMax) : n_(4), msg_("") {
     if (!init(x1, x2, x3, x4, yMax))
         throw FISException(msg_);
 }
@@ -135,7 +133,7 @@ throw (FISException) : n_(4), msg_("") {
      * @param y The vector of y coordinates.
      * @throw FISException
      */
-FISMemberFunction::FISMemberFunction(FISCoords x, FISCoords y) throw (FISException) :
+FISMemberFunction::FISMemberFunction(FISCoords x, FISCoords y) :
     n_(x.size()), x_(x), y_(y), msg_("") {
     if (x.size() != y.size())
         throw FISException("x and y are different sizes.");
@@ -149,7 +147,7 @@ FISMemberFunction::FISMemberFunction(FISCoords x, FISCoords y) throw (FISExcepti
      * @param coords The map of coordinates.
      * @throw FISException
      */
-FISMemberFunction::FISMemberFunction(std::map<double, double> coords) throw (FISException) :
+FISMemberFunction::FISMemberFunction(std::map<double, double> coords) :
     n_(coords.size()), msg_("") {
     if (0 == coords.size())
         throw FISException("No coordinates provided.");
@@ -461,7 +459,7 @@ bool FISMemberFunctionSet::setError(QString msg) {
      * Blank constructor.
      * @throw FISException
      */
-FISMemberFunctionSet::FISMemberFunctionSet() throw (FISException) : n_(0), msg_("") {}
+FISMemberFunctionSet::FISMemberFunctionSet() : n_(0), msg_("") {}
 
 /**
      * Constructor.
@@ -469,7 +467,7 @@ FISMemberFunctionSet::FISMemberFunctionSet() throw (FISException) : n_(0), msg_(
      * @param max The maximum allowable x value.
      * @throw FISException
      */
-FISMemberFunctionSet::FISMemberFunctionSet(double min, double max) throw (FISException) :
+FISMemberFunctionSet::FISMemberFunctionSet(double min, double max) :
     n_(0), min_(min), max_(max), msg_("") {
     if (min >= max)
         throw FISException("Invalid range. Max must be greater than min.");
@@ -953,7 +951,7 @@ void FISRuleSet::init(FISOperatorAnd andOperator, FISOperatorOr orOperator, FISI
      * Blank constructor.
      * @throw FISException
      */
-FISRuleSet::FISRuleSet() throw (FISException) : nInputs_(0), nRules_(0), msg_("")  {}
+FISRuleSet::FISRuleSet() : nInputs_(0), nRules_(0), msg_("")  {}
 
 /**
      * Constructor.
@@ -965,7 +963,7 @@ FISRuleSet::FISRuleSet() throw (FISException) : nInputs_(0), nRules_(0), msg_(""
      * @throw FISException
      */
 FISRuleSet::FISRuleSet(FISOperatorAnd andOperator, FISOperatorOr orOperator, FISImplicator implicator,
-                       FISAggregator aggregator, FISDefuzzifier defuzzifier) throw (FISException) :
+                       FISAggregator aggregator, FISDefuzzifier defuzzifier) :
     nInputs_(0), nRules_(0), msg_("") {
     init(andOperator, orOperator, implicator, aggregator, defuzzifier);
 }

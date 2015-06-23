@@ -12,7 +12,6 @@
 #include "hsisimulation.h"
 #include "fissimulation.h"
 #include "hmvariable.h"
-#include "unit.h"
 #include "hsccategorical.h"
 #include "hscinflection.h"
 #include "hmvariable.h"

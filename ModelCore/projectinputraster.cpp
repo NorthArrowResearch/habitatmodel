@@ -1,5 +1,6 @@
 #include "projectinputraster.h"
 #include "project.h"
+#include "habitat_interface.h"
 #include "rastermanager_interface.h"
 
 namespace HabitatModel {

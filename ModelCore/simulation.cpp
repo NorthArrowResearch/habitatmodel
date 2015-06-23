@@ -3,6 +3,7 @@
 #include "simulation.h"
 #include "hsi.h"
 #include "project.h"
+#include "habitat_exception.h"
 #include "rastermanager_interface.h"
 
 namespace HabitatModel{

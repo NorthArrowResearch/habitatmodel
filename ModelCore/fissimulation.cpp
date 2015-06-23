@@ -1,4 +1,6 @@
 #include "fissimulation.h"
+#include "projectinputraster.h"
+#include "rastermanager_interface.h"
 
 namespace HabitatModel{
 

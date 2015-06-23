@@ -5,6 +5,7 @@
 #include "projectinputcsv.h"
 #include "projectinputraster.h"
 #include "projectinputvector.h"
+#include "habitat_exception.h"
 
 namespace HabitatModel{
 /*

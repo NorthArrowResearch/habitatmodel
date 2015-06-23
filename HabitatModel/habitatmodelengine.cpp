@@ -5,7 +5,7 @@
 #include <QFileInfo>
 #include <cstring>
 #include <iostream>
-
+#include "habitat_exception.h"
 #include "project.h"
 
 namespace HabitatModelEngine {

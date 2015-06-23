@@ -1,4 +1,5 @@
 #include "simulationfisinput.h"
+#include "habitat_exception.h"
 
 namespace HabitatModel{
 

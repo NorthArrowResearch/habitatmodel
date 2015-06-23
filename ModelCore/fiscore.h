@@ -82,7 +82,7 @@ protected:
      */
     bool init(double x1, double x2, double x3, double x4, double yMax);
 public:
-    FISMemberFunction() throw (FISException);
+    FISMemberFunction();
     /**
      * @brief
      *
@@ -91,7 +91,7 @@ public:
      * @param x3
      * @param yMax
      */
-    FISMemberFunction(double x1, double x2, double x3, double yMax) throw (FISException);
+    FISMemberFunction(double x1, double x2, double x3, double yMax);
     /**
      * @brief
      *
@@ -101,21 +101,21 @@ public:
      * @param x4
      * @param yMax
      */
-    FISMemberFunction(double x1, double x2, double x3, double x4, double yMax) throw (FISException);
+    FISMemberFunction(double x1, double x2, double x3, double x4, double yMax);
     /**
      * @brief
      *
      * @param x
      * @param y
      */
-    FISMemberFunction(FISCoords x, FISCoords y) throw (FISException);
+    FISMemberFunction(FISCoords x, FISCoords y);
     /**
      * @brief
      *
      * @param std::map<double
      * @param coords
      */
-    FISMemberFunction(std::map<double, double> coords) throw (FISException);
+    FISMemberFunction(std::map<double, double> coords);
     /**
      * @brief
      *
@@ -256,14 +256,14 @@ private:
     bool setError(QString);
     friend class FISRuleSet;
 public:
-    FISMemberFunctionSet() throw (FISException);
+    FISMemberFunctionSet();
     /**
      * @brief
      *
      * @param min
      * @param max
      */
-    FISMemberFunctionSet(double min, double max) throw (FISException);
+    FISMemberFunctionSet(double min, double max);
     /**
      * @brief
      *
@@ -465,7 +465,7 @@ protected:
     void init(FISOperatorAnd andOperator, FISOperatorOr orOperator, FISImplicator implicator,
                         FISAggregator aggregator, FISDefuzzifier defuzzifier);
 public:
-    FISRuleSet() throw (FISException);
+    FISRuleSet();
     /**
      * @brief
      *
@@ -476,7 +476,7 @@ public:
      * @param defuzzifier
      */
     FISRuleSet(FISOperatorAnd andOperator, FISOperatorOr orOperator, FISImplicator implicator,
-                         FISAggregator aggregator, FISDefuzzifier defuzzifier) throw (FISException);
+                         FISAggregator aggregator, FISDefuzzifier defuzzifier);
     /**
      * @brief
      *

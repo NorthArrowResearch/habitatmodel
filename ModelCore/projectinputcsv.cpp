@@ -2,6 +2,7 @@
 #include "projectinput.h"
 #include "project.h"
 #include "raster.h"
+#include "habitat_exception.h"
 
 namespace HabitatModel{
 

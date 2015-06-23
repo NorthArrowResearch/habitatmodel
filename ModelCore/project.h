@@ -5,12 +5,8 @@
 #include <QDomElement>
 #include <QDir>
 #include <QTime>
-
 #include "habitatmodel_global.h"
 #include "namedobject.h"
-#include "habitat_exception.h"
-#include "projectinput.h"
-#include "habitat_interface.h"
 #include "xmlfile.h"
 
 namespace HabitatModel{
@@ -20,7 +16,7 @@ class HSC;
 class Unit;
 class HMVariable;
 
-class DLL_API Project
+class Project
 {
 public:
 
@@ -29,40 +25,19 @@ public:
      * @param psXMLInput
      * @param psXMLOutput
      */
-    Project(const char * psProjectRoot,
+    DLL_API Project(const char * psProjectRoot,
             const char *psXMLInputDef,
             const char *psXMLInputConf,
             const char * psXMLOutput);
 
-    ~Project();
+    DLL_API ~Project();
 
     /**
      * @brief Run: This is the main function that does all the work
      * @param psXMLInput
      * @param psXMLOutput
      */
-    int Run();
-
-
-    /**
-     * @brief Load the xml file from a path string
-     * @param sXMLConfig
-     */
-    void LoadHMVariables();
-    void LoadLookupTable();
-    void LoadUnits();
-    void LoadHSCs();
-    void LoadHSCCoordinatePairs();
-    void LoadProjectDataSources();
-    void LoadSimulations();
-
-    /**
-     * @brief LoadHSC
-     * @param nNewHSCID
-     * @param nType
-     * @return
-     */
-    HSC * LoadHSC(int nNewHSCID, int nType);
+    DLL_API int Run();
 
     /**
      * @brief GetConfigDom
@@ -198,11 +173,6 @@ public:
     ProjectInputTypeCodes GetInputType(QString sInputFilePath);
 
     /**
-     * @brief PrepareProjectInputs
-     */
-    void PrepareProjectInputs();
-
-    /**
      * @brief GetRawProjectInputsStore
      * @return
      */
@@ -232,6 +202,27 @@ public:
     static QTime m_subprocessTimer;
 
 private:
+
+    /**
+     * @brief Load the xml file from a path string
+     * @param sXMLConfig
+     */
+    void LoadHMVariables();
+    void LoadLookupTable();
+    void LoadUnits();
+    void LoadHSCs();
+    void LoadHSCCoordinatePairs();
+    void LoadProjectDataSources();
+    void LoadSimulations();
+
+    /**
+     * @brief LoadHSC
+     * @param nNewHSCID
+     * @param nType
+     * @return
+     */
+    HSC * LoadHSC(int nNewHSCID, int nType);
+
 
     // Project Attributes
     QString qd_date_created;
