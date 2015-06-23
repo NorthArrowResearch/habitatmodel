@@ -118,11 +118,6 @@ void FIS::RunRasterFis(QString sOutputFile)
 
     rules->initFuzzy();
 
-    ProcessTimer FISTimer("Doing FIS");
-    LoopTimer lineLoop("Process Line");  //DEBUG Only
-    LoopTimer valLoop("Cells with Value");  //DEBUG Only
-    LoopTimer nodataLoop("Cells with NoDATA");  //DEBUG Only
-
     // Loop over the rows and columns. DO FIS!!
 
     for (int i=0; i < m_RasterExtents->GetRows(); i++)
@@ -155,10 +150,6 @@ void FIS::RunRasterFis(QString sOutputFile)
                                                 inputNoDataValues,
                                                 dNodataVal);
 
-            if (pOutputBuffer[j] == dNodataVal)
-                valLoop.Tick();
-            else
-                nodataLoop.Tick();
 
         }
 
@@ -168,14 +159,8 @@ void FIS::RunRasterFis(QString sOutputFile)
                             sRasterCols, 1,
                             GDT_Float64,
                             0, 0 );
-        lineLoop.Tick();
 
     }
-    FISTimer.Output();
-
-    lineLoop.Output(); // DEBUG only
-    nodataLoop.Output(); // DEBUG only
-    valLoop.Output(); //DEBUG only
 
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);
@@ -247,17 +232,19 @@ void FIS::RunCSVFis(QString sOutputFile)
         throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
     }
 
-    // Our final output CSV file name and path:
-    Project::EnsureFile(sOutputFile);
-
     // Create and open a new CSV file for writing
     // --------------------------------------------
+    Project::EnsureFile(sOutputFile);
     QFile outputCSVFile(sOutputFile);
+    qDebug() << sOutputFile;
     if (!outputCSVFile.open(QFile::WriteOnly|QFile::Truncate)){
         throw HabitatException(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + sOutputFile  );
     }
     QTextStream qtsOutputStream(&outputCSVFile);
 
+
+
+    rules->initFuzzy();
 
     // --------------------------------------------
     // Go line-by-line in the CSV file, calculating HSI values
@@ -274,7 +261,6 @@ void FIS::RunCSVFis(QString sOutputFile)
         QStringList slCSVcells = CSVline.split(","); //Note: this will fail if headers items contain commans
         QStringList slCSVInputs;
         QStringList slCSVOutputs;
-
 
         // Line 1: This is a special case
         // this is where we decide what to keep and what to lose
@@ -305,13 +291,17 @@ void FIS::RunCSVFis(QString sOutputFile)
 
                         // Here is the corresponding input raster
                         ProjectInput * pInput = dSimFISInputs.value()->GetProjectInput();
+                        QString sFISInputName = dSimFISInputs.value()->GetFISInputName();
                         ProjectInputCSV * InputCSV = dynamic_cast <ProjectInputCSV *> ( pInput );
+
                         if ( InputCSV && sCSVCol.compare(InputCSV->GetValueFieldName(), Qt::CaseInsensitive) == 0 ){
 
                             // add this input to our list
                             slCSVInputs.append(sCSVCol);
                             for (int i=0; i < rules->numInputs(); i++){
-                                qhFISInputOrder.insert(i, nColNumber);
+                                QString sRulesInputname = QString::fromUtf8( rules->getInputName(i) );
+                                if (sRulesInputname.compare(sFISInputName, Qt::CaseInsensitive) == 0)
+                                    qhFISInputOrder.insert(nColNumber, i);
                             }
 
                         }
@@ -341,33 +331,32 @@ void FIS::RunCSVFis(QString sOutputFile)
             }
 
             // Now loop through all cols and add the ones we need.
-            for (int i=0; i < rules->numInputs(); i++){
-                foreach (QString sCSVCol, slCSVcells){
+            foreach (QString sCSVCol, slCSVcells){
 
-                    int nColForRule = qhFISInputOrder.find(i).value();
-                    if (nColForRule == nColNumber){
-                        // Now add the Data input value
-                        ProjectInputCSV::CSVCellClean( sCSVCol );
-                        slCSVInputs.append(sCSVCol);
-                        if (double dCSVItem = sCSVCol.toDouble()){
+                if (qhFISInputOrder.find(nColNumber).key() == nColNumber){
+                    int nColRule = qhFISInputOrder.find(nColNumber).value();
+                    // Now add the Data input value
+                    ProjectInputCSV::CSVCellClean( sCSVCol );
+                    slCSVInputs.append(sCSVCol);
+                    if (double dCSVItem = sCSVCol.toDouble()){
 
-                            if (dCSVItem != dNoDataVal){
-                                inputData[i] =  dCSVItem;
-                            }
-                            else{
-                                slCSVOutputs.append(" ");
-                            }
+                        if (dCSVItem != dNoDataVal){
+                            inputData[nColRule] =  dCSVItem;
                         }
-                        // Could not make a double. Just insert a blank space
-                        else {
+                        else{
                             slCSVOutputs.append(" ");
                         }
-
+                    }
+                    // Could not make a double. Just insert a blank space
+                    else {
+                        slCSVOutputs.append(" ");
                     }
 
-                    nColNumber++;
                 }
+
+                nColNumber++;
             }
+
 
             double dCombinedVal = rules->calculate(inputData, false,
                                                    inputNoDataValues,

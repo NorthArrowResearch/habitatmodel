@@ -121,8 +121,6 @@ void FISSimulation::Run()
     Project::GetOutputXML()->Log("Starting FIS Simulation Run: " + GetName() , 0);
 
     // Our final output Raster file name and path:
-
-
     m_fis->init();
 
     if (HasOutputRaster()){
