@@ -67,6 +67,12 @@ Simulation::Simulation(QDomElement * elSimulation)
         throw HabitatException(XML_INPUT_ERROR, "CSV-only method does not support multiple CSVs at this time.");
     }
 
+    // Simulations get their own special XML file.
+    QString sHSResultsLog = QDir(m_sfolder).filePath("HSResults.xml");
+    Project::EnsureFile(sHSResultsLog);
+    m_XMLSimOutput = new XMLFile(sHSResultsLog, false);
+
+
     m_dWeightedUse = -1;
     m_dNormWeightedUse = -1;
     m_dPercentUsage = -1;
@@ -88,6 +94,26 @@ Simulation::Simulation(QDomElement * elSimulation)
 
 Simulation::~Simulation() {
     delete m_RasterTemplateMeta;
+}
+
+void Simulation::SimulationError(int nErrorCode){
+    SimulationError(nErrorCode, "");
+    Project::ProjectError(nErrorCode, "");
+}
+
+void Simulation::SimulationError(int nErrorCode, QString m_sEvidence){
+    m_XMLSimOutput->Log(HabitatException::GetReturnCodeOnlyAsString(nErrorCode),  m_sEvidence, SEVERITY_ERROR, 1);
+    Project::ProjectError(nErrorCode, m_sEvidence);
+}
+
+void Simulation::SimulationLog(QString sMsg, int nIndent){
+    m_XMLSimOutput->Log(sMsg, nIndent);
+    Project::GetOutputXML()->Log(sMsg, nIndent);
+}
+
+void Simulation::SimulationAddResult(QString sTagName, QString sTagValue){
+    m_XMLSimOutput->AddResult(this, sTagName,  sTagValue);
+    Project::GetOutputXML()->AddResult(this, sTagName,  sTagValue);
 }
 
 void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){

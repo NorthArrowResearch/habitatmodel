@@ -37,7 +37,6 @@ SOURCES += \
     habitat_interface.cpp \
     xmlfile.cpp \
     fissimulation.cpp \
-    fis.cpp \
     simulationfisinput.cpp \
     fiscore.cpp
 
@@ -65,7 +64,6 @@ HEADERS +=\
     xmlfile.h \
     habitat_exception.h \
     fissimulation.h \
-    fis.h \
     simulationfisinput.h \
     fiscore.h \
     habitat_misc.h \

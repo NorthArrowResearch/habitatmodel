@@ -39,7 +39,7 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     }
 
     if (elHSI == NULL)
-        Project::ProjectError(SEVERITY_ERROR, "Project is missing an HSI.");
+        SimulationError(SEVERITY_ERROR, "Project is missing an HSI.");
 
     m_hsiRef = new HSI(elHSI);
 
@@ -74,7 +74,7 @@ void HSISimulation::AddRastersToExtents(){
 
         if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
             try {
-                Project::GetOutputXML()->Log("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
+                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
                 QString sRasterPath = pInput->GetSourceFilePath();
                 const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
 
@@ -83,7 +83,7 @@ void HSISimulation::AddRastersToExtents(){
                 delete pRasterMeta;
             }
             catch (RasterManager::RasterManagerException e){
-                Project::GetOutputXML()->Log("ERROR:" + e.GetReturnMsgAsString() , 0);
+                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
             }
 
         }
@@ -101,7 +101,7 @@ void HSISimulation::Run(){
     QTime qtRunTime;
     qtRunTime.start();
 
-    Project::GetOutputXML()->Log("Starting Simulation Run: " + GetName() , 0);
+    SimulationLog("Starting Simulation Run: " + GetName() , 0);
 
     //Method of combination
     int nMethod = DetermineMethod();
@@ -133,11 +133,11 @@ void HSISimulation::Run(){
 
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
-    Project::GetOutputXML()->Log("Simulation Complete", 1);
+    SimulationLog("Simulation Complete", 1);
 }
 
 void HSISimulation::RunCSVHSI(int nMethod){
-    Project::GetOutputXML()->Log("Beginning CSV input processing: " + m_bOutputCSV , 2);
+    SimulationLog("Beginning CSV input processing: " + m_bOutputCSV , 2);
 
     QString sXField, sYField, sInputCSVFile;
     QHash<int, HSC * > qhHSCs;
@@ -162,10 +162,10 @@ void HSISimulation::RunCSVHSI(int nMethod){
 
 
     if (sXField.isEmpty()){
-        Project::ProjectError(CSV_INPUT_ERROR, "the X field could not be determined.");
+        SimulationError(CSV_INPUT_ERROR, "the X field could not be determined.");
     }
     if (sInputCSVFile.isEmpty()){
-        Project::ProjectError(CSV_INPUT_ERROR, "the CSV input path could not be determined.");
+        SimulationError(CSV_INPUT_ERROR, "the CSV input path could not be determined.");
     }
 
     // Open the input CSV file as ReadOnly
@@ -259,7 +259,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
                 slCSVInputs.append(xVal);
             }
             else
-                Project::ProjectError(CSV_INPUT_ERROR, "Could not find X-col" + sXField + " in CSV file.");
+                SimulationError(CSV_INPUT_ERROR, "Could not find X-col" + sXField + " in CSV file.");
 
             if (ycol >= 0){
                 QString yVal = slCSVcells.at(ycol);
@@ -352,7 +352,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
      *  Combine Output Rasters using HSIMethodID in HSI
      *
      **/
-    Project::GetOutputXML()->Log("Combining all output rasters into one: " + m_bOutputRaster , 2);
+    SimulationLog("Combining all output rasters into one: " + m_bOutputRaster , 2);
 
 
     // Our final output Raster file name and path:
@@ -493,7 +493,7 @@ double HSISimulation::CombineValues(int nMethod, QHash<int, double> dCellContent
 
 void HSISimulation::PrepareInputs(){
 
-    Project::GetOutputXML()->Log("Preparing inputs for HSI Simulation: " + GetName() , 2);
+    SimulationLog("Preparing inputs for HSI Simulation: " + GetName() , 2);
 
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
     while (i.hasNext()) {
@@ -507,7 +507,7 @@ void HSISimulation::PrepareInputs(){
 
 int HSISimulation::DetermineMethod(){
     if (m_hsiRef->GetMethod() == NULL)
-        Project::ProjectError(SEVERITY_ERROR, "This HSI has no method.");
+        SimulationError(SEVERITY_ERROR, "This HSI has no method.");
 
     QString sMethod = m_hsiRef->GetMethod()->GetName();
 
@@ -517,7 +517,7 @@ int HSISimulation::DetermineMethod(){
     else if ( sMethod.compare("Minimum", Qt::CaseInsensitive) == 0 ){ return HSI_MINIMUM; }
     else if ( sMethod.compare("Weighted Mean", Qt::CaseInsensitive) == 0 ){ return HSI_WEIGHTED_MEAN; }
 
-    Project::ProjectError(SEVERITY_ERROR, "Could not determine Method for Raster combination in HSI Simulation");
+    SimulationError(SEVERITY_ERROR, "Could not determine Method for Raster combination in HSI Simulation");
     return -1;
 
 }
@@ -530,7 +530,7 @@ void HSISimulation::Clean(){
 // Inputs for preparation down in PrepareInputs()
 void HSISimulation::LoadInputs(){
 
-    Project::GetOutputXML()->Log("Loading Inputs for HSI Simulation: " + GetName() , 2);
+    SimulationLog("Loading Inputs for HSI Simulation: " + GetName() , 2);
 
     QDomNodeList elHSCInputs = Project::GetConfigDom()->elementsByTagName("SimulationHSCInputs");
 

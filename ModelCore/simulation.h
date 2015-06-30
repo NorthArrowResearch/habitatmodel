@@ -14,6 +14,7 @@ namespace HabitatModel{
 
 //class HSI;
 class SimulationHSCInput;
+class XMLFile;
 
 class Simulation : public NamedObjectWithID
 {
@@ -63,8 +64,16 @@ protected:
 
     void RasterUnion(RasterManager::RasterMeta *pMeta);
 
+    // These wrap ProjectError
+    void SimulationError(int nErrorCode);
+    void SimulationError(int nErrorCode, QString m_sEvidence);
+    void SimulationLog(QString sMsg, int nIndent);
+    void SimulationAddResult(QString sTagName, QString sTagValue);
+
     QString m_bOutputRaster;
     QString m_bOutputCSV;
+
+    XMLFile * m_XMLSimOutput;
 
     int m_NumRasters;
     int m_NumCSVs;

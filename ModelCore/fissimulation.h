@@ -2,9 +2,10 @@
 #define FISSIMULATION_H
 
 #include "simulationfisinput.h"
-#include "fis.h"
 #include <QDomElement>
 #include <QHash>
+#include "gdal_priv.h"
+#include "fiscore.h"
 
 namespace HabitatModel{
 
@@ -19,17 +20,23 @@ public:
     void Clean();
     void PrepareInputs();
 
-    inline FIS * GetFIS() const { return m_fis; }
     inline SimulationFISInput * GetSimulationFISInput(int nIndex) const { return m_simulation_fis_inputs.value(nIndex); }
 
+    void RunRasterFis(QString sOutputFile);
+    void RunCSVFis(QString sOutputFile);
 private:
-
-    FIS * m_fis;
 
      // Hash store of simulationFIS inputs related to this sim.
     QHash<int, SimulationFISInput *> m_simulation_fis_inputs;
 
     void AddRastersToExtents();
+
+
+    QString m_sFISRuleFile;
+    FISRuleSet* rules; /**< TODO */
+
+    GDALDataset * m_outputDataset;
+
 };
 
 }

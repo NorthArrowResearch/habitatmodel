@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QTime>
 
+#include "habitat_exception.h"
 #include "hsisimulation.h"
 #include "fissimulation.h"
 #include "hmvariable.h"
@@ -70,7 +71,7 @@ Project::Project(const char * psProjectRoot,
 
     m_ProjectRootDir = new QDir(SanitizePath(psProjectRoot));
     if (!m_ProjectRootDir->exists())
-        ProjectError(DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath());
+        ProjectError( DIRECTORY_NOT_FOUND, m_ProjectRootDir->absolutePath() );
 
 
     m_XMLOutput->Log("Starting Simulation Run...");
