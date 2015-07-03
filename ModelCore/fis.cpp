@@ -162,8 +162,8 @@ void FIS::RunRasterFis(QString sOutputFile)
 
     }
 
-    if ( pOutputDS != NULL)
-        GDALClose(pOutputDS);
+
+    GDALClose(pOutputDS);
     CPLFree(pReadBuffer);
     pReadBuffer = NULL;
 

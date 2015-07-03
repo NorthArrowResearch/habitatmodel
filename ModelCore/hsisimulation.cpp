@@ -437,8 +437,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
                             0, 0 );
     }
 
-    if ( pOutputDS != NULL)
-        GDALClose(pOutputDS);
+    GDALClose(pOutputDS);
     CPLFree(pReadBuffer);
     pReadBuffer = NULL;
 
