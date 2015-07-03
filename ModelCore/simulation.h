@@ -91,7 +91,6 @@ private:
 
     QString m_screated_on;
 
-    bool m_bqueued;
     bool m_badd_individual_output;
 
     RasterManager::RasterMeta * m_RasterTemplateMeta;

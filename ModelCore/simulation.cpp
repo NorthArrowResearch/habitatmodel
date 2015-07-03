@@ -33,12 +33,6 @@ Simulation::Simulation(QDomElement * elSimulation)
 
     m_sfolder =  Project::GetProjectRootPath()->filePath(mSimRootFolder);
 
-    QString sQueued = elSimulation->firstChildElement("IsQueuedToRun").text();
-    if (sQueued == "true" || sQueued == "1")
-        m_bqueued = true;
-    else
-        m_bqueued = false;
-
     QString sAddIndOut = elSimulation->firstChildElement("AddIndividualOutput").text();
     if (sAddIndOut == "true" || sAddIndOut == "1")
         m_badd_individual_output = true;

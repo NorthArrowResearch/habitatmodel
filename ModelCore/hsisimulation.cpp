@@ -445,7 +445,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
     QHashIterator<int, GDALRasterBand *> qhds(dDatasets);
     while (qhds.hasNext()) {
         qhds.next();
-        GDALClose(qhds.value());
+        GDALClose(qhds.value()->GetDataset());
     }
     dDatasets.clear();
     QHashIterator<int, double *> qhbuff(dInBuffers);

@@ -132,30 +132,34 @@ void Project::LoadSimulations(){
     for(int n= 0; n < elSimulations.length(); n++){
         QDomElement elSimulation = elSimulations.at(n).toElement();
 
-        int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
+        // If it's not queued then we don't care about it.
+        QString sQueued = elSimulation.firstChildElement("IsQueuedToRun").text();
+        if (sQueued.compare("false", Qt::CaseInsensitive) != 0 && sQueued.compare("0", Qt::CaseInsensitive) != 0){
+            int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
 
-        int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
-        // int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
+            int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
+            // int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
 
-        bool bHSIID=false, bFISID=false;
+            bool bHSIID=false, bFISID=false;
 
-        if (nSimulationHSIID > 0)
-            bHSIID = true;
-        else
-            bFISID = true;
+            if (nSimulationHSIID > 0)
+                bHSIID = true;
+            else
+                bFISID = true;
 
-        Simulation * newSim;
+            Simulation * newSim;
 
-        if (bHSIID){
-            newSim = new HSISimulation(&elSimulation);
-            m_simulation_store.insert(nSimulationID, newSim);
-        }
-        else if(bFISID){
-            newSim = new FISSimulation(&elSimulation);
-            m_simulation_store.insert(nSimulationID, newSim);
-        }
-        else{
-            GetOutputXML()->Log("Missing HSI, FIS", "Simulation with ID '"+QString::number(nSimulationID) +"' has no valid <HSI> or <FIS> nodes found in the config file. Skipping Simulation", SEVERITY_WARNING, 1);
+            if (bHSIID){
+                newSim = new HSISimulation(&elSimulation);
+                m_simulation_store.insert(nSimulationID, newSim);
+            }
+            else if(bFISID){
+                newSim = new FISSimulation(&elSimulation);
+                m_simulation_store.insert(nSimulationID, newSim);
+            }
+            else{
+                GetOutputXML()->Log("Missing HSI, FIS", "Simulation with ID '"+QString::number(nSimulationID) +"' has no valid <HSI> or <FIS> nodes found in the config file. Skipping Simulation", SEVERITY_WARNING, 1);
+            }
         }
 
     }
