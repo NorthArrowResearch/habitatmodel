@@ -51,39 +51,36 @@ win32 {
     DEPENDPATH += $$GDALWIN/include
 
     # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    LIBS += -L$$DESTDIR -lModelCore
+    LIBS += -L$$DESTDIR -lRasterManager
 
 }
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
-
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_MAC_SDK = macosx10.11
 
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
-
 }
 unix:!macx {
     message("Unix")
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
-
-    target.path = /usr/bin
-    INSTALLS += target
+    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
 
     # GDAL is required
     LIBS += -L/usr/lib -lgdal
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
+
 }
+unix{
+    target.path = /usr/bin
+    INSTALLS += target
 
-LIBS += -L$$DESTDIR -lModelCore
-LIBS += -L$$DESTDIR -lRasterManager
-
-message("Building to: $$DESTDIR")
+    LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
+    LIBS += -L/usr/local/lib -lRasterManager
+}
