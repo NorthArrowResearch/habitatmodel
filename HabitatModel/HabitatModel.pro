@@ -24,10 +24,6 @@ SOURCES += main.cpp \
 HEADERS += \
     habitatmodelengine.h
 
-
-CONFIG(release, debug|release): BUILD_TYPE = release
-else:CONFIG(debug, debug|release): BUILD_TYPE = debug
-
 INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 
@@ -35,6 +31,9 @@ INCLUDEPATH += $$PWD/../ModelCore
 DEPENDPATH += $$PWD/../ModelCore
 
 win32 {
+    CONFIG(release, debug|release): BUILD_TYPE = release
+    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
         ARCH = "32"
@@ -49,6 +48,8 @@ win32 {
     LIBS += -L$$GDALWIN/lib -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
+
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 
     # Compile to a central location
     LIBS += -L$$DESTDIR -lModelCore
