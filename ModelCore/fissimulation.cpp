@@ -148,6 +148,9 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
     rules->initFuzzy();
 
     // Loop over the rows and columns. DO FIS!!
+    double cellSum = 0;
+    double usedCellCounter = 0;
+    double cellArea = fabs( GetRasterExtentMeta()->GetCellHeight() * GetRasterExtentMeta()->GetCellWidth() );
 
     for (int i=0; i < GetRasterExtentMeta()->GetRows(); i++)
     {
@@ -173,12 +176,16 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
                 dDatasetIterator.next();
                 int nDataKey = dDatasetIterator.key();
                 inputData[nDataKey] = dInBuffers.value(nDataKey)[j];
-            }
+            }           
 
             pOutputBuffer[j] = rules->calculate(inputData, checkNoData,
                                                 inputNoDataValues,
                                                 dNodataVal);
 
+            if (pOutputBuffer[j] != dNodataVal){
+                cellSum += pOutputBuffer[j];
+                usedCellCounter++;
+            }
 
         }
 
@@ -190,6 +197,13 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
                             0, 0 );
 
     }
+
+    // Now write some results
+    m_dCellArea = cellArea;
+    m_dWeightedUse = cellSum * cellArea;
+    m_dNormWeightedUse = m_dWeightedUse / (usedCellCounter * cellArea);
+    m_dPercentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
+    m_nOccupiedCells = usedCellCounter;
 
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);
@@ -409,6 +423,13 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
         nlinenumber++;
     }
 
+    // Now write some results
+    m_dCellArea = m_dCellSize * m_dCellSize;
+    m_dWeightedUse = cellSum * m_dCellArea;
+    m_dNormWeightedUse = m_dWeightedUse / (usedCellCounter * m_dCellArea);
+    m_nOccupiedCells = usedCellCounter;
+    m_nCSVLines = nlinenumber;
+
 
     // Note: Percent usage is not a useful stat here so it is not written.
     InputCSVFile.close();
@@ -495,8 +516,20 @@ void FISSimulation::Run()
         Project::EnsureFile(m_bOutputCSV);
         RunCSVFis(m_bOutputCSV);
     }
-//    if (m_dWeightedUse >= 0)
-//        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+    if (m_dWeightedUse >= 0)
+        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+    if (m_dNormWeightedUse >= 0)
+        Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+    if (m_dPercentUsage >= 0)
+        Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+    if (m_nOccupiedCells >= 0)
+        Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+    if (m_nTotalCells >= 0)
+        Project::GetOutputXML()->AddResult(this, "TotalCells",  QString::number(m_nTotalCells) );
+    if (m_nCSVLines >= 0)
+        Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
+    if (m_dCellArea >= 0)
+        Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
 
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
