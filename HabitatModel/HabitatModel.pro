@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 1.0.4
+VERSION = 1.0.5
 DEFINES += VERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 
 TARGET = HabitatModel
@@ -30,9 +30,10 @@ DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
 INCLUDEPATH += $$PWD/../ModelCore
 DEPENDPATH += $$PWD/../ModelCore
 
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
 win32 {
-    CONFIG(release, debug|release): BUILD_TYPE = release
-    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -62,11 +63,17 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
     QMAKE_MAC_SDK = macosx10.11
 
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
+
+    LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
+    LIBS += -L$$DESTDIR -lRasterManager
 }
 unix:!macx {
     message("Unix")
@@ -77,8 +84,6 @@ unix:!macx {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 
-}
-unix{
     target.path = /usr/bin
     INSTALLS += target
 

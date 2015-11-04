@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 1.0.4
+VERSION = 1.0.5
 TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
@@ -69,9 +69,10 @@ HEADERS +=\
     habitat_misc.h \
     benchmark.h
 
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
 win32 {
-    CONFIG(release, debug|release): BUILD_TYPE = release
-    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -98,11 +99,16 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
     QMAKE_MAC_SDK = macosx10.11
 
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
+
+    LIBS += -L$$DESTDIR -lRasterManager
 
 }
 unix:!macx {
@@ -112,8 +118,7 @@ unix:!macx {
     LIBS += -L/usr/lib -lgdal
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
-}
-unix{
+
     target.path = /usr/bin
     INSTALLS += target
 
