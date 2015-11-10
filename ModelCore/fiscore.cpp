@@ -756,39 +756,46 @@ bool FISRuleSet::parseRules(std::ifstream& fisFile, std::string &line) {
     int i1, i2, mfIndex, nRules = 0;
     indices.resize(nInputs_);
     getline(fisFile, line);
-    while (!fisFile.eof() && (line.length() > 0) && ('[' != line[0])) {
-        i1 = line.find(",");
-        Habitat::tokenize(line.substr(0, i1), tokens);
-        if ((int)tokens.size() != nInputs_)
-            return setError(QString("Wrong number of inputs: %1").arg(QString::fromStdString(line)));
-        std::transform(tokens.begin(), tokens.end(), indices.begin(), Habitat::convertToInt);
-        FISRule rule;
-        for (int n=0; n<nInputs_; n++) {
-            mfIndex = indices[n];
-            if (0 != mfIndex) {
-                mfIndex--;
-                if (0 > mfIndex || mfIndex >= inputs_[n].n_)
-                    return setInvalidInput(line);
-                rule.addMf(n, mfIndex);
+    bool isDone = false;
+    while (!isDone) {
+        // we don't consider blank lines
+        if (line.length() > 0 && line.find_first_not_of(' ') != std::string::npos){
+            i1 = line.find(",");
+            Habitat::tokenize(line.substr(0, i1), tokens);
+            if ((int)tokens.size() != nInputs_)
+                return setError(QString("Wrong number of inputs: %1").arg(QString::fromStdString(line)));
+            std::transform(tokens.begin(), tokens.end(), indices.begin(), Habitat::convertToInt);
+            FISRule rule;
+            for (int n=0; n<nInputs_; n++) {
+                mfIndex = indices[n];
+                if (0 != mfIndex) {
+                    mfIndex--;
+                    if (0 > mfIndex || mfIndex >= inputs_[n].n_)
+                        return setInvalidInput(line);
+                    rule.addMf(n, mfIndex);
+                }
             }
+            i2 = line.find("(", i1 + 1);
+            Habitat::tokenize(line.substr(i1 + 1, i2 - i1 - 1), tokens);
+            if (1 != tokens.size() || !Habitat::string2int(tokens[0], mfIndex))
+                return setInvalidInput(line);
+            rule.output_ = &output_.mfs_[--mfIndex];
+            i1 = line.find(")", i2 + 1);
+            if (!Habitat::string2double(line.substr(i2 + 1, i1 - i2 - 1), rule.weight_))
+                return setInvalidInput(line);
+            if (!Habitat::string2int(line.substr(line.find(":") + 1), mfIndex) || 1 > mfIndex || 2 < mfIndex)
+                return setInvalidInput(line);
+            if (1 == mfIndex)
+                rule.operator_ = andOperator_;
+            else if (2 == mfIndex)
+                rule.operator_ = orOperator_;
+            rules_.push_back(rule);
+            nRules++;
         }
-        i2 = line.find("(", i1 + 1);
-        Habitat::tokenize(line.substr(i1 + 1, i2 - i1 - 1), tokens);
-        if (1 != tokens.size() || !Habitat::string2int(tokens[0], mfIndex))
-            return setInvalidInput(line);
-        rule.output_ = &output_.mfs_[--mfIndex];
-        i1 = line.find(")", i2 + 1);
-        if (!Habitat::string2double(line.substr(i2 + 1, i1 - i2 - 1), rule.weight_))
-            return setInvalidInput(line);
-        if (!Habitat::string2int(line.substr(line.find(":") + 1), mfIndex) || 1 > mfIndex || 2 < mfIndex)
-            return setInvalidInput(line);
-        if (1 == mfIndex)
-            rule.operator_ = andOperator_;
-        else if (2 == mfIndex)
-            rule.operator_ = orOperator_;
-        rules_.push_back(rule);
-        nRules++;
-        getline(fisFile, line);
+        isDone = fisFile.eof() || (line.length() > 0 && '['== line[0]);
+        if (!isDone){
+            getline(fisFile, line);
+        }
     }
     if (nRules == nRules_)
         return true;
