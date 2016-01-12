@@ -88,4 +88,7 @@ linux {
 
     LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
     LIBS += -L/usr/lib -lRasterManager
+
+    INCLUDEPATH += $$PWD/../../rasterman/RasterManager
+    DEPENDPATH += $$PWD/../../rasterman/RasterManager
 }

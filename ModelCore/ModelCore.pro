@@ -91,6 +91,10 @@ win32 {
 
     DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
     LIBS += -L$$DESTDIR -lRasterManager
+
+    INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+    DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+
 }
 macx{
     ## OSX common build here
@@ -110,6 +114,9 @@ macx{
 
     LIBS += -L$$DESTDIR -lRasterManager
 
+    INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+    DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+
 }
 linux {
 
@@ -118,11 +125,10 @@ linux {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 
-    target.path = /usr/bin
+    target.path = /usr/lib
     INSTALLS += target
 
     LIBS += -L/usr/lib -lRasterManager
+    INCLUDEPATH += $$PWD/../../rasterman/RasterManager
+    DEPENDPATH += $$PWD/../../rasterman/RasterManager
 }
-
-INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
-DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
