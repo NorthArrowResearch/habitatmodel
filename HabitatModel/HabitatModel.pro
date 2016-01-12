@@ -75,8 +75,7 @@ macx{
     LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
     LIBS += -L$$DESTDIR -lRasterManager
 }
-unix:!macx {
-    message("Unix")
+linux {
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
 
     # GDAL is required
@@ -88,5 +87,5 @@ unix:!macx {
     INSTALLS += target
 
     LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
-    LIBS += -L/usr/local/lib -lRasterManager
+    LIBS += -L/usr/lib -lRasterManager
 }

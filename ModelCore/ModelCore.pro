@@ -111,8 +111,7 @@ macx{
     LIBS += -L$$DESTDIR -lRasterManager
 
 }
-unix:!macx {
-    message("Unix")
+linux {
 
     # GDAL is required
     LIBS += -L/usr/lib -lgdal
@@ -122,7 +121,7 @@ unix:!macx {
     target.path = /usr/bin
     INSTALLS += target
 
-    LIBS += -L/usr/local/lib -lRasterManager
+    LIBS += -L/usr/lib -lRasterManager
 }
 
 INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
