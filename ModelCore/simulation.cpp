@@ -1,10 +1,11 @@
 #include <QString>
-
+#include "gdal_priv.h"
 #include "simulation.h"
 #include "hsi.h"
 #include "project.h"
 #include "habitat_exception.h"
 #include "rastermanager_interface.h"
+#include "ogrsf_frmts.h"
 
 namespace HabitatModel{
 
@@ -72,7 +73,6 @@ Simulation::Simulation(QDomElement * elSimulation)
     Project::EnsureFile(sHSResultsLog);
     m_XMLSimOutput = new XMLFile(sHSResultsLog, false);
 
-
     m_dWeightedUse = -1;
     m_dNormWeightedUse = -1;
     m_dPercentUsage = -1;
@@ -88,8 +88,40 @@ Simulation::Simulation(QDomElement * elSimulation)
     else
         m_dCellSize = -1;
 
+    if (this->HasOutputRaster()){
+        InitRasterMeta(elSimulation);
+    }
+
     Init();
 
+}
+
+void Simulation::InitRasterMeta(QDomElement * elSimulation){
+
+    double dTop = elSimulation->firstChildElement("top").text().toDouble();
+    double dLeft = elSimulation->firstChildElement("left").text().toDouble();
+    double dCellSize = elSimulation->firstChildElement("cellsize").text().toDouble();
+    int nRows = elSimulation->firstChildElement("rows").text().toInt();
+    int nCols = elSimulation->firstChildElement("cols").text().toInt();
+
+    QString qsProj = elSimulation->firstChildElement("projection").text();
+    const QByteArray qbXProj = qsProj.toLocal8Bit();
+    const char * psProjection = qbXProj.data();
+    const char * psDriver = "GTiff";
+
+    char * psUnit = NULL;
+    char * psWKT = NULL;
+    psWKT = (char *) psProjection;
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
+
+    OGRSpatialReference poSRS;
+    poSRS.importFromWkt(&psWKT);
+    poSRS.GetLinearUnits(&psUnit);
+    GDALDataType nDType = GDT_Float32;
+    m_RasterTemplateMeta = new RasterManager::RasterMeta(dTop, dLeft, nRows, nCols,
+                                                                            &dCellSize, &dCellSize,
+                                                                            &fNoDataValue, psDriver,
+                                                                            &nDType, psProjection, psUnit);
 }
 
 Simulation::~Simulation() {
@@ -116,6 +148,10 @@ void Simulation::SimulationAddResult(QString sTagName, QString sTagValue){
     Project::GetOutputXML()->AddResult(this, sTagName,  sTagValue);
 }
 
+/**
+ * @brief Simulation::RasterUnion DEPPRECATED FOR NOW since we're doing this work in the
+ * @param pMeta
+ */
 void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){
 
     // First time round set the bounds to the first raster we give it.

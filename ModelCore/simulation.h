@@ -42,11 +42,6 @@ public:
 
     virtual void PrepareInputs() = 0;
 
-    /**
-     * @brief Init
-     */
-    void Init();
-
     inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") != 0;}
     inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") != 0;  }
 
@@ -92,6 +87,13 @@ protected:
     double m_dCellSize;
 
 private:
+    /**
+     * @brief Init
+     */
+    void Init();
+
+    void InitRasterMeta(QDomElement *elSimulation);
+
     /**
      * @brief m_sfolder the simulation folder relative to project root
      */
