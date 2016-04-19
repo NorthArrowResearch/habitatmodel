@@ -49,11 +49,6 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     // ready for preparation.
     LoadInputs();
 
-    // Now, if this thing is a raster we need to add it to the ExtentRectangle
-    // For this simulation
-    if (HasOutputRaster()){
-        AddRastersToExtents();
-    }
     // Now that all the inputs are loaded we know the extent of the laoded
     // Rasters and we can prepare the inputs.
     QTime qtPrepTime;
@@ -63,6 +58,10 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 
 }
 
+/**
+ * @brief FISSimulation::AddRastersToExtents DEPPRECATED FOR NOW. We're going to do this work in the
+ * UI instead
+ */
 void HSISimulation::AddRastersToExtents(){
 
     QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
@@ -77,10 +76,6 @@ void HSISimulation::AddRastersToExtents(){
                 SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
                 QString sRasterPath = pInput->GetSourceFilePath();
                 const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
-
-                RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
-                RasterUnion(pRasterMeta);
-                delete pRasterMeta;
             }
             catch (RasterManager::RasterManagerException e){
                 SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
@@ -109,27 +104,27 @@ void HSISimulation::Run(){
     // This will work for Raster  and CSV+Raster output cases
     if (HasOutputRaster()){
         RunRasterHSI(nMethod);
+        if (m_dWeightedUse >= 0)
+            Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+        if (m_dNormWeightedUse >= 0)
+            Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+        if (m_dPercentUsage >= 0)
+            Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+        if (m_nOccupiedCells >= 0)
+            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+        if (m_dCellArea >= 0)
+            Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
     }
 
     // The above will work for both Raster or CSV+Raster but not for CSV only.
     if (HasOutputCSV() && !HasOutputRaster()){
         RunCSVHSI(nMethod);
+        if (m_nOccupiedCells >= 0)
+            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+        if (m_nCSVLines >= 0)
+            Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
     }
 
-    if (m_dWeightedUse >= 0)
-        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
-    if (m_dNormWeightedUse >= 0)
-        Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
-    if (m_dPercentUsage >= 0)
-        Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
-    if (m_nOccupiedCells >= 0)
-        Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
-    if (m_nTotalCells >= 0)
-        Project::GetOutputXML()->AddResult(this, "TotalCells",  QString::number(m_nTotalCells) );
-    if (m_nCSVLines >= 0)
-        Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
-    if (m_dCellArea >= 0)
-        Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
 
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
@@ -309,9 +304,6 @@ void HSISimulation::RunCSVHSI(int nMethod){
     }
 
     // Now write some results
-    m_dCellArea = m_dCellSize * m_dCellSize;
-    m_dWeightedUse = cellSum * m_dCellArea;
-    m_dNormWeightedUse = m_dWeightedUse / (usedCellCounter * m_dCellArea);
     m_nOccupiedCells = usedCellCounter;
     m_nCSVLines = nlinenumber;
 

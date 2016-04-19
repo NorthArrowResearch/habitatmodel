@@ -32,12 +32,6 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
     // ready for preparation.
     LoadInputs();
 
-    // Now, if this thing is a raster we need to add it to the ExtentRectangle
-    // For this simulation
-    if (HasOutputRaster()){
-        AddRastersToExtents();
-    }
-
 
     QString sFISRulePath = Project::SanitizePath(elFIS->firstChildElement("FISRuleFile").text());
     m_sFISRuleFile = Project::GetProjectRootPath()->filePath(sFISRulePath);
@@ -438,7 +432,10 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
 
 
 
-
+/**
+ * @brief FISSimulation::AddRastersToExtents DEPPRECATED FOR NOW. We're going to do this work in the
+ * UI instead
+ */
 void FISSimulation::AddRastersToExtents(){
 
     QHashIterator<int, SimulationFISInput *> i(m_simulation_fis_inputs);
@@ -455,7 +452,6 @@ void FISSimulation::AddRastersToExtents(){
                 const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
 
                 RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
-                RasterUnion(pRasterMeta);
                 delete pRasterMeta;
             }
             catch (RasterManager::RasterManagerException e){
@@ -510,26 +506,26 @@ void FISSimulation::Run()
     if (HasOutputRaster()){
         Project::EnsureFile(m_bOutputRaster);
         RunRasterFis(m_bOutputRaster);
+        if (m_dWeightedUse >= 0)
+            Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+        if (m_dNormWeightedUse >= 0)
+            Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+        if (m_dPercentUsage >= 0)
+            Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+        if (m_nOccupiedCells >= 0)
+            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+        if (m_dCellArea >= 0)
+            Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
     }
 
     if (HasOutputCSV() && !HasOutputRaster()){
         Project::EnsureFile(m_bOutputCSV);
         RunCSVFis(m_bOutputCSV);
+        if (m_nCSVLines >= 0)
+            Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
+        if (m_nOccupiedCells >= 0)
+            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
     }
-    if (m_dWeightedUse >= 0)
-        Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
-    if (m_dNormWeightedUse >= 0)
-        Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
-    if (m_dPercentUsage >= 0)
-        Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
-    if (m_nOccupiedCells >= 0)
-        Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
-    if (m_nTotalCells >= 0)
-        Project::GetOutputXML()->AddResult(this, "TotalCells",  QString::number(m_nTotalCells) );
-    if (m_nCSVLines >= 0)
-        Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
-    if (m_dCellArea >= 0)
-        Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
 
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);

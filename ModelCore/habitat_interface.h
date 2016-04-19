@@ -15,7 +15,7 @@ const int ERRBUFFERSIZE = 1024;
  * @return
  */
 extern "C" DLL_API int RunSimulations(const char * psProjectRoot,
-                                      const char *psXMLInputDef, const char *psXMLInputConf,
+                                      const char * psXMLInputDef, const char *psXMLInputConf,
                                       const char * psXMLOutput, char *sErr, unsigned int iBufferSize);
 
 
