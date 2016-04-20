@@ -13,6 +13,7 @@
 #include "habitat_exception.h"
 #include "gdal_priv.h"
 #include "simulation.h"
+#include "histogramsclass.h"
 #include <QTextStream>
 #include <QList>
 
@@ -446,6 +447,11 @@ void HSISimulation::RunRasterHSI(int nMethod){
         CPLFree(qhbuff.value());
     }
     dInBuffers.clear();
+
+    RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
+    const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+    theHisto.writeCSV(sHSIOutputHistogramsQB.data());
+
 
     // Now write some results
     m_dCellArea = cellArea;

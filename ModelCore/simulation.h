@@ -45,6 +45,8 @@ public:
     inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") != 0;}
     inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") != 0;  }
 
+    inline bool GetHistogramBins(){ return m_HistogramBins;  }
+
     inline QString GetFolder(){ return m_sfolder; }
 
     /**
@@ -66,6 +68,7 @@ protected:
     void SimulationAddResult(QString sTagName, QString sTagValue);
 
     QString m_bOutputRaster;
+    QString m_bOutputHistogram;
     QString m_bOutputCSV;
 
     XMLFile * m_XMLSimOutput;
@@ -73,6 +76,8 @@ protected:
     int m_NumRasters;
     int m_NumCSVs;
     int m_NumVectors;
+
+    int m_HistogramBins;
 
     // Results Variables
     double m_dWeightedUse;

@@ -47,6 +47,8 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_NumCSVs = 0;
     m_NumVectors = 0;
 
+    m_HistogramBins = 10;
+
     QString OutputRasterPath = Project::SanitizePath(elSimulation->firstChildElement("OutputRaster").text());
     QString OutputCSVPath = Project::SanitizePath(elSimulation->firstChildElement("OutputCSV").text());
 
@@ -55,6 +57,11 @@ Simulation::Simulation(QDomElement * elSimulation)
 
     if (OutputRasterPath.compare("",Qt::CaseInsensitive) != 0){
         m_bOutputRaster = Project::GetProjectRootPath()->filePath( OutputRasterPath );
+        QString histogramBaseName = QFileInfo(m_bOutputRaster).baseName();
+        QString histogramPath = QFileInfo(m_bOutputRaster).path();
+        m_bOutputHistogram = Project::GetProjectRootPath()->filePath( QDir(histogramPath).filePath(histogramBaseName + ".csv") );
+
+
     }
 
     if (OutputCSVPath.compare("",Qt::CaseInsensitive) != 0){
