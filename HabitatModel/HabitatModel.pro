@@ -24,14 +24,23 @@ SOURCES += main.cpp \
 HEADERS += \
     habitatmodelengine.h
 
-INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
-DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
-
 INCLUDEPATH += $$PWD/../ModelCore
 DEPENDPATH += $$PWD/../ModelCore
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
+RASTERMAN = $$(RASTERMANDIR)
+isEmpty(RASTERMAN){
+    RASTERMAN= $$PWD/../../../RasterManager/rastermanager/
+    message("RASTERMANDIR not set. Defaulting to $$RASTERMAN")
+}else{
+    RASTERMAN=$$(RASTERMANDIR)
+    message("RASTERMANDIR set to $$RASTERMAN")
+}
+
+INCLUDEPATH += $$RASTERMAN/RasterManager
+DEPENDPATH += $$RASTERMAN/RasterManager
 
 win32 {
 
@@ -45,7 +54,7 @@ win32 {
     }
 
     # GDAL is required
-    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    GDALWIN = $$(GDALLIBDIR)
     LIBS += -L$$GDALWIN/lib -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
@@ -89,6 +98,4 @@ linux {
     LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
     LIBS += -L/usr/lib -lRasterManager
 
-    INCLUDEPATH += $$PWD/../../rasterman/RasterManager
-    DEPENDPATH += $$PWD/../../rasterman/RasterManager
 }
