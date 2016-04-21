@@ -105,9 +105,9 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
             if (sFISInputName.compare(sInputname, Qt::CaseInsensitive) == 0){
                 found = true;
                 // Here is the corresponding input raster, added as a hash to a dataset
-                ProjectInput * pSimFISOutput = dSimFISInputs.value()->GetProjectInput();
-                const QByteArray sHSIOutputQB = pSimFISOutput->GetPreparedRasterFileName().toLocal8Bit();
-                GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
+                ProjectInput * pSimFISPartialOutput = dSimFISInputs.value()->GetProjectInput();
+                const QByteArray sFISPartialOutputQB = pSimFISPartialOutput->GetPreparedRasterFileName().toLocal8Bit();
+                GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sFISPartialOutputQB.data(), GA_ReadOnly);
                 GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 
                 // Add a buffer for reading this input
@@ -191,6 +191,10 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
                             0, 0 );
 
     }
+
+    RasterManager::HistogramsClass theHisto(sFISOutputQB.data(), GetHistogramBins());
+    const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+    theHisto.writeCSV(sHSIOutputHistogramsQB.data());
 
     // Now write some results
     m_dCellArea = cellArea;

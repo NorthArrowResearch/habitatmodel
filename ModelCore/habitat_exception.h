@@ -20,7 +20,7 @@ enum ProjectErrorCodes {
     , RASTERMAN_EXCEPTION
     , XML_INPUT_ERROR
     , CSV_INPUT_ERROR
-
+    , HISTOGRAM_ERROR
     , FIS_ERROR
 
     , DEBUG
@@ -87,6 +87,9 @@ public:
             break;
         case CSV_INPUT_ERROR:
             return "Input CSV Error";
+            break;
+        case HISTOGRAM_ERROR:
+            return "Error generating histogram";
             break;
         case MISSING_FIELD:
             return "Field missing";

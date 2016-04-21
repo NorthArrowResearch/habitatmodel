@@ -4,6 +4,7 @@
 #include "simulation.h"
 #include "hsi.h"
 #include "gdal_priv.h"
+#include "histogramsclass.h"
 
 namespace HabitatModel{
 

@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QDomElement>
 #include "simulation.h"
+#include "histogramsclass.h"
 
 
 
@@ -151,6 +152,13 @@ public:
      * @param nTime
      */
     void QueueStatus(QString sID, StatusCode nCode, StatusType nType, int nTime);
+
+    /**
+     * @brief WriteHistogram
+     * @param theHisto
+     * @param logSim
+     */
+    void WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation *logSim);
 private:
     QFile * m_xmlFile;
 
@@ -170,7 +178,12 @@ private:
     #endif
     }
 
-
+    /**
+     * @brief GetSimulationResultNode
+     * @param logSim
+     * @return
+     */
+    QDomElement GetSimulationResultNode(Simulation *logSim);
 };
 
 

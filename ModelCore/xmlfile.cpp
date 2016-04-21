@@ -7,6 +7,7 @@
 #include <QXmlStreamWriter>
 
 #include "habitat_exception.h"
+#include "histogramsclass.h"
 #include "simulation.h"
 
 namespace HabitatModel{
@@ -165,12 +166,65 @@ void XMLFile::AddMeta(QString sTagName, QString sTagValue){
     WriteDomToFile();
 }
 
-void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue){
-    QDomElement report_data, sim_data, tagresult, report_data_tag;
-    QDomElement documentElement = m_pDoc->documentElement();
+void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation * logSim){
+        QDomElement nodHistogram, nodBin, nodArea, nodVol, nodCount;
 
+        int nSimID = logSim->GetID();
+        QString simName = logSim->GetName();
+
+        QDomElement sim_data = GetSimulationResultNode(logSim);
+
+        if (theHisto.getNumBins() == 0)
+            throw HabitatException(HISTOGRAM_ERROR, "Number of bins cannot be 0");
+        int numBins = theHisto.getNumBins();
+        double binSize = theHisto.getBinSize();
+        double min = theHisto.getMinimumBin();
+        double max = min + binSize;
+
+        nodHistogram= m_pDoc->createElement( "histogram" );
+
+        double * areaHistogram = theHisto.getAreaHistogram();
+        double * volumeHistogram = theHisto.getVolumeHistogram();
+        long * countHistogram = theHisto.getCountHistogram();
+
+        for (int i=0; i < numBins; i++)
+        {
+            nodBin= m_pDoc->createElement( "bin" );
+            nodBin.setAttribute("min", QString::number(min));
+            nodBin.setAttribute("max", QString::number(max));
+
+            nodArea = m_pDoc->createElement( "area" );
+            nodArea.setNodeValue(QString::number(areaHistogram[i]));
+            nodBin.appendChild(nodArea);
+
+            nodVol = m_pDoc->createElement( "volume" );
+            nodVol.setNodeValue(QString::number(volumeHistogram[i]));
+            nodBin.appendChild(nodVol);
+
+            nodCount = m_pDoc->createElement( "count" );
+            nodCount.setNodeValue(QString::number(countHistogram[i]));
+            nodBin.appendChild(nodCount);
+
+            nodHistogram.appendChild(nodBin);
+
+            min = max;
+            max += binSize;
+        }
+
+        delete(areaHistogram);
+        delete(volumeHistogram);
+        delete(countHistogram);
+
+        sim_data.appendChild(nodHistogram);
+
+        WriteDomToFile();
+}
+
+QDomElement XMLFile::GetSimulationResultNode(Simulation * logSim){
     int nSimID = logSim->GetID();
     QString simName = logSim->GetName();
+    QDomElement report_data, sim_data;
+    QDomElement documentElement = m_pDoc->documentElement();
 
     // First search for (create if necessary) a results.
     QDomNodeList reportEl = documentElement.elementsByTagName( "results" );
@@ -187,7 +241,6 @@ void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue
 
     // Create the simulation node if it doesn't already exist
     QDomNodeList simEl = report_data.childNodes();
-    QDomText sMsgTxt = m_pDoc->createTextNode(sTagValue.toHtmlEscaped());
 
     bool bFound = false;
     for(int n= 0; n < simEl.length(); n++){
@@ -209,6 +262,16 @@ void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue
       sim_data.setAttribute("name", simName);
       report_data.appendChild(sim_data);
     }
+
+    return sim_data;
+}
+
+void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue){
+    QDomElement tagresult, report_data_tag;
+    QDomElement documentElement = m_pDoc->documentElement();
+    QDomText sMsgTxt = m_pDoc->createTextNode(sTagValue.toHtmlEscaped());
+
+    QDomElement sim_data = GetSimulationResultNode(logSim);
 
     // Create the message itself
     tagresult = m_pDoc->createElement( sTagName );

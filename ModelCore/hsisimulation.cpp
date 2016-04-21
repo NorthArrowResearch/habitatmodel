@@ -13,7 +13,6 @@
 #include "habitat_exception.h"
 #include "gdal_priv.h"
 #include "simulation.h"
-#include "histogramsclass.h"
 #include <QTextStream>
 #include <QList>
 
@@ -367,8 +366,9 @@ void HSISimulation::RunRasterHSI(int nMethod){
 
         // Here is the corresponding input raster, added as a hash to a dataset
         ProjectInput * pSimHSCHSOutput = dSimHSCInputs.value()->GetProjectInput();
-        const QByteArray sHSIOutputQB = pSimHSCHSOutput->GetOutputRasterFileName().toLocal8Bit();
-        GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sHSIOutputQB.data(), GA_ReadOnly);
+        const QByteArray sPartialHSIOutputQB = pSimHSCHSOutput->GetOutputRasterFileName().toLocal8Bit();
+
+        GDALDataset * pInputDS = (GDALDataset*) GDALOpen( sPartialHSIOutputQB.data(), GA_ReadOnly);
         GDALRasterBand * pInputRB = pInputDS->GetRasterBand(1);
 
         // Add a buffer for reading this input
