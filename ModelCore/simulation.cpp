@@ -15,17 +15,24 @@ Simulation::Simulation(QDomElement * elSimulation)
 
     //    Example Node:
     /*
-    <Simulations>
-      <SimulationID>3</SimulationID>
-      <HSIID>3</HSIID>
-      <CreatedBy>SB</CreatedBy>
-      <CreatedOn>2014-07-10T00:00:00-07:00</CreatedOn>
-      <VisitID>1</VisitID>
-      <Discharge>0.5</Discharge>
-      <IsQueuedToRun>false</IsQueuedToRun>
-      <Title>Old2</Title>
-      <AddIndividualOutput>false</AddIndividualOutput>
-    </Simulations> */
+    <SimulationID>2</SimulationID>
+    <HSIID>3</HSIID>
+    <CreatedBy>Matt</CreatedBy>
+    <CreatedOn>2016-04-21T12:42:52.136752-07:00</CreatedOn>
+    <IsQueuedToRun>true</IsQueuedToRun>
+    <Title>test1</Title>
+    <Folder>Simulations\test1</Folder>
+    <AddIndividualOutput>false</AddIndividualOutput>
+    <RunOn>1970-01-01T00:00:00-08:00</RunOn>
+    <OutputRaster>Simulations\test1\Outputs\test1.tif</OutputRaster>
+    <OutputCSV>Simulations\test1\Outputs\test1.csv</OutputCSV>
+    <RasterTop>5007573</RasterTop>
+    <RasterLeft>428470</RasterLeft>
+    <RasterRows>2450</RasterRows>
+    <RasterCols>2970</RasterCols>
+    <RasterCellSize>0.1</RasterCellSize>
+    <RasterSpatRef>TEMPORARY STRING FOR TESTING</RasterSpatRef>
+    <RasterUnits>TEMPORARY STRING FOR TESTING</RasterUnits> */
 
     Project::GetOutputXML()->Log("Loading simulation: " + GetName() , 2);
 
@@ -102,23 +109,34 @@ Simulation::Simulation(QDomElement * elSimulation)
     Init();
 
 }
+/*
+<OutputRaster>Simulations\test1\Outputs\test1.tif</OutputRaster>
+<OutputCSV>Simulations\test1\Outputs\test1.csv</OutputCSV>
 
+<RasterRows>2450</RasterRows>
+<RasterCols>2970</RasterCols>
+<RasterSpatRef>TEMPORARY STRING FOR TESTING</RasterSpatRef>
+<RasterUnits>TEMPORARY STRING FOR TESTING</RasterUnits> */
 void Simulation::InitRasterMeta(QDomElement * elSimulation){
 
-    double dTop = elSimulation->firstChildElement("top").text().toDouble();
-    double dLeft = elSimulation->firstChildElement("left").text().toDouble();
-    double dCellSize = elSimulation->firstChildElement("cellsize").text().toDouble();
-    int nRows = elSimulation->firstChildElement("rows").text().toInt();
-    int nCols = elSimulation->firstChildElement("cols").text().toInt();
+    double dTop = elSimulation->firstChildElement("RasterTop").text().toDouble();
+    double dLeft = elSimulation->firstChildElement("RasterLeft").text().toDouble();
+    double dCellSize = elSimulation->firstChildElement("RasterCellSize").text().toDouble();
+    int nRows = elSimulation->firstChildElement("RasterRows").text().toInt();
+    int nCols = elSimulation->firstChildElement("RasterCols").text().toInt();
 
-    QString qsProj = elSimulation->firstChildElement("projection").text();
-    const QByteArray qbXProj = qsProj.toLocal8Bit();
-    const char * psProjection = qbXProj.data();
+    QString qsProj = elSimulation->firstChildElement("RasterSpatRef").text();
+    QString qsUnits = elSimulation->firstChildElement("RasterUnits").text();
+    const QByteArray qbXProjRef = qsProj.toLocal8Bit();
+    const QByteArray qbXProjUnits = qsUnits.toLocal8Bit();
+    const char * psProjection = qbXProjRef.data();
+    const char * psUnits = qbXProjUnits.data();
     const char * psDriver = "GTiff";
 
-    char * psUnit = NULL;
     char * psWKT = NULL;
     psWKT = (char *) psProjection;
+    char * psUnit = NULL;
+    psUnit = (char *) psUnits;
     double fNoDataValue = (double) -std::numeric_limits<float>::max();
 
     OGRSpatialReference poSRS;
@@ -171,7 +189,7 @@ void Simulation::RasterUnion(RasterManager::RasterMeta * pMeta){
 }
 
 void Simulation::Init(){
-    m_RasterTemplateMeta = NULL;
+
 }
 
 
