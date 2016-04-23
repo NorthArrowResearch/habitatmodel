@@ -335,6 +335,11 @@ void Project::ProjectError(int nErrorCode, QString m_sEvidence){
     throw HabitatException(nErrorCode, m_sEvidence);
 }
 
+QString Project::ReplaceSuffix(QString sPath, QString newSuffix){
+    QFileInfo info(sPath);
+    QString strNewName = info.path() + info.completeBaseName() + "." + newSuffix;
+    return strNewName;
+}
 
 QString Project::SanitizePath(QString sPath){
     // It's possible this will need to be more complicated

@@ -1,6 +1,8 @@
 #include "fissimulation.h"
 #include "projectinputraster.h"
 #include "habitat_exception.h"
+#include "rastermanager.h"
+#include "raster.h"
 #include "rastermanager_interface.h"
 #include "QTextStream"
 
@@ -192,9 +194,6 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
 
     }
 
-    RasterManager::HistogramsClass theHisto(sFISOutputQB.data(), GetHistogramBins());
-    const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
-    theHisto.writeCSV(sHSIOutputHistogramsQB.data());
 
     // Now write some results
     m_dCellArea = cellArea;
@@ -202,6 +201,8 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
     m_dNormWeightedUse = m_dWeightedUse / (usedCellCounter * cellArea);
     m_dPercentUsage = 100 * usedCellCounter / ( GetRasterExtentMeta()->GetRows() * GetRasterExtentMeta()->GetCols() );
     m_nOccupiedCells = usedCellCounter;
+
+    RasterManager::CalculateStats(pOutputDS->GetRasterBand(1));
 
     if ( pOutputDS != NULL)
         GDALClose(pOutputDS);
@@ -511,24 +512,36 @@ void FISSimulation::Run()
         Project::EnsureFile(m_bOutputRaster);
         RunRasterFis(m_bOutputRaster);
         if (m_dWeightedUse >= 0)
-            Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+            SimulationAddResult("WeightedUsableArea",  QString::number(m_dWeightedUse) );
         if (m_dNormWeightedUse >= 0)
-            Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+            SimulationAddResult("NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
         if (m_dPercentUsage >= 0)
-            Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+            SimulationAddResult("PercentOccupied",  QString::number(m_dPercentUsage) );
         if (m_nOccupiedCells >= 0)
-            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+            SimulationAddResult("OccupiedCells",  QString::number(m_nOccupiedCells) );
         if (m_dCellArea >= 0)
-            Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
+            SimulationAddResult("CellArea",  QString::number(m_dCellArea) );
+
+        // Write a histogram both to a file AND to the xml
+        const QByteArray sHSIOutputQB = m_bOutputRaster.toLocal8Bit();
+        RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
+        const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+        theHisto.writeCSV(sHSIOutputHistogramsQB.data());
+        SimulationAddHistogram(theHisto);
+
+        if (HasOutputCSV()){
+            const QByteArray sHSIOutputCSVQB = m_bOutputCSV.toLocal8Bit();
+            RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
+        }
     }
 
     if (HasOutputCSV() && !HasOutputRaster()){
         Project::EnsureFile(m_bOutputCSV);
         RunCSVFis(m_bOutputCSV);
         if (m_nCSVLines >= 0)
-            Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
+            SimulationAddResult("CSVLines",  QString::number(m_nCSVLines) );
         if (m_nOccupiedCells >= 0)
-            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+            SimulationAddResult("OccupiedCells",  QString::number(m_nOccupiedCells) );
     }
 
 

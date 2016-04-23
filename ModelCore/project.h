@@ -201,6 +201,7 @@ public:
     static QTime m_totalTimer;
     static QTime m_subprocessTimer;
 
+    static QString ReplaceSuffix(QString sPath, QString newSuffix);
 private:
 
     /**

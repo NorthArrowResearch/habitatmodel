@@ -169,9 +169,6 @@ void XMLFile::AddMeta(QString sTagName, QString sTagValue){
 void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation * logSim){
         QDomElement nodHistogram, nodBin, nodArea, nodVol, nodCount;
 
-        int nSimID = logSim->GetID();
-        QString simName = logSim->GetName();
-
         QDomElement sim_data = GetSimulationResultNode(logSim);
 
         if (theHisto.getNumBins() == 0)
@@ -194,14 +191,15 @@ void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation
             nodBin.setAttribute("max", QString::number(max));
 
             nodArea = m_pDoc->createElement( "area" );
-            nodArea.setNodeValue(QString::number(areaHistogram[i]));
+            nodArea.appendChild(m_pDoc->createTextNode(QString::number(areaHistogram[i])));
             nodBin.appendChild(nodArea);
 
             nodVol = m_pDoc->createElement( "volume" );
-            nodVol.setNodeValue(QString::number(volumeHistogram[i]));
+            nodVol.appendChild(m_pDoc->createTextNode(QString::number(volumeHistogram[i])));
             nodBin.appendChild(nodVol);
 
             nodCount = m_pDoc->createElement( "count" );
+            nodCount.appendChild(m_pDoc->createTextNode(QString::number(countHistogram[i])));
             nodCount.setNodeValue(QString::number(countHistogram[i]));
             nodBin.appendChild(nodCount);
 
@@ -210,10 +208,6 @@ void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation
             min = max;
             max += binSize;
         }
-
-        delete(areaHistogram);
-        delete(volumeHistogram);
-        delete(countHistogram);
 
         sim_data.appendChild(nodHistogram);
 

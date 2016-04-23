@@ -54,7 +54,7 @@ Simulation::Simulation(QDomElement * elSimulation)
     m_NumCSVs = 0;
     m_NumVectors = 0;
 
-    m_HistogramBins = 10;
+    m_nHistogramBins = 20;
 
     QString OutputRasterPath = Project::SanitizePath(elSimulation->firstChildElement("OutputRaster").text());
     QString OutputCSVPath = Project::SanitizePath(elSimulation->firstChildElement("OutputCSV").text());
@@ -66,9 +66,7 @@ Simulation::Simulation(QDomElement * elSimulation)
         m_bOutputRaster = Project::GetProjectRootPath()->filePath( OutputRasterPath );
         QString histogramBaseName = QFileInfo(m_bOutputRaster).baseName();
         QString histogramPath = QFileInfo(m_bOutputRaster).path();
-        m_bOutputHistogram = Project::GetProjectRootPath()->filePath( QDir(histogramPath).filePath(histogramBaseName + ".csv") );
-
-
+        m_bOutputHistogram = Project::GetProjectRootPath()->filePath( QDir(histogramPath).filePath(histogramBaseName + "_histogram.csv") );
     }
 
     if (OutputCSVPath.compare("",Qt::CaseInsensitive) != 0){
@@ -121,7 +119,8 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
 
     double dTop = elSimulation->firstChildElement("RasterTop").text().toDouble();
     double dLeft = elSimulation->firstChildElement("RasterLeft").text().toDouble();
-    double dCellSize = elSimulation->firstChildElement("RasterCellSize").text().toDouble();
+    double dCellWidth = elSimulation->firstChildElement("RasterCellSize").text().toDouble();
+    double dCellHeight = -dCellWidth;
     int nRows = elSimulation->firstChildElement("RasterRows").text().toInt();
     int nCols = elSimulation->firstChildElement("RasterCols").text().toInt();
 
@@ -144,13 +143,14 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
     poSRS.GetLinearUnits(&psUnit);
     GDALDataType nDType = GDT_Float32;
     m_RasterTemplateMeta = new RasterManager::RasterMeta(dTop, dLeft, nRows, nCols,
-                                                                            &dCellSize, &dCellSize,
+                                                                            &dCellHeight, &dCellWidth,
                                                                             &fNoDataValue, psDriver,
                                                                             &nDType, psProjection, psUnit);
 }
 
 Simulation::~Simulation() {
-    delete m_RasterTemplateMeta;
+    if (m_RasterTemplateMeta)
+        delete m_RasterTemplateMeta;
 }
 
 void Simulation::SimulationError(int nErrorCode){
@@ -171,6 +171,11 @@ void Simulation::SimulationLog(QString sMsg, int nIndent){
 void Simulation::SimulationAddResult(QString sTagName, QString sTagValue){
     m_XMLSimOutput->AddResult(this, sTagName,  sTagValue);
     Project::GetOutputXML()->AddResult(this, sTagName,  sTagValue);
+}
+
+void Simulation::SimulationAddHistogram(RasterManager::HistogramsClass theHisto){
+    m_XMLSimOutput->WriteHistogram(theHisto, this);
+    Project::GetOutputXML()->WriteHistogram(theHisto, this);
 }
 
 /**

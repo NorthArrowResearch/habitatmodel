@@ -9,7 +9,9 @@
 #include "projectinputraster.h"
 #include "projectinputcsv.h"
 #include "projectinputvector.h"
+#include "rastermanager.h"
 #include "rastermanager_interface.h"
+#include "raster.h"
 #include "habitat_exception.h"
 #include "gdal_priv.h"
 #include "simulation.h"
@@ -62,28 +64,28 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
  * @brief FISSimulation::AddRastersToExtents DEPPRECATED FOR NOW. We're going to do this work in the
  * UI instead
  */
-void HSISimulation::AddRastersToExtents(){
+//void HSISimulation::AddRastersToExtents(){
 
-    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
+//    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
 
-    while (i.hasNext()) {
-        i.next();
-        // Here is the curve we want
-        ProjectInput * pInput = i.value()->GetProjectInput();
+//    while (i.hasNext()) {
+//        i.next();
+//        // Here is the curve we want
+//        ProjectInput * pInput = i.value()->GetProjectInput();
 
-        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
-            try {
-                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-                QString sRasterPath = pInput->GetSourceFilePath();
-                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
-            }
-            catch (RasterManager::RasterManagerException e){
-                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
-            }
+//        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
+//            try {
+//                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
+//                QString sRasterPath = pInput->GetSourceFilePath();
+//                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
+//            }
+//            catch (RasterManager::RasterManagerException e){
+//                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
+//            }
 
-        }
-    }
-}
+//        }
+//    }
+//}
 
 void HSISimulation::Run(){
 
@@ -105,27 +107,37 @@ void HSISimulation::Run(){
     if (HasOutputRaster()){
         RunRasterHSI(nMethod);
         if (m_dWeightedUse >= 0)
-            Project::GetOutputXML()->AddResult(this, "WeightedUsableArea",  QString::number(m_dWeightedUse) );
+            SimulationAddResult("WeightedUsableArea",  QString::number(m_dWeightedUse) );
         if (m_dNormWeightedUse >= 0)
-            Project::GetOutputXML()->AddResult(this, "NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
+            SimulationAddResult("NormalizedWeightedUsableArea",  QString::number(m_dNormWeightedUse) );
         if (m_dPercentUsage >= 0)
-            Project::GetOutputXML()->AddResult(this, "PercentOccupied",  QString::number(m_dPercentUsage) );
+            SimulationAddResult("PercentOccupied",  QString::number(m_dPercentUsage) );
         if (m_nOccupiedCells >= 0)
-            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+            SimulationAddResult("OccupiedCells",  QString::number(m_nOccupiedCells));
         if (m_dCellArea >= 0)
-            Project::GetOutputXML()->AddResult(this, "CellArea",  QString::number(m_dCellArea) );
+            SimulationAddResult("CellArea",  QString::number(m_dCellArea) );
+
+        // Write a histogram both to a file AND to the xml
+        const QByteArray sHSIOutputQB = m_bOutputRaster.toLocal8Bit();
+        RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
+        const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+        theHisto.writeCSV(sHSIOutputHistogramsQB.data());
+        SimulationAddHistogram(theHisto);
+
+        if (HasOutputCSV()){
+            const QByteArray sHSIOutputCSVQB = m_bOutputCSV.toLocal8Bit();
+            RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
+        }
     }
 
     // The above will work for both Raster or CSV+Raster but not for CSV only.
     if (HasOutputCSV() && !HasOutputRaster()){
         RunCSVHSI(nMethod);
         if (m_nOccupiedCells >= 0)
-            Project::GetOutputXML()->AddResult(this, "OccupiedCells",  QString::number(m_nOccupiedCells) );
+            SimulationAddResult("OccupiedCells",  QString::number(m_nOccupiedCells));
         if (m_nCSVLines >= 0)
-            Project::GetOutputXML()->AddResult(this, "CSVLines",  QString::number(m_nCSVLines) );
+            SimulationAddResult("CSVLines",  QString::number(m_nCSVLines));
     }
-
-
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
     SimulationLog("Simulation Complete", 1);
@@ -429,6 +441,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
                             GDT_Float64,
                             0, 0 );
     }
+    RasterManager::CalculateStats(pOutputDS->GetRasterBand(1));
 
     GDALClose(pOutputDS);
     CPLFree(pReadBuffer);
@@ -447,10 +460,6 @@ void HSISimulation::RunRasterHSI(int nMethod){
         CPLFree(qhbuff.value());
     }
     dInBuffers.clear();
-
-    RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
-    const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
-    theHisto.writeCSV(sHSIOutputHistogramsQB.data());
 
 
     // Now write some results

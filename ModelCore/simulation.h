@@ -7,6 +7,7 @@
 #include <vector>
 #include <QHash>
 #include <QDomDocument>
+#include "histogramsclass.h"
 #include "namedobject.h"
 #include "projectinput.h"
 
@@ -45,7 +46,7 @@ public:
     inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") != 0;}
     inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") != 0;  }
 
-    inline bool GetHistogramBins(){ return m_HistogramBins;  }
+    inline int GetHistogramBins(){ return m_nHistogramBins;  }
 
     inline QString GetFolder(){ return m_sfolder; }
 
@@ -77,7 +78,7 @@ protected:
     int m_NumCSVs;
     int m_NumVectors;
 
-    int m_HistogramBins;
+    int m_nHistogramBins;
 
     // Results Variables
     double m_dWeightedUse;
@@ -91,6 +92,7 @@ protected:
     // On CSV runs we need to know cell size
     double m_dCellSize;
 
+    void SimulationAddHistogram(RasterManager::HistogramsClass theHisto);
 private:
     /**
      * @brief Init
