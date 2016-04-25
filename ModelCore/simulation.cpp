@@ -100,9 +100,7 @@ Simulation::Simulation(QDomElement * elSimulation)
     else
         m_dCellSize = -1;
 
-    if (this->HasOutputRaster()){
-        InitRasterMeta(elSimulation);
-    }
+    InitRasterMeta(elSimulation);
 
     Init();
 
@@ -117,6 +115,13 @@ Simulation::Simulation(QDomElement * elSimulation)
 <RasterUnits>TEMPORARY STRING FOR TESTING</RasterUnits> */
 void Simulation::InitRasterMeta(QDomElement * elSimulation){
 
+    // If there is no raster then just initialize a blank object and exit.
+    if (!HasOutputRaster()){
+        SimulationLog("No Raster Meta information needed. Skipping RasterMeta initiation.",0);
+        m_RasterTemplateMeta = new RasterManager::RasterMeta();
+        return;
+    }
+
     double dTop = elSimulation->firstChildElement("RasterTop").text().toDouble();
     double dLeft = elSimulation->firstChildElement("RasterLeft").text().toDouble();
     double dCellWidth = elSimulation->firstChildElement("RasterCellSize").text().toDouble();
@@ -126,6 +131,12 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
 
     QString qsProj = elSimulation->firstChildElement("RasterSpatRef").text();
     QString qsUnits = elSimulation->firstChildElement("RasterUnits").text();
+
+    if (qsProj.compare("") == 0)
+        SimulationLog("WARNING: Empty spatial ref detected for simulation",0);
+    if (qsUnits.compare("") == 0)
+        SimulationLog("WARNING: Empty units ref detected for simulation",0);
+
     const QByteArray qbXProjRef = qsProj.toLocal8Bit();
     const QByteArray qbXProjUnits = qsUnits.toLocal8Bit();
     const char * psProjection = qbXProjRef.data();
@@ -143,14 +154,14 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
     poSRS.GetLinearUnits(&psUnit);
     GDALDataType nDType = GDT_Float32;
     m_RasterTemplateMeta = new RasterManager::RasterMeta(dTop, dLeft, nRows, nCols,
-                                                                            &dCellHeight, &dCellWidth,
-                                                                            &fNoDataValue, psDriver,
-                                                                            &nDType, psProjection, psUnit);
+                                                         &dCellHeight, &dCellWidth,
+                                                         &fNoDataValue, psDriver,
+                                                         &nDType, psProjection, psUnit);
 }
 
 Simulation::~Simulation() {
-    if (m_RasterTemplateMeta)
-        delete m_RasterTemplateMeta;
+    delete m_RasterTemplateMeta;
+    delete m_XMLSimOutput;
 }
 
 void Simulation::SimulationError(int nErrorCode){

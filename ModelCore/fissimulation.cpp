@@ -55,7 +55,7 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
 
     // Confirm that the number of inputs specified matches the number in the rule file
     if (rules->numInputs() != m_simulation_fis_inputs.count())
-        throw HabitatException(FIS_ERROR, "Number of FIS inputs must match the number in the rule file.");
+        SimulationError(FIS_ERROR, "Number of FIS inputs must match the number in the rule file.");
 
 
 }
@@ -76,7 +76,7 @@ FISSimulation::~FISSimulation()
  */
 void FISSimulation::RunRasterFis(QString sOutputFile)
 {
-    Project::GetOutputXML()->Log("Beginning Raster FIS Simulation run: " + sOutputFile , 2);
+    SimulationLog("Beginning Raster FIS Simulation run: " + sOutputFile , 2);
 
     QHashIterator<int, SimulationFISInput *> dSimFISInputs(m_simulation_fis_inputs);
     QHash<int, GDALRasterBand *> dDatasets;
@@ -92,9 +92,9 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
     // Open all the inputs into a hash of datasets. We must remember to clean this up later
 
     if (rules->numInputs() != m_simulation_fis_inputs.count())
-        throw new HabitatException(FIS_ERROR, "Number of inputs does not match number of FIS inputs.");
+        SimulationError(FIS_ERROR, "Number of inputs does not match number of FIS inputs.");
 
-    Project::GetOutputXML()->Log(QString("Preparing %1 inputs for FIS.").arg(m_simulation_fis_inputs.count()), 3 );
+    SimulationLog(QString("Preparing %1 inputs for FIS.").arg(m_simulation_fis_inputs.count()), 3 );
     for (int i=0; i<rules->numInputs(); i++)
     {
         QString sInputname = QString::fromUtf8( rules->getInputName(i) );
@@ -128,7 +128,7 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
 
         }
         if (!found)
-            throw new HabitatException(FIS_ERROR, QString( "Could not find FIS input named: %1").arg(sInputname) );
+            SimulationError(FIS_ERROR, QString( "Could not find FIS input named: %1").arg(sInputname) );
     }
 
 
@@ -227,7 +227,7 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
 
 void FISSimulation::RunCSVFis(QString sOutputFile)
 {
-    Project::GetOutputXML()->Log("Beginning CSV input FIS Run: " + sOutputFile , 2);
+    SimulationLog("Beginning CSV input FIS Run: " + sOutputFile , 2);
 
     QString sXField, sYField, sInputCSVFile;
     QHashIterator<int, SimulationFISInput *> dSimFISInputs( m_simulation_fis_inputs);
@@ -239,7 +239,7 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
     std::fill (inputNoDataValues.begin(),inputNoDataValues.end(),dNoDataVal);
     std::vector<double> inputData = std::vector<double>(m_simulation_fis_inputs.count());
 
-    Project::GetOutputXML()->Log(QString("Preparing %1 inputs for FIS.").arg(m_simulation_fis_inputs.count()), 3 );
+    SimulationLog(QString("Preparing %1 inputs for FIS.").arg(m_simulation_fis_inputs.count()), 3 );
 
     dSimFISInputs.toFront();
 
@@ -260,10 +260,10 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
     }
 
     if (sXField.isEmpty()){
-        Project::ProjectError(CSV_INPUT_ERROR, "the X field could not be determined.");
+        SimulationError(CSV_INPUT_ERROR, "the X field could not be determined.");
     }
     if (sInputCSVFile.isEmpty()){
-        Project::ProjectError(CSV_INPUT_ERROR, "the CSV input path could not be determined.");
+        SimulationError(CSV_INPUT_ERROR, "the CSV input path could not be determined.");
     }
 
 
@@ -271,7 +271,7 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
     // --------------------------------------------
     QFile InputCSVFile(sInputCSVFile);
     if (!InputCSVFile.open(QFile::ReadOnly)){
-        throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
+        SimulationError(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
     }
 
     // Create and open a new CSV file for writing
@@ -280,7 +280,7 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
     QFile outputCSVFile(sOutputFile);
 
     if (!outputCSVFile.open(QFile::WriteOnly|QFile::Truncate)){
-        throw HabitatException(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + sOutputFile  );
+        SimulationError(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + sOutputFile  );
     }
     QTextStream qtsOutputStream(&outputCSVFile);
 
@@ -441,31 +441,31 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
  * @brief FISSimulation::AddRastersToExtents DEPPRECATED FOR NOW. We're going to do this work in the
  * UI instead
  */
-void FISSimulation::AddRastersToExtents(){
+//void FISSimulation::AddRastersToExtents(){
 
-    QHashIterator<int, SimulationFISInput *> i(m_simulation_fis_inputs);
+//    QHashIterator<int, SimulationFISInput *> i(m_simulation_fis_inputs);
 
-    while (i.hasNext()) {
-        i.next();
-        // Here is the curve we want
-        ProjectInput * pInput = i.value()->GetProjectInput();
+//    while (i.hasNext()) {
+//        i.next();
+//        // Here is the curve we want
+//        ProjectInput * pInput = i.value()->GetProjectInput();
 
-        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
-            try {
-                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-                QString sRasterPath = pInput->GetSourceFilePath();
-                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
+//        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
+//            try {
+//                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
+//                QString sRasterPath = pInput->GetSourceFilePath();
+//                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
 
-                RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
-                delete pRasterMeta;
-            }
-            catch (RasterManager::RasterManagerException e){
-                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
-            }
+//                RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
+//                delete pRasterMeta;
+//            }
+//            catch (RasterManager::RasterManagerException e){
+//                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
+//            }
 
-        }
-    }
-}
+//        }
+//    }
+//}
 
 
 void FISSimulation::LoadInputs()

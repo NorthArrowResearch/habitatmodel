@@ -74,6 +74,9 @@ protected:
 
     XMLFile * m_XMLSimOutput;
 
+    inline bool KeepIndividualOutputs(){ return m_badd_individual_output; }
+
+
     int m_NumRasters;
     int m_NumCSVs;
     int m_NumVectors;

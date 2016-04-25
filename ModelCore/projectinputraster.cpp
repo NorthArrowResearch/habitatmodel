@@ -40,6 +40,8 @@ void ProjectInputRaster::Prepare(Simulation * pSimulation){
     const QByteArray qbFinalRaster = sFinalPath.toLocal8Bit();
 
     char* sErr = new char[ERRBUFFERSIZE];
+
+
     RasterManager::Copy( qbOriginalRaster.data(),
                          qbFinalRaster.data(),
                          TemplateRasterMeta->GetCellWidth(),

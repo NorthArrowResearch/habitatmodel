@@ -179,7 +179,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
     // --------------------------------------------
     QFile InputCSVFile(sInputCSVFile);
     if (!InputCSVFile.open(QFile::ReadOnly)){
-        throw HabitatException(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
+        SimulationError(FILE_NOT_FOUND, "Could not open CSV Input file for reading.");
     }
 
     // Our final output CSV file name and path:
@@ -189,7 +189,7 @@ void HSISimulation::RunCSVHSI(int nMethod){
     // --------------------------------------------
     QFile outputCSVFile(m_bOutputCSV);
     if (!outputCSVFile.open(QFile::WriteOnly|QFile::Truncate)){
-        throw HabitatException(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + m_bOutputCSV  );
+        SimulationError(FILE_WRITE_ERROR, "Could not open file CSV output file for writing: " + m_bOutputCSV  );
     }
     QTextStream qtsOutputStream(&outputCSVFile);
 
@@ -339,15 +339,16 @@ void HSISimulation::RunRasterHSI(int nMethod){
         // Here is the corresponding input raster
         ProjectInput * pInput = dSimHSCInputs.value()->GetProjectInput();
 
-        // Pure virtual function will decide if it's a categorical
+        // Pure virtual function will decide if it's a categorical3
         // or coordinate pair HSC
         try{
+            SimulationLog("Processing raster against HSC: " + pInput->GetPreparedRasterFileName() , 2);
             pHSC->ProcessRaster( pInput->GetPreparedRasterFileName(),
                                  pInput->GetOutputRasterFileName(),
                                  GetRasterExtentMeta() );
         }
         catch (RasterManager::RasterManagerException e){
-            throw HabitatException(RASTERMAN_EXCEPTION, e.GetReturnMsgAsString());
+            SimulationError(RASTERMAN_EXCEPTION, e.GetReturnMsgAsString());
         }
     }
 
@@ -366,7 +367,7 @@ void HSISimulation::RunRasterHSI(int nMethod){
     QHash<int, double *> dInBuffers;
 
     //    if (HasRasters() == false) {
-    //        throw HabitatException(NO_RASTERS, "For now if you want a raster output you need to have at least one raster in your inputs.");
+    //        SimulationError(NO_RASTERS, "For now if you want a raster output you need to have at least one raster in your inputs.");
     //    }
     int sRasterCols = GetRasterExtentMeta()->GetCols();
 
@@ -446,6 +447,22 @@ void HSISimulation::RunRasterHSI(int nMethod){
     GDALClose(pOutputDS);
     CPLFree(pReadBuffer);
     pReadBuffer = NULL;
+
+    // Clean up individual outputs if that is requested
+    if (!KeepIndividualOutputs()){
+        dSimHSCInputs.toFront();
+        while (dSimHSCInputs.hasNext()) {
+            dSimHSCInputs.next();
+
+            // Here is the corresponding input raster, added as a hash to a dataset
+            ProjectInput * pSimHSCHSOutput = dSimHSCInputs.value()->GetProjectInput();
+            QString sPartialHSIOutput = pSimHSCHSOutput->GetOutputRasterFileName();
+            if (QFile::exists(sPartialHSIOutput))
+            {
+                QFile::remove(sPartialHSIOutput);
+            }
+        }
+    }
 
     // Let's remember to clean up the inputs
     QHashIterator<int, GDALRasterBand *> qhds(dDatasets);
