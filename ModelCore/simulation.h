@@ -58,6 +58,8 @@ public:
 
     bool InputBelongs(ProjectInput *pInput);
 
+    inline QHash<QString, QString> GetMetaData(){ return m_qhMetaValues; }
+
 protected:
 
     void RasterUnion(RasterManager::RasterMeta *pMeta);
@@ -110,11 +112,14 @@ private:
     QString m_sfolder;
     QString m_screated_by;
 
+    QHash<QString, QString> m_qhMetaValues;
+
     QString m_screated_on;
 
     bool m_badd_individual_output;
 
     RasterManager::RasterMeta * m_RasterTemplateMeta;
+    void LoadSimulationMeta();
 };
 
 }

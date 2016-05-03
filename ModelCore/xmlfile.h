@@ -55,6 +55,17 @@ inline QString enumToString(StatusType eCode){
     }
 }
 
+
+inline QString enumToString(XML_LOG_SEVERITY eCode){
+    switch (eCode){
+    case SEVERITY_SUCCESS: return "Success";
+    case SEVERITY_WARNING: return "Warning";
+    case SEVERITY_ERROR: return "Error";
+    case SEVERITY_VERBOSE: return "Verbose";
+    default: return "unknown";
+    }
+}
+
 class XMLFile
 {
 
@@ -105,7 +116,7 @@ public:
      * @param sTagName
      * @param sTagValue
      */
-    void AddMeta(QString sTagName, QString sTagValue);
+    void AddRunMeta(QString sTagName, QString sTagValue);
 
     /**
      * @brief AddResult Add a <result> tag
@@ -159,6 +170,13 @@ public:
      * @param logSim
      */
     void WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation *logSim);
+
+    /**
+     * @brief WriteSimulationMeta
+     * @param logsim
+     */
+    void WriteSimulationMeta(Simulation *logSim);
+
 private:
     QFile * m_xmlFile;
 

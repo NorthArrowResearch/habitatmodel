@@ -60,33 +60,6 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
 
 }
 
-/**
- * @brief FISSimulation::AddRastersToExtents DEPPRECATED FOR NOW. We're going to do this work in the
- * UI instead
- */
-//void HSISimulation::AddRastersToExtents(){
-
-//    QHashIterator<int, SimulationHSCInput *> i(m_simulation_hsc_inputs);
-
-//    while (i.hasNext()) {
-//        i.next();
-//        // Here is the curve we want
-//        ProjectInput * pInput = i.value()->GetProjectInput();
-
-//        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
-//            try {
-//                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-//                QString sRasterPath = pInput->GetSourceFilePath();
-//                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
-//            }
-//            catch (RasterManager::RasterManagerException e){
-//                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
-//            }
-
-//        }
-//    }
-//}
-
 void HSISimulation::Run(){
 
     /**
@@ -126,6 +99,7 @@ void HSISimulation::Run(){
 
         if (HasOutputCSV()){
             const QByteArray sHSIOutputCSVQB = m_bOutputCSV.toLocal8Bit();
+            Project::EnsureFile(m_bOutputCSV);
             RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
         }
     }
@@ -140,7 +114,7 @@ void HSISimulation::Run(){
     }
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
-    SimulationLog("Simulation Complete", 1);
+    SimulationLog("Simulation Complete: " + GetName() , 0);
 }
 
 void HSISimulation::RunCSVHSI(int nMethod){

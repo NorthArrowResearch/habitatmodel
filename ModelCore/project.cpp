@@ -93,7 +93,7 @@ Project::Project(const char * psProjectRoot,
     // Load the models necessary to that particular simulation: HSI Curves etc.
     LoadSimulations();
 
-    m_XMLOutput->AddMeta("LoadTime", QString::number(m_totalTimer.elapsed()/1000));
+    m_XMLOutput->AddRunMeta("LoadTime", QString::number(m_totalTimer.elapsed()/1000));
 }
 
 
@@ -107,7 +107,7 @@ int Project::Run()
         sim.value()->Run();
     }
     m_XMLOutput->Log("Simulations Completed Successfully.");
-    m_XMLOutput->AddMeta("TotalTime", QString::number(m_totalTimer.elapsed()/1000));
+    m_XMLOutput->AddRunMeta("TotalTime", QString::number(m_totalTimer.elapsed()/1000));
 
     m_XMLOutput->AddStatus("Project", STATUS_COMPLETE ,STATUSTYPE_PROJECT, m_totalTimer.elapsed()/1000);
     return PROCESS_OK;
@@ -203,6 +203,7 @@ void Project::LoadProjectDataSources(){
     }
 
 }
+
 
 HabitatModel::ProjectInputTypeCodes Project::GetInputType(QString sInputFilePath){
 

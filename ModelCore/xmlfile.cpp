@@ -5,7 +5,7 @@
 #include <QDateTime>
 #include <QDomElement>
 #include <QXmlStreamWriter>
-
+#include <QDebug>
 #include "habitat_exception.h"
 #include "histogramsclass.h"
 #include "simulation.h"
@@ -78,7 +78,7 @@ void XMLFile::CopyTmpToOutput(){
         QFile::copy(m_sTMPFilePath, m_sXMLFilePath);
     }catch(std::exception e)
     {
-         //Do nothing. We don't care that it can't write.
+        //Do nothing. We don't care that it can't write.
     }
 }
 
@@ -86,10 +86,6 @@ void XMLFile::CopyTmpToOutput(){
 void XMLFile::Init(QString &sFilePath){
 
     m_pDoc = new QDomDocument;
-
-    // Clean up the status items
-    QDomElement documentElement = m_pDoc->documentElement();
-    QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
 
     m_sXMLFilePath = sFilePath;
 
@@ -101,7 +97,7 @@ void XMLFile::Init(QString &sFilePath){
 
     QString fileName = sTmpPrefix + "*.xml";
     slTmpFiles = sNewDir.entryList(QStringList(fileName),
-                                 QDir::Files | QDir::NoSymLinks);
+                                   QDir::Files | QDir::NoSymLinks);
 
     foreach(QString sTmpFile, slTmpFiles){
         // If the file was already there remove it
@@ -124,16 +120,16 @@ void XMLFile::Init(QString &sFilePath){
         QDomElement log = m_pDoc->createElement("log");
         QDomElement status = m_pDoc->createElement("status");
         QDomElement results = m_pDoc->createElement("results");
-        QDomElement meta = m_pDoc->createElement("meta_data");
+        QDomElement meta = m_pDoc->createElement("run_meta");
         QDomElement messages = m_pDoc->createElement("messages");
 
         log.appendChild(results);
-        log.appendChild(meta);
         log.appendChild(messages);
+        log.appendChild(meta);
         log.appendChild(status);
 
         QDomNode xmlNode = m_pDoc->createProcessingInstruction("xml",
-                                     "version=\"1.0\" encoding=\"ISO-8859-1\"");
+                                                               "version=\"1.0\" encoding=\"ISO-8859-1\"");
 
         m_pDoc->appendChild(xmlNode);
         m_pDoc->appendChild(log);
@@ -142,20 +138,21 @@ void XMLFile::Init(QString &sFilePath){
     m_xmlFile->close();
 }
 
-void XMLFile::AddMeta(QString sTagName, QString sTagValue){
+void XMLFile::AddRunMeta(QString sTagName, QString sTagValue){
     QDomElement meta_data, meta_data_tag;
     QDomElement documentElement = m_pDoc->documentElement();
-    QDomNodeList elements = documentElement.elementsByTagName( "meta_data" );
+    QDomNodeList elements = documentElement.elementsByTagName( "run_meta" );
+
     QDomText sMsgTxt = m_pDoc->createTextNode(sTagValue.toHtmlEscaped());
 
     if( elements.size() == 0 )
     {
-      meta_data = m_pDoc->createElement( "meta_data" );
-      documentElement.insertBefore( meta_data, documentElement );
+        meta_data = m_pDoc->createElement( "run_meta" );
+        documentElement.insertBefore( meta_data, documentElement );
     }
     else if( elements.size() == 1 )
     {
-      meta_data = elements.at(0).toElement();
+        meta_data = elements.at(0).toElement();
     }
 
     // Create the message itself
@@ -166,52 +163,71 @@ void XMLFile::AddMeta(QString sTagName, QString sTagValue){
     WriteDomToFile();
 }
 
+void XMLFile::WriteSimulationMeta(Simulation * logSim){
+    QDomElement nodMeta, nodKeyVal;
+
+    QDomElement sim_data = GetSimulationResultNode(logSim);
+    nodMeta = m_pDoc->createElement( "sim_meta" );
+    QHashIterator<QString, QString> i(logSim->GetMetaData());
+    while (i.hasNext()) {
+        i.next();
+
+        nodKeyVal = m_pDoc->createElement( "meta" );
+        nodKeyVal.setAttribute("key", i.key());
+        nodKeyVal.appendChild(m_pDoc->createTextNode(i.value()));
+        nodMeta.appendChild(nodKeyVal);
+    }
+    sim_data.appendChild(nodMeta);
+
+    WriteDomToFile();
+}
+
 void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation * logSim){
-        QDomElement nodHistogram, nodBin, nodArea, nodVol, nodCount;
+    QDomElement nodHistogram, nodBin, nodArea, nodVol, nodCount;
 
-        QDomElement sim_data = GetSimulationResultNode(logSim);
+    QDomElement sim_data = GetSimulationResultNode(logSim);
 
-        if (theHisto.getNumBins() == 0)
-            throw HabitatException(HISTOGRAM_ERROR, "Number of bins cannot be 0");
-        int numBins = theHisto.getNumBins();
-        double binSize = theHisto.getBinSize();
-        double min = theHisto.getMinimumBin();
-        double max = min + binSize;
+    if (theHisto.getNumBins() == 0)
+        throw HabitatException(HISTOGRAM_ERROR, "Number of bins cannot be 0");
+    int numBins = theHisto.getNumBins();
+    double binSize = theHisto.getBinSize();
+    double min = theHisto.getMinimumBin();
+    double max = min + binSize;
 
-        nodHistogram= m_pDoc->createElement( "histogram" );
+    nodHistogram= m_pDoc->createElement( "histogram" );
 
-        double * areaHistogram = theHisto.getAreaHistogram();
-        double * volumeHistogram = theHisto.getVolumeHistogram();
-        long * countHistogram = theHisto.getCountHistogram();
+    double * areaHistogram = theHisto.getAreaHistogram();
+    double * volumeHistogram = theHisto.getVolumeHistogram();
+    long * countHistogram = theHisto.getCountHistogram();
 
-        for (int i=0; i < numBins; i++)
-        {
-            nodBin= m_pDoc->createElement( "bin" );
-            nodBin.setAttribute("min", QString::number(min));
-            nodBin.setAttribute("max", QString::number(max));
+    for (int i=0; i < numBins; i++)
+    {
+        nodBin= m_pDoc->createElement( "bin" );
+        nodBin.setAttribute("min", QString::number(min));
+        nodBin.setAttribute("max", QString::number(max));
 
-            nodArea = m_pDoc->createElement( "area" );
-            nodArea.appendChild(m_pDoc->createTextNode(QString::number(areaHistogram[i])));
-            nodBin.appendChild(nodArea);
+        nodArea = m_pDoc->createElement( "area" );
+        nodArea.appendChild(m_pDoc->createTextNode(QString::number(areaHistogram[i])));
+        nodBin.appendChild(nodArea);
 
-            nodVol = m_pDoc->createElement( "volume" );
-            nodVol.appendChild(m_pDoc->createTextNode(QString::number(volumeHistogram[i])));
-            nodBin.appendChild(nodVol);
+        nodVol = m_pDoc->createElement( "volume" );
+        nodVol.appendChild(m_pDoc->createTextNode(QString::number(volumeHistogram[i])));
+        nodBin.appendChild(nodVol);
 
-            nodCount = m_pDoc->createElement( "count" );
-            nodCount.appendChild(m_pDoc->createTextNode(QString::number(countHistogram[i])));
-            nodCount.setNodeValue(QString::number(countHistogram[i]));
-            nodBin.appendChild(nodCount);
+        nodCount = m_pDoc->createElement( "count" );
+        nodCount.appendChild(m_pDoc->createTextNode(QString::number(countHistogram[i])));
+        nodCount.setNodeValue(QString::number(countHistogram[i]));
+        nodBin.appendChild(nodCount);
 
-            nodHistogram.appendChild(nodBin);
+        nodHistogram.appendChild(nodBin);
 
-            min = max;
-            max += binSize;
-        }
+        min = max;
+        max += binSize;
+    }
 
-        sim_data.appendChild(nodHistogram);
+    sim_data.appendChild(nodHistogram);
 
-        WriteDomToFile();
+    WriteDomToFile();
 }
 
 QDomElement XMLFile::GetSimulationResultNode(Simulation * logSim){
@@ -225,12 +241,12 @@ QDomElement XMLFile::GetSimulationResultNode(Simulation * logSim){
 
     if( reportEl.size() == 0 )
     {
-      report_data = m_pDoc->createElement( "results" );
-      documentElement.insertBefore( report_data, documentElement );
+        report_data = m_pDoc->createElement( "results" );
+        documentElement.insertBefore( report_data, documentElement );
     }
     else if( reportEl.size() == 1 )
     {
-      report_data = reportEl.at(0).toElement();
+        report_data = reportEl.at(0).toElement();
     }
 
     // Create the simulation node if it doesn't already exist
@@ -251,10 +267,10 @@ QDomElement XMLFile::GetSimulationResultNode(Simulation * logSim){
 
     if( !bFound )
     {
-      sim_data = m_pDoc->createElement( "simulation" );
-      sim_data.setAttribute("id", QString::number(nSimID));
-      sim_data.setAttribute("name", simName);
-      report_data.appendChild(sim_data);
+        sim_data = m_pDoc->createElement( "simulation" );
+        sim_data.setAttribute("id", QString::number(nSimID));
+        sim_data.setAttribute("name", simName);
+        report_data.appendChild(sim_data);
     }
 
     return sim_data;
@@ -283,19 +299,19 @@ QString XMLFile::GetTmpFileName()
     qsrand((uint)time.msec());
 
 
-   const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-");
-   const int randomStringLength = 16; // assuming you want random strings of 12 characters
+    const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-");
+    const int randomStringLength = 16; // assuming you want random strings of 12 characters
 
-   QString randomString;
+    QString randomString;
 
-   for(int i=0; i < randomStringLength; ++i)
-   {
-       int index = qrand() % possibleCharacters.length();
-       QChar nextChar = possibleCharacters.at(index);
-       randomString.append(nextChar);
-   }
+    for(int i=0; i < randomStringLength; ++i)
+    {
+        int index = qrand() % possibleCharacters.length();
+        QChar nextChar = possibleCharacters.at(index);
+        randomString.append(nextChar);
+    }
 
-   return sTmpPrefix + randomString + ".xml";
+    return sTmpPrefix + randomString + ".xml";
 }
 
 
@@ -310,12 +326,12 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
 
     if( elements.size() == 0 )
     {
-      messages = m_pDoc->createElement( "messages" );
-      documentElement.insertBefore( messages, documentElement );
+        messages = m_pDoc->createElement( "messages" );
+        documentElement.insertBefore( messages, documentElement );
     }
     else if( elements.size() == 1 )
     {
-      messages = elements.at(0).toElement();
+        messages = elements.at(0).toElement();
     }
 
     // Create the message itself
@@ -340,6 +356,18 @@ void XMLFile::Log(QString sMsg, QString sException, int nSeverity, int indent)
     }
     messages.appendChild( message );
 
+    // If we're in debug mode output to screen
+#ifdef QT_DEBUG
+    qDebug() << qPrintable( QString("[%0]: [%1] %2")
+                            .arg(enumToString((XML_LOG_SEVERITY)nSeverity))
+                            .arg(local.toString(Qt::ISODate))
+                            .arg(sMsg));
+    if (nSeverity != 0 && sException.compare("") != 0){
+        qDebug() << qPrintable( QString("---------------------[EXCEPTION]: \n%1\n----------------------------")
+                                .arg(sException));
+    }
+#endif
+
     WriteDomToFile();
 }
 
@@ -352,12 +380,12 @@ void XMLFile::QueueStatus(QString sID, StatusCode nCode, StatusType nType, int n
 
     if( statusNL.size() == 0 )
     {
-      statusEl = m_pDoc->createElement( "status" );
-      documentElement.insertBefore( statusEl, documentElement );
+        statusEl = m_pDoc->createElement( "status" );
+        documentElement.insertBefore( statusEl, documentElement );
     }
     else if( statusNL.size() == 1 )
     {
-      statusEl = statusNL.at(0).toElement();
+        statusEl = statusNL.at(0).toElement();
     }
 
     // Create the message itself

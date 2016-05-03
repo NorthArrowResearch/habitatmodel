@@ -100,6 +100,10 @@ Simulation::Simulation(QDomElement * elSimulation)
     else
         m_dCellSize = -1;
 
+    // Simulation meta are ky/value pairs that get passed straight through the system
+    LoadSimulationMeta();
+
+    // Ratermeta is the the top/left/cellwidth/col/row data of the final raster
     InitRasterMeta(elSimulation);
 
     Init();
@@ -157,6 +161,30 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
                                                          &dCellHeight, &dCellWidth,
                                                          &fNoDataValue, psDriver,
                                                          &nDType, psProjection, psUnit);
+}
+
+//<SimulationMeta>
+//  <MetaID>1</MetaID>
+//  <SimulationID>2</SimulationID>
+//  <TheKey>sim1meta1</TheKey>
+//  <TheValue>sim1metavalue1</TheValue>
+//</SimulationMeta>
+
+void Simulation::LoadSimulationMeta(){
+    QDomNodeList elSimulationMetas =  Project::GetConfigDom()->elementsByTagName("SimulationMeta");
+    for(int n= 0; n < elSimulationMetas.length(); n++){
+        QDomElement elSimulationMeta = elSimulationMetas.at(n).toElement();
+        int nSimulationID = elSimulationMeta.firstChildElement("SimulationID").text().toInt();
+        if (nSimulationID > 0 && nSimulationID == GetID()){
+            QString sKey = elSimulationMeta.firstChildElement("TheKey").text();
+            QString sValue = elSimulationMeta.firstChildElement("TheValue").text();
+            m_qhMetaValues.insert(sKey, sValue);
+        }
+    }
+    // Nothing fancy here. Simulation meta passes straight through to the
+    // log file
+    m_XMLSimOutput->WriteSimulationMeta(this);
+    Project::GetOutputXML()->WriteSimulationMeta(this);
 }
 
 Simulation::~Simulation() {

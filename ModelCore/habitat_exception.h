@@ -101,7 +101,7 @@ public:
             return "Unhandled Raster Manager return code.";
             break;
         }
-    };
+    }
 
     /**
      * @brief GetReturnMsgAsString: This function returns more information than GetReturnCodeOnlyAsString
