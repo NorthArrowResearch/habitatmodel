@@ -60,15 +60,15 @@ public:
 
     inline QHash<QString, QString> GetMetaData(){ return m_qhMetaValues; }
 
-protected:
-
-    void RasterUnion(RasterManager::RasterMeta *pMeta);
-
     // These wrap ProjectError
     void SimulationError(int nErrorCode);
     void SimulationError(int nErrorCode, QString m_sEvidence);
     void SimulationLog(QString sMsg, int nIndent);
     void SimulationAddResult(QString sTagName, QString sTagValue);
+
+protected:
+
+    void RasterUnion(RasterManager::RasterMeta *pMeta);
 
     QString m_bOutputRaster;
     QString m_bOutputHistogram;

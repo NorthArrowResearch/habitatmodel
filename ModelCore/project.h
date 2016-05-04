@@ -224,6 +224,9 @@ private:
      */
     HSC * LoadHSC(int nNewHSCID, int nType);
 
+    int m_nSuccess;
+    int m_nFailures;
+    int m_nTotal;
 
     // Project Attributes
     QString qd_date_created;

@@ -10,6 +10,7 @@ enum ProjectErrorCodes {
     , FILE_NOT_FOUND
     , DIRECTORY_NOT_FOUND
     , FILE_PRESENT
+    , INIT_ERROR
     , DIRECTORY_PRESENT
     , FILE_WRITE_ERROR
     , FILE_READ_ONLY
@@ -54,6 +55,9 @@ public:
             break;
         case FILE_NOT_FOUND:
             return "File Not Found";
+            break;
+        case INIT_ERROR:
+            return "Initialization error";
             break;
         case DIRECTORY_NOT_FOUND:
             return "Directory Not Found";
@@ -115,6 +119,12 @@ public:
         }
         return sOutput;
     }
+
+    /**
+     * @brief GetEvidence: Just return the evidence string
+     * @return
+     */
+    inline QString GetEvidence(){ return m_sEvidence; }
 
 private:
     int m_nErrorCode;

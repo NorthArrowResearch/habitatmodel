@@ -44,8 +44,13 @@ FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulatio
     delete elFIS;
 
     QTime qtPrepTime;
-    qtPrepTime.start();
-    PrepareInputs();
+    try{
+        PrepareInputs();
+    }
+    catch(HabitatException e){
+        SimulationError(INIT_ERROR,  e.GetEvidence());
+        throw e;
+    }
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_PREPARED, STATUSTYPE_SIMULATION, qtPrepTime.elapsed()/1000 );
 
 
@@ -134,7 +139,9 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
 
     // Open the output dataset for writing and get its band.
     const QByteArray sFISOutputQB = sOutputFile.toLocal8Bit();
-    GDALDataset * pOutputDS = RasterManager::CreateOutputDS( sFISOutputQB.data(), GetRasterExtentMeta());
+    GDALDataset * pOutputDS;
+    pOutputDS = RasterManager::CreateOutputDS( sFISOutputQB.data(), GetRasterExtentMeta());
+
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
 
@@ -436,38 +443,6 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
 }
 
 
-
-/**
- * @brief FISSimulation::AddRastersToExtents DEPPRECATED FOR NOW. We're going to do this work in the
- * UI instead
- */
-//void FISSimulation::AddRastersToExtents(){
-
-//    QHashIterator<int, SimulationFISInput *> i(m_simulation_fis_inputs);
-
-//    while (i.hasNext()) {
-//        i.next();
-//        // Here is the curve we want
-//        ProjectInput * pInput = i.value()->GetProjectInput();
-
-//        if ( dynamic_cast <ProjectInputRaster *> ( pInput )){
-//            try {
-//                SimulationLog("Adding Raster to extent: " + i.value()->GetProjectInput()->GetName() , 2);
-//                QString sRasterPath = pInput->GetSourceFilePath();
-//                const QByteArray QBRasterPath = sRasterPath.toLocal8Bit();
-
-//                RasterManager::RasterMeta * pRasterMeta = new RasterManager::RasterMeta(QBRasterPath.data());
-//                delete pRasterMeta;
-//            }
-//            catch (RasterManager::RasterManagerException e){
-//                SimulationLog("ERROR:" + e.GetReturnMsgAsString() , 0);
-//            }
-
-//        }
-//    }
-//}
-
-
 void FISSimulation::LoadInputs()
 {
     SimulationLog("Loading Inputs for FIS Simulation: " + GetName() , 2);
@@ -522,16 +497,26 @@ void FISSimulation::Run()
         if (m_dCellArea >= 0)
             SimulationAddResult("CellArea",  QString::number(m_dCellArea) );
 
-        // Write a histogram both to a file AND to the xml
         const QByteArray sHSIOutputQB = m_bOutputRaster.toLocal8Bit();
-        RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
-        const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
-        theHisto.writeCSV(sHSIOutputHistogramsQB.data());
-        SimulationAddHistogram(theHisto);
+        try{
+            // Write a histogram both to a file AND to the xml
+            RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
+            const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+            theHisto.writeCSV(sHSIOutputHistogramsQB.data());
+            SimulationAddHistogram(theHisto);
+        }
+        catch (RasterManager::RasterManagerException e){
+            SimulationError(RASTERMAN_EXCEPTION, e.GetEvidence());
+        }
 
         if (HasOutputCSV()){
             const QByteArray sHSIOutputCSVQB = m_bOutputCSV.toLocal8Bit();
-            RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
+            try{
+                RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
+            }
+            catch (RasterManager::RasterManagerException e){
+                SimulationError(RASTERMAN_EXCEPTION, e.GetEvidence());
+            }
         }
     }
 

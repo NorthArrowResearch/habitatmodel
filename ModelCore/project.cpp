@@ -60,6 +60,8 @@ Project::Project(const char * psProjectRoot,
 
     m_XMLOutput = new XMLFile(psXMLOutput, false);
 
+    m_nSuccess = m_nFailures = m_nTotal = 0;
+
     Project::GetOutputXML()->Log("Opened Input Definitions XML File: " + QString(psXMLInputDef) );
     Project::GetOutputXML()->Log("Opened Input Configurations XML File: " + QString(psXMLInputConf) );
     Project::GetOutputXML()->Log("Opened Output XML File: " + QString(psXMLOutput) );
@@ -98,16 +100,27 @@ Project::Project(const char * psProjectRoot,
 
 
 int Project::Run()
-    {
+{
     m_XMLOutput->Log("Starting to run Simulations...");
     // Run the actual simulations. This is a polymorhic virtual function.
     QHashIterator<int, Simulation *> sim(m_simulation_store);
     while (sim.hasNext()) {
         sim.next();
-        sim.value()->Run();
+        try{
+            sim.value()->Run();
+            m_nSuccess++;
+        }
+        catch(HabitatException e){
+            sim.value()->SimulationError(e.GetErrorCode(), e.GetEvidence());
+            m_nFailures++;
+        }
     }
-    m_XMLOutput->Log("Simulations Completed Successfully.");
+    m_XMLOutput->Log("All Simulations Completed.");
     m_XMLOutput->AddRunMeta("TotalTime", QString::number(m_totalTimer.elapsed()/1000));
+
+    m_XMLOutput->AddRunMeta("Simulations", QString::number(m_nTotal));
+    m_XMLOutput->AddRunMeta("Successes", QString::number(m_nSuccess));
+    m_XMLOutput->AddRunMeta("Failures", QString::number(m_nFailures));
 
     m_XMLOutput->AddStatus("Project", STATUS_COMPLETE ,STATUSTYPE_PROJECT, m_totalTimer.elapsed()/1000);
     return PROCESS_OK;
@@ -138,6 +151,11 @@ void Project::LoadSimulations(){
         if (sQueued.compare("false", Qt::CaseInsensitive) != 0 && sQueued.compare("0", Qt::CaseInsensitive) != 0){
             int nSimulationID = elSimulation.firstChildElement("SimulationID").text().toInt();
 
+            // Title gets processed formally later but this is helpful for any error messages
+            QString s_SimulationTitle = elSimulation.firstChildElement("Title").text();
+            if (s_SimulationTitle.trimmed().length() == 0)
+                s_SimulationTitle = QString("Simulation with ID = %1").arg(nSimulationID);
+
             int nSimulationHSIID = elSimulation.firstChildElement("HSIID").text().toInt();
             // int nSimulationFISID = elSimulation.firstChildElement("FISID").text().toInt();
 
@@ -149,17 +167,29 @@ void Project::LoadSimulations(){
                 bFISID = true;
 
             Simulation * newSim;
-
+            m_nTotal++;
             if (bHSIID){
-                newSim = new HSISimulation(&elSimulation);
-                m_simulation_store.insert(nSimulationID, newSim);
+                try{
+                    newSim = new HSISimulation(&elSimulation);
+                    m_simulation_store.insert(nSimulationID, newSim);
+                }
+                catch(HabitatException e){
+                    GetOutputXML()->Log("Failed to initialize simulation: " + s_SimulationTitle, e.GetEvidence(), SEVERITY_ERROR, 1);
+                    m_nFailures++;
+                }
             }
             else if(bFISID){
-                newSim = new FISSimulation(&elSimulation);
-                m_simulation_store.insert(nSimulationID, newSim);
+                try{
+                    newSim = new FISSimulation(&elSimulation);
+                    m_simulation_store.insert(nSimulationID, newSim);
+                }
+                catch(HabitatException e){
+                    GetOutputXML()->Log("Failed to initialize simulation: " + s_SimulationTitle, e.GetEvidence(), SEVERITY_ERROR, 1);
+                    m_nFailures++;
+                }
             }
             else{
-                GetOutputXML()->Log("Missing HSI, FIS", "Simulation with ID '"+QString::number(nSimulationID) +"' has no valid <HSI> or <FIS> nodes found in the config file. Skipping Simulation", SEVERITY_WARNING, 1);
+                GetOutputXML()->Log("Missing HSI, FIS", "Simulation with ID '" + s_SimulationTitle + "' has no valid <HSI> or <FIS> nodes found in the config file. Skipping Simulation", SEVERITY_WARNING, 1);
             }
         }
 
@@ -292,9 +322,9 @@ HSC * Project::LoadHSC(int nNewHSCID, int nType){
 
 void Project::LoadHSCs(){
 
-     m_XMLOutput->Log("Loading HSCs", 2);
+    m_XMLOutput->Log("Loading HSCs", 2);
 
-     // Load first the coordinate pairs and then the HSC categories. If the parent
+    // Load first the coordinate pairs and then the HSC categories. If the parent
     // HSC doesn't exist it is created.
     QDomNodeList elHSCCoordPairs = m_elDef->elementsByTagName("HSCCoordinatePairs");
 
@@ -357,17 +387,17 @@ void Project::EnsureFile(QString sFilePath){
 
     // Make a path if we don't have one already.
     if (!sNewDir.exists()){
-      Project::GetOutputXML()->LogDebug("Dir Doesn't exist. Making : " + sNewDir.absolutePath() , 3);
-      sNewDir.mkpath(".");
+        Project::GetOutputXML()->LogDebug("Dir Doesn't exist. Making : " + sNewDir.absolutePath() , 3);
+        sNewDir.mkpath(".");
     }
 
     // Delete the file if it already exists.
-   if (sNewFileInfo.exists()){
-       Project::GetOutputXML()->LogDebug("File exists. Deleting : " + sNewFileInfo.fileName() , 3);
-       QFile::remove(sNewFileInfo.absoluteFilePath());
-   }
-
-
+    if (sNewFileInfo.exists()){
+        Project::GetOutputXML()->LogDebug("File exists. Deleting : " + sNewFileInfo.fileName() , 3);
+        QFile file(sFilePath);
+        file.setPermissions(QFile::ReadOther | QFile::WriteOther);
+        file.remove();
+    }
 }
 
 Project::~Project(){

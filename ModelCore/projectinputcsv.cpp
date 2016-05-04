@@ -3,6 +3,7 @@
 #include "project.h"
 #include "raster.h"
 #include "habitat_exception.h"
+#include <QFile>
 
 namespace HabitatModel{
 
@@ -50,12 +51,15 @@ void ProjectInputCSV::Init(QString sXFieldName,QString sYFieldName){
 
 void ProjectInputCSV::Prepare(Simulation * pSimulation){
 
-    Project::GetOutputXML()->Log("Preparing CSV Input: " + GetName() , 3);
+    pSimulation->SimulationLog("Preparing CSV Input: " + GetName() , 3);
 
     // We only need a raster if one is requested.
     if (pSimulation->HasOutputRaster()){
         QString sCSVFilePath = GetSourceFilePath();
         QString sFinalRasterPath = GetPreparedRasterFileName();
+
+        if (!QFile::exists(sCSVFilePath))
+            throw HabitatException(FILE_NOT_FOUND, "Could not locate CSV file: " + sCSVFilePath);
 
         // Make sure there's a directory and delete any duplicate files.
         Project::EnsureFile(sFinalRasterPath);
@@ -68,14 +72,19 @@ void ProjectInputCSV::Prepare(Simulation * pSimulation){
         const QByteArray qbYFieldName = GetYFieldName().toLocal8Bit();
         const QByteArray qbDataFieldName = GetValueFieldName().toLocal8Bit();
 
-        Project::GetOutputXML()->Log("Create Tif from CSV: " + sCSVFilePath , 3);
+        pSimulation->SimulationLog("Create Raster Tif from CSV File: " + sCSVFilePath , 3);
 
-        RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
-                                           qbFinalRaster.data(),
-                                           qbXFieldName.data(),
-                                           qbYFieldName.data(),
-                                           qbDataFieldName.data(),
-                                           pSimulation->GetRasterExtentMeta());
+        try{
+            RasterManager::Raster::CSVtoRaster(qbCSVFilePath.data(),
+                                               qbFinalRaster.data(),
+                                               qbXFieldName.data(),
+                                               qbYFieldName.data(),
+                                               qbDataFieldName.data(),
+                                               pSimulation->GetRasterExtentMeta());
+        }
+        catch (RasterManager::RasterManagerException e){
+            pSimulation->SimulationError(RASTERMAN_EXCEPTION, e.GetEvidence());
+        }
 
     }
 

@@ -40,6 +40,7 @@ void ProjectInput::Init(QString sCreatedOn,
     m_preparedrasterfilename = sUtilizationRasterFileName;
     m_outputfilepath = sHSOutputFileName;
 
+
 }
 
 }

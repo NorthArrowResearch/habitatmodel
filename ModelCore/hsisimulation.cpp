@@ -55,7 +55,13 @@ HSISimulation::HSISimulation(QDomElement *elSimulation)
     // Rasters and we can prepare the inputs.
     QTime qtPrepTime;
     qtPrepTime.start();
-    PrepareInputs();
+    try{
+        PrepareInputs();
+    }
+    catch(HabitatException e){
+        SimulationError(INIT_ERROR,  e.GetEvidence());
+        throw e;
+    }
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_PREPARED, STATUSTYPE_SIMULATION, qtPrepTime.elapsed()/1000 );
 
 }
@@ -90,17 +96,27 @@ void HSISimulation::Run(){
         if (m_dCellArea >= 0)
             SimulationAddResult("CellArea",  QString::number(m_dCellArea) );
 
-        // Write a histogram both to a file AND to the xml
         const QByteArray sHSIOutputQB = m_bOutputRaster.toLocal8Bit();
-        RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
-        const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
-        theHisto.writeCSV(sHSIOutputHistogramsQB.data());
-        SimulationAddHistogram(theHisto);
+        try{
+            // Write a histogram both to a file AND to the xml
+            RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
+            const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+            theHisto.writeCSV(sHSIOutputHistogramsQB.data());
+            SimulationAddHistogram(theHisto);
+        }
+        catch (RasterManager::RasterManagerException e){
+            SimulationError(RASTERMAN_EXCEPTION, e.GetEvidence());
+        }
 
         if (HasOutputCSV()){
             const QByteArray sHSIOutputCSVQB = m_bOutputCSV.toLocal8Bit();
             Project::EnsureFile(m_bOutputCSV);
-            RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
+            try{
+                RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
+            }
+            catch (RasterManager::RasterManagerException e){
+                SimulationError(RASTERMAN_EXCEPTION, e.GetEvidence());
+            }
         }
     }
 
@@ -422,22 +438,6 @@ void HSISimulation::RunRasterHSI(int nMethod){
     CPLFree(pReadBuffer);
     pReadBuffer = NULL;
 
-    // Clean up individual outputs if that is requested
-    if (!KeepIndividualOutputs()){
-        dSimHSCInputs.toFront();
-        while (dSimHSCInputs.hasNext()) {
-            dSimHSCInputs.next();
-
-            // Here is the corresponding input raster, added as a hash to a dataset
-            ProjectInput * pSimHSCHSOutput = dSimHSCInputs.value()->GetProjectInput();
-            QString sPartialHSIOutput = pSimHSCHSOutput->GetOutputRasterFileName();
-            if (QFile::exists(sPartialHSIOutput))
-            {
-                QFile::remove(sPartialHSIOutput);
-            }
-        }
-    }
-
     // Let's remember to clean up the inputs
     QHashIterator<int, GDALRasterBand *> qhds(dDatasets);
     while (qhds.hasNext()) {
@@ -451,6 +451,37 @@ void HSISimulation::RunRasterHSI(int nMethod){
         CPLFree(qhbuff.value());
     }
     dInBuffers.clear();
+
+    // Clean up individual outputs if that is requested
+    if (!KeepIndividualOutputs()){
+        dSimHSCInputs.toFront();
+        while (dSimHSCInputs.hasNext()) {
+            dSimHSCInputs.next();
+
+            // Here is the corresponding input raster, added as a hash to a dataset
+            ProjectInput * pSimHSCHSOutput = dSimHSCInputs.value()->GetProjectInput();
+            QFile qfHSOutputFile(pSimHSCHSOutput->GetOutputRasterFileName());
+            QFile qfHSInputFile(pSimHSCHSOutput->GetPreparedRasterFileName());
+            if (qfHSOutputFile.exists())
+            {
+                SimulationLog("Cleaning up Intermediate Output: " + qfHSOutputFile.fileName(), 2);
+                qfHSOutputFile.setPermissions(QFile::ReadOther | QFile::WriteOther);
+                qfHSOutputFile.remove();
+                QString dirPath = QFileInfo(qfHSOutputFile).absoluteDir().absolutePath();
+                QDir d;
+                d.rmdir(dirPath); // This will fail (gracefully) if there are files.
+            }
+            if (qfHSInputFile.exists())
+            {
+                SimulationLog("Cleaning up InputFile: " + qfHSInputFile.fileName(), 2);
+                qfHSInputFile.setPermissions(QFile::ReadOther | QFile::WriteOther);
+                qfHSInputFile.remove();
+                QString dirPath = QFileInfo(qfHSInputFile).absoluteDir().absolutePath();
+                QDir d;
+                d.rmdir(dirPath); // This will fail (gracefully) if there are files.
+            }
+        }
+    }
 
 
     // Now write some results

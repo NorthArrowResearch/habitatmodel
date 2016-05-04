@@ -25,13 +25,16 @@ void ProjectInputRaster::Init(){
 void ProjectInputRaster::Prepare(Simulation * pSimulation){
 
     QString sOriginalRaster = GetSourceFilePath();
-
     QString sFinalPath = GetPreparedRasterFileName();
+
+    if (!QFile::exists(sOriginalRaster))
+        throw HabitatException(FILE_NOT_FOUND, "Could not locate Raster file: " + sOriginalRaster);
 
     // Make sure there's a directory and delete any duplicate files.
     Project::EnsureFile(sFinalPath);
 
-    Project::GetOutputXML()->LogDebug("Copying file' : " + sOriginalRaster + " to:  " + sFinalPath , 3);
+
+    pSimulation->SimulationLog("Copying file' : " + sOriginalRaster + " to:  " + sFinalPath , 3);
 
     RasterManager::RasterMeta * TemplateRasterMeta = pSimulation->GetRasterExtentMeta();
 
@@ -41,14 +44,20 @@ void ProjectInputRaster::Prepare(Simulation * pSimulation){
 
     char* sErr = new char[ERRBUFFERSIZE];
 
+    try{
+        RasterManager::Copy( qbOriginalRaster.data(),
+                             qbFinalRaster.data(),
+                             TemplateRasterMeta->GetCellWidth(),
+                             TemplateRasterMeta->GetLeft(),
+                             TemplateRasterMeta->GetTop(),
+                             TemplateRasterMeta->GetRows(),
+                             TemplateRasterMeta->GetCols(), sErr);
 
-    RasterManager::Copy( qbOriginalRaster.data(),
-                         qbFinalRaster.data(),
-                         TemplateRasterMeta->GetCellWidth(),
-                         TemplateRasterMeta->GetLeft(),
-                         TemplateRasterMeta->GetTop(),
-                         TemplateRasterMeta->GetRows(),
-                         TemplateRasterMeta->GetCols(), sErr);
+    }
+    catch (RasterManager::RasterManagerException e){
+        pSimulation->SimulationError(RASTERMAN_EXCEPTION, e.GetEvidence());
+    }
+
     delete [] sErr;
 }
 
