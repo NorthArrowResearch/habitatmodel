@@ -185,6 +185,9 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
                                                 inputNoDataValues,
                                                 dNodataVal);
 
+            if (isnan(pOutputBuffer[j]))
+                pOutputBuffer[j] = dNodataVal;
+
             if (pOutputBuffer[j] != dNodataVal){
                 cellSum += pOutputBuffer[j];
                 usedCellCounter++;
@@ -220,7 +223,7 @@ void FISSimulation::RunRasterFis(QString sOutputFile)
     QHashIterator<int, GDALRasterBand *> qhds(dDatasets);
     while (qhds.hasNext()) {
         qhds.next();
-        GDALClose(qhds.value());
+        GDALClose(qhds.value()->GetDataset());
     }
     dDatasets.clear();
     QHashIterator<int, double *> qhbuff(dInBuffers);
@@ -390,8 +393,9 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
                     // Now add the Data input value
                     ProjectInputCSV::CSVCellClean( sCSVCol );
                     slCSVInputs.append(sCSVCol);
-
-                    if (double dCSVItem = sCSVCol.toDouble() ){
+                    bool test;
+                    double dCSVItem = sCSVCol.toDouble(&test);
+                    if (test){
                         if (dCSVItem != dNoDataVal && sCSVCol.length() > 0){
                             inputData[nColRule] =  dCSVItem;
                         }
@@ -415,7 +419,7 @@ void FISSimulation::RunCSVFis(QString sOutputFile)
                                                    inputNoDataValues,
                                                    dNoDataVal);
 
-            if (dCombinedVal == dNoDataVal)
+            if ( isnan(dCombinedVal) || dCombinedVal == dNoDataVal )
                 slCSVOutputs.append(" ");
             else {
                 cellSum += dCombinedVal;
