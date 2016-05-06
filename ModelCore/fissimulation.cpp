@@ -485,7 +485,7 @@ void FISSimulation::Run()
      **/
     QTime qtRunTime;
     qtRunTime.start();
-    SimulationLog("Starting FIS Simulation Run: " + GetName() , 0);
+    SimulationLog("Starting FIS Simulation Run: " + GetName() , 1);
 
     if (HasOutputRaster()){
         Project::EnsureFile(m_bOutputRaster);
@@ -506,6 +506,7 @@ void FISSimulation::Run()
             // Write a histogram both to a file AND to the xml
             RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
             const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+            Project::EnsureFile(m_bOutputHistogram);
             theHisto.writeCSV(sHSIOutputHistogramsQB.data());
             SimulationAddHistogram(theHisto);
         }
@@ -515,6 +516,7 @@ void FISSimulation::Run()
 
         if (HasOutputCSV()){
             const QByteArray sHSIOutputCSVQB = m_bOutputCSV.toLocal8Bit();
+            Project::EnsureFile(m_bOutputCSV);
             try{
                 RasterManager::Raster::RasterToCSV(sHSIOutputQB.data(), sHSIOutputCSVQB.data());
             }

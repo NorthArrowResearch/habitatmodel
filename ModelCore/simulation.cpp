@@ -121,7 +121,7 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
 
     // If there is no raster then just initialize a blank object and exit.
     if (!HasOutputRaster()){
-        SimulationLog("No Raster Meta information needed. Skipping RasterMeta initiation.",0);
+        SimulationLog("No Raster Meta information needed. Skipping RasterMeta initiation.",2);
         m_RasterTemplateMeta = new RasterManager::RasterMeta();
         return;
     }
@@ -137,9 +137,9 @@ void Simulation::InitRasterMeta(QDomElement * elSimulation){
     QString qsUnits = elSimulation->firstChildElement("RasterUnits").text();
 
     if (qsProj.compare("") == 0)
-        SimulationLog("WARNING: Empty spatial ref detected for simulation",0);
+        SimulationLog("WARNING: Empty spatial ref detected for simulation",2);
     if (qsUnits.compare("") == 0)
-        SimulationLog("WARNING: Empty units ref detected for simulation",0);
+        SimulationLog("WARNING: Empty units ref detected for simulation",2);
 
     const QByteArray qbXProjRef = qsProj.toLocal8Bit();
     const QByteArray qbXProjUnits = qsUnits.toLocal8Bit();

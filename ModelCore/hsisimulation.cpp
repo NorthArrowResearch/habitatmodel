@@ -77,7 +77,7 @@ void HSISimulation::Run(){
     QTime qtRunTime;
     qtRunTime.start();
 
-    SimulationLog("Starting Simulation Run: " + GetName() , 0);
+    SimulationLog("Starting Simulation Run: " + GetName() , 1);
 
     //Method of combination
     int nMethod = DetermineMethod();
@@ -101,6 +101,7 @@ void HSISimulation::Run(){
             // Write a histogram both to a file AND to the xml
             RasterManager::HistogramsClass theHisto(sHSIOutputQB.data(), GetHistogramBins());
             const QByteArray sHSIOutputHistogramsQB = m_bOutputHistogram.toLocal8Bit();
+            Project::EnsureFile(m_bOutputHistogram);
             theHisto.writeCSV(sHSIOutputHistogramsQB.data());
             SimulationAddHistogram(theHisto);
         }
@@ -130,7 +131,7 @@ void HSISimulation::Run(){
     }
 
     Project::GetOutputXML()->AddStatus(this->GetName(), STATUS_COMPLETE, STATUSTYPE_SIMULATION , qtRunTime.elapsed()/1000);
-    SimulationLog("Simulation Complete: " + GetName() , 0);
+    SimulationLog("Simulation Complete: " + GetName() , 1);
 }
 
 void HSISimulation::RunCSVHSI(int nMethod){
