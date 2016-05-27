@@ -9,11 +9,12 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 1.1.0
+VERSION = 1.2.0
 TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
+DEFINES += HMLIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 DEFINES += MODELCORE_LIBRARY
 
 SOURCES += \

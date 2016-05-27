@@ -9,6 +9,8 @@
 #include "habitat_exception.h"
 #include "histogramsclass.h"
 #include "simulation.h"
+#include "habitat_interface.h"
+#include "rastermanager_interface.h"
 
 namespace HabitatModel{
 
@@ -118,12 +120,25 @@ void XMLFile::Init(QString &sFilePath){
     {
 
         QDomElement log = m_pDoc->createElement("log");
+        QDomElement habVersion = m_pDoc->createElement("habitat_version");
+        QDomElement rmVersion = m_pDoc->createElement("rasterman_version");
+        QDomElement runTimestamp = m_pDoc->createElement("run_timestamp");
         QDomElement status = m_pDoc->createElement("status");
-        QDomElement results = m_pDoc->createElement("results");
+        QDomElement simulations = m_pDoc->createElement("simulations");
         QDomElement meta = m_pDoc->createElement("run_meta");
         QDomElement messages = m_pDoc->createElement("messages");
 
-        log.appendChild(results);
+        habVersion.appendChild(m_pDoc->createTextNode(GetLibVersion()));
+        rmVersion.appendChild(m_pDoc->createTextNode(RasterManager::GetLibVersion()));
+
+        // Timestamps are useful
+        QDateTime local(QDateTime::currentDateTime());
+        runTimestamp.appendChild(m_pDoc->createTextNode( local.toString(Qt::ISODate)));
+
+        log.appendChild(habVersion);
+        log.appendChild(rmVersion);
+        log.appendChild(runTimestamp);
+        log.appendChild(simulations);
         log.appendChild(messages);
         log.appendChild(meta);
         log.appendChild(status);
@@ -166,7 +181,7 @@ void XMLFile::AddRunMeta(QString sTagName, QString sTagValue){
 void XMLFile::WriteSimulationMeta(Simulation * logSim){
     QDomElement nodMeta, nodKeyVal;
 
-    QDomElement sim_data = GetSimulationResultNode(logSim);
+    QDomElement sim_data = GetSimulationNode(logSim);
     nodMeta = m_pDoc->createElement( "sim_meta" );
     QHashIterator<QString, QString> i(logSim->GetMetaData());
     while (i.hasNext()) {
@@ -185,7 +200,7 @@ void XMLFile::WriteSimulationMeta(Simulation * logSim){
 void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation * logSim){
     QDomElement nodHistogram, nodBin, nodArea, nodVol, nodCount;
 
-    QDomElement sim_data = GetSimulationResultNode(logSim);
+    QDomElement sim_data = GetSimulationNode(logSim);
 
     if (theHisto.getNumBins() == 0)
         throw HabitatException(HISTOGRAM_ERROR, "Number of bins cannot be 0");
@@ -230,18 +245,18 @@ void XMLFile::WriteHistogram(RasterManager::HistogramsClass theHisto, Simulation
     WriteDomToFile();
 }
 
-QDomElement XMLFile::GetSimulationResultNode(Simulation * logSim){
+QDomElement XMLFile::GetSimulationNode(Simulation * logSim){
     int nSimID = logSim->GetID();
     QString simName = logSim->GetName();
     QDomElement report_data, sim_data;
     QDomElement documentElement = m_pDoc->documentElement();
 
     // First search for (create if necessary) a results.
-    QDomNodeList reportEl = documentElement.elementsByTagName( "results" );
+    QDomNodeList reportEl = documentElement.elementsByTagName( "simulations" );
 
     if( reportEl.size() == 0 )
     {
-        report_data = m_pDoc->createElement( "results" );
+        report_data = m_pDoc->createElement( "simulations" );
         documentElement.insertBefore( report_data, documentElement );
     }
     else if( reportEl.size() == 1 )
@@ -277,17 +292,29 @@ QDomElement XMLFile::GetSimulationResultNode(Simulation * logSim){
 }
 
 void XMLFile::AddResult(Simulation * logSim, QString sTagName, QString sTagValue){
-    QDomElement tagresult, report_data_tag;
-    QDomElement documentElement = m_pDoc->documentElement();
+    QDomElement tagresult, report_data_tag, results_data;
     QDomText sMsgTxt = m_pDoc->createTextNode(sTagValue.toHtmlEscaped());
 
-    QDomElement sim_data = GetSimulationResultNode(logSim);
+    QDomElement sim_data = GetSimulationNode(logSim);
+
+    // First search for (create if necessary) a results.
+    QDomNodeList reportEl = sim_data.elementsByTagName( "results" );
+
+    if( reportEl.size() == 0 )
+    {
+        results_data = m_pDoc->createElement( "results" );
+        sim_data.appendChild(results_data);
+    }
+    else if( reportEl.size() == 1 )
+    {
+        results_data = reportEl.at(0).toElement();
+    }
 
     // Create the message itself
     tagresult = m_pDoc->createElement( sTagName );
     tagresult.appendChild(sMsgTxt);
     tagresult.appendChild( report_data_tag );
-    sim_data.appendChild(tagresult);
+    results_data.appendChild(tagresult);
 
     WriteDomToFile();
 

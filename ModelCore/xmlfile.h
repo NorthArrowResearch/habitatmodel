@@ -197,11 +197,11 @@ private:
     }
 
     /**
-     * @brief GetSimulationResultNode
+     * @brief GetSimulationNode
      * @param logSim
      * @return
      */
-    QDomElement GetSimulationResultNode(Simulation *logSim);
+    QDomElement GetSimulationNode(Simulation *logSim);
 };
 
 

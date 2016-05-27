@@ -8,6 +8,8 @@ namespace HabitatModel{
 
 const int ERRBUFFERSIZE = 1024;
 
+inline const char * GetLibVersion(){ return HMLIBVERSION; }
+
 /**
  * @brief RunSimulations
  * @param psXMLInput
