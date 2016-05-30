@@ -25,7 +25,7 @@ public:
      * @brief Simulation
      * @param elSimulation
      */
-    Simulation(QDomElement *elSimulation);
+    Simulation(QDomElement *elSimulation, QString sType);
 
     virtual ~Simulation();
 
@@ -38,11 +38,8 @@ public:
      * @brief clean
      */
     virtual void Clean() = 0;
-
     virtual void LoadInputs() = 0;
-
     virtual void PrepareInputs() = 0;
-
     inline bool HasOutputRaster(){ return m_bOutputRaster.compare("") != 0;}
     inline bool HasOutputCSV(){ return m_bOutputCSV.compare("") != 0;  }
 
@@ -57,6 +54,8 @@ public:
     inline RasterManager::RasterMeta * GetRasterExtentMeta(){ return m_RasterTemplateMeta; }
 
     bool InputBelongs(ProjectInput *pInput);
+
+    inline QString GetType(){return m_sType;}
 
     inline QHash<QString, QString> GetMetaData(){ return m_qhMetaValues; }
 
@@ -73,11 +72,9 @@ protected:
     QString m_bOutputRaster;
     QString m_bOutputHistogram;
     QString m_bOutputCSV;
-
     XMLFile * m_XMLSimOutput;
 
     inline bool KeepIndividualOutputs(){ return m_badd_individual_output; }
-
 
     int m_NumRasters;
     int m_NumCSVs;
@@ -111,6 +108,7 @@ private:
      */
     QString m_sfolder;
     QString m_screated_by;
+    QString m_sType;
 
     QHash<QString, QString> m_qhMetaValues;
 

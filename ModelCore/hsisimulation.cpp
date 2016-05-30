@@ -21,7 +21,7 @@
 namespace HabitatModel{
 
 HSISimulation::HSISimulation(QDomElement *elSimulation)
-    : Simulation(elSimulation)
+    : Simulation(elSimulation, "Habitat HSI")
 {
 
     QDomElement * elHSI = NULL;

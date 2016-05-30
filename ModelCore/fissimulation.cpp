@@ -8,7 +8,7 @@
 
 namespace HabitatModel{
 
-FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulation)
+FISSimulation::FISSimulation(QDomElement *elSimulation) : Simulation(elSimulation, "Habitat FIS")
 {
 
     QDomElement * elFIS = NULL;

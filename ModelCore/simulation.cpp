@@ -9,7 +9,7 @@
 
 namespace HabitatModel{
 
-Simulation::Simulation(QDomElement * elSimulation)
+Simulation::Simulation(QDomElement * elSimulation, QString sType)
     : NamedObjectWithID(elSimulation, "Title", "SimulationID")
 {
 
@@ -84,6 +84,8 @@ Simulation::Simulation(QDomElement * elSimulation)
     QString sHSResultsLog = QDir(m_sfolder).filePath("HSResults.xml");
     Project::EnsureFile(sHSResultsLog);
     m_XMLSimOutput = new XMLFile(sHSResultsLog, false);
+
+    m_sType = sType;
 
     m_dWeightedUse = -1;
     m_dNormWeightedUse = -1;

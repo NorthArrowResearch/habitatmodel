@@ -285,6 +285,7 @@ QDomElement XMLFile::GetSimulationNode(Simulation * logSim){
         sim_data = m_pDoc->createElement( "simulation" );
         sim_data.setAttribute("id", QString::number(nSimID));
         sim_data.setAttribute("name", simName);
+        sim_data.setAttribute("type", logSim->GetType());
         report_data.appendChild(sim_data);
     }
 
