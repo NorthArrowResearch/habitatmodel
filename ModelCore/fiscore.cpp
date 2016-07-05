@@ -175,12 +175,21 @@ double FISMemberFunction::fuzzify(double x) {
     double result = 0;
     for (unsigned i=1; i<x_.size(); i++) {
         if ((x >= x_[i-1]) && (x <= x_[i])) {
-            result = y_[i-1] + (x - x_[i-1]) * ((y_[i] - y_[i-1]) / (x_[i] - x_[i-1]));
+            // Asymptote special case
+            // NOTE: THIS HAS Been tested for the MAX workflow only.
+            // TODO: Need to test this with other FIS cases.
+            if (x_[i] - x_[i-1] == 0) {
+                result = std::max(y_[i], y_[i-1]);
+            }
+            else{
+                result = y_[i-1] + (x - x_[i-1]) * ((y_[i] - y_[i-1]) / (x_[i] - x_[i-1]));
+            }
             break;
         }
     }
     return result;
 }
+
 
 /**
      * Get the objects error message.
@@ -299,6 +308,7 @@ void FISMemberFunction::FISAggMax(FISMemberFunction* inMf, FISMemberFunction* ou
         }
         outMf->clear();
         std::map<double, double>::iterator it=coords.begin();
+        // If the first value isn't zero then push a zero value onto the stack
         if (0 != (*it).second) {
             outMf->x_.push_back((*it).first);
             outMf->y_.push_back(0);
@@ -308,6 +318,7 @@ void FISMemberFunction::FISAggMax(FISMemberFunction* inMf, FISMemberFunction* ou
             outMf->y_.push_back((*it).second);
         }
         it--;
+        // Push a zero onto the stack if the last value isn't zero
         if (0 != (*it).second) {
             outMf->x_.push_back((*it).first);
             outMf->y_.push_back(0);
@@ -322,23 +333,49 @@ void FISMemberFunction::FISAggMax(FISMemberFunction* inMf, FISMemberFunction* ou
      * This is a static function that does not apply to a specific object.
      * @param mf The membership function to defuzzify.
      * @return The crisp result of defuzzification.
+     * NOTE: This method was found to be problematic and so we modeled it after the
+     * centroid from SciPy fuzzy:
+     * https://github.com/scikit-fuzzy/scikit-fuzzy/blob/master/skfuzzy/defuzzify/defuzz.py
      */
 double FISMemberFunction::FISDefuzzCentroid(FISMemberFunction* mf) {
-    double area = 0;
-    double xCentroid = 0;
-    double m;
-    for (int i=0; i<mf->n_-1; i++) {
-        m = mf->x_[i] * mf->y_[i+1] - mf->x_[i+1] * mf->y_[i];
-        area += m;
-        xCentroid += (mf->x_[i] + mf->x_[i+1]) * m;
+    double sum_moment_area = 0;
+    double sum_area = 0;
+
+    for (int i=1; i<mf->n_; i++) {
+        double moment = 0;
+        double area = 0;
+        double x1 = mf->x_[i-1];
+        double x2 = mf->x_[i];
+        double y1 = mf->y_[i-1];
+        double y2 = mf->y_[i];
+        // Check that this isn't zero height or zero length
+        if ( !( y1 == 0 && y2 == 0 ) && x1 != x2){
+            // Rectangle
+            if (y1 == y2){
+                moment = 0.5 * (x1 + x2);
+                area = (x2 -x1) * y1;
+            }
+            // Triangle with height y2
+            else if (y1 == 0 and y2 != 0){
+                moment = (2 * x2 + x1) / 3;
+                area = 0.5 * (x2 - x1) * y2;
+            }
+            // Triangle with height y1
+            else if (y2 == 0 and y1 != 0){
+                moment = (2 * x1 + x2) / 3;
+                area = 0.5 * (x2 - x1) * y1;
+            }
+            // Other cases
+            else {
+                moment = ( 2 / 3 * (x2 - x1) * (y2 + 0.5 * y1) ) / (y1 + y2) +x1;
+                area = 0.5 * (x2 - x1) * (y1 + y2);
+            }
+        }
+        sum_moment_area += moment * area;
+        sum_area += area;
     }
-    int i = mf->n_ - 1;
-    m = mf->x_[i] * mf->y_[0] - mf->x_[0] * mf->y_[i];
-    area += m;
-    xCentroid += (mf->x_[i] + mf->x_[0]) * m;
-    area = area / 2;
-    xCentroid = xCentroid / (6 * area);
-    return xCentroid;
+
+    return sum_moment_area / sum_area;
 }
 
 /**
