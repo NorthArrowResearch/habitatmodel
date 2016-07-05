@@ -4,12 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core
-QT       += xml
-
+QT       += core xml
 QT       -= gui
 
-VERSION = 1.3.0
+VERSION = 1.4.0
 DEFINES += VERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 
 TARGET = HabitatModel
@@ -32,7 +30,7 @@ else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 RASTERMAN = $$(RASTERMANDIR)
 isEmpty(RASTERMAN){
-    RASTERMAN= $$PWD/../../../RasterManager/rastermanager/
+    RASTERMAN= $$PWD/../../rasterman
     message("RASTERMANDIR not set. Defaulting to $$RASTERMAN")
 }else{
     RASTERMAN=$$(RASTERMANDIR)
@@ -41,6 +39,8 @@ isEmpty(RASTERMAN){
 
 INCLUDEPATH += $$RASTERMAN/RasterManager
 DEPENDPATH += $$RASTERMAN/RasterManager
+INCLUDEPATH += $$PWD/../ModelCore
+DEPENDPATH += $$PWD/../ModelCore
 
 win32 {
 
@@ -72,30 +72,41 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
     QMAKE_MAC_SDK = macosx10.11
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
-    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    LIBS += -L$$GDALNIX/lib -lgdal
-    INCLUDEPATH += $$GDALNIX/include
-    DEPENDPATH  += $$GDALNIX/include
+    LIBS += -L$$GDALLIB/lib -lgdal
+    INCLUDEPATH += $$GDALLIB/include
+    DEPENDPATH  += $$GDALLIB/include
 
     LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
     LIBS += -L$$DESTDIR -lRasterManager
-}
-linux {
-    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
 
-    # GDAL is required
-    LIBS += -L/usr/lib -lgdal
-    INCLUDEPATH += /usr/include/gdal
-    DEPENDPATH  += /usr/include/gdal
-
-    target.path = /usr/bin
+    # Where are we installing to
+    target.path = /usr/local/bin
     INSTALLS += target
 
-    LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
-    LIBS += -L/usr/lib -lRasterManager
+}
+linux {
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
 
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+
+    # GDAL is required
+    LIBS += -L$$GDALLIB/lib -lgdal
+    INCLUDEPATH += $$GDALLIB/include
+    DEPENDPATH  += $$GDALLIB/include
+
+    target.path = /usr/local/bin
+    INSTALLS += target
 }

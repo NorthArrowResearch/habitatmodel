@@ -4,12 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core
-QT       += xml
+QT       += core xml
+QT       -= gui widgets
 
-QT       -= gui
-
-VERSION = 1.3.0
+VERSION = 1.4.0
 TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
@@ -73,9 +71,11 @@ HEADERS +=\
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
+GDALLIB = $$(GDALLIBDIR)
+
 RASTERMAN = $$(RASTERMANDIR)
 isEmpty(RASTERMAN){
-    RASTERMAN= $$PWD/../../../RasterManager/rastermanager/
+    RASTERMAN= $$PWD/../../rasterman
     message("RASTERMANDIR not set. Defaulting to $$RASTERMAN")
 }else{
     RASTERMAN=$$(RASTERMANDIR)
@@ -85,12 +85,11 @@ isEmpty(RASTERMAN){
 INCLUDEPATH += $$RASTERMAN/RasterManager
 DEPENDPATH += $$RASTERMAN/RasterManager
 
-GDALLIB = $$(GDALLIBDIR)
-isEmpty(GDALLIB){
-    error("GDALLIBDIR not set. This will cause failures")
-}
 
 win32 {
+    isEmpty(GDALLIB){
+        error("GDALLIBDIR not set. This will cause failures")
+    }
 
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -113,12 +112,16 @@ win32 {
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
-
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
     QMAKE_MAC_SDK = macosx10.11
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
@@ -127,21 +130,26 @@ macx{
 
     LIBS += -L$$DESTDIR -lRasterManager
 
-    INCLUDEPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
-    DEPENDPATH += $$PWD/../../../RasterManager/rastermanager/RasterManager
+    # Where are we installing to
+    target.path = /usr/local/lib
+    INSTALLS += target
 
 }
 linux {
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
-    target.path = /usr/lib
+    # Where are we installing to
+    target.path = /usr/local/lib
     INSTALLS += target
-
-    LIBS += -L/usr/lib -lRasterManager
-    INCLUDEPATH += $$PWD/../../rasterman/RasterManager
-    DEPENDPATH += $$PWD/../../rasterman/RasterManager
 }

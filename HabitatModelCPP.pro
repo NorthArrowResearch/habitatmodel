@@ -11,6 +11,8 @@ SUBDIRS += \
     ModelCore \
     HabitatModel
 
+HabitatModel.depends = ModelCore
+
 win32{
   message(Building fow Win32)
 }
