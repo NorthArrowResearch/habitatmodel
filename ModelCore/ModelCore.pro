@@ -105,7 +105,7 @@ win32 {
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH += $$GDALLIB/include
 
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
     LIBS += -L$$DESTDIR -lRasterManager
 
 }
@@ -121,7 +121,7 @@ macx{
     }
 
     # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
@@ -142,7 +142,7 @@ linux {
     }
 
     # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
