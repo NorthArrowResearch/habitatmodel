@@ -356,12 +356,12 @@ double FISMemberFunction::FISDefuzzCentroid(FISMemberFunction* mf) {
                 area = (x2 -x1) * y1;
             }
             // Triangle with height y2
-            else if (y1 == 0 and y2 != 0){
+            else if (y1 == 0 && y2 != 0){
                 moment = (2 * x2 + x1) / 3;
                 area = 0.5 * (x2 - x1) * y2;
             }
             // Triangle with height y1
-            else if (y2 == 0 and y1 != 0){
+            else if (y2 == 0 && y1 != 0){
                 moment = (2 * x1 + x2) / 3;
                 area = 0.5 * (x2 - x1) * y1;
             }

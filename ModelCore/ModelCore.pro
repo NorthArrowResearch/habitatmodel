@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 1.2.0
+VERSION = 1.3.0
 TARGET = ModelCore
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
