@@ -141,9 +141,6 @@ linux {
         GDALLIB = /usr/local
     }
 
-    # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
-
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include

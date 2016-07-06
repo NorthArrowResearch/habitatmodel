@@ -99,16 +99,13 @@ linux {
         GDALLIB = /usr/local
     }
 
-    # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
-
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
-    LIBS += -L$$DESTDIR -lModelCore
-    LIBS += -L$$DESTDIR -lRasterManager
+    LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
+    LIBS += -L/usr/local/lib -lRasterManager
 
     target.path = /usr/local/bin
     INSTALLS += target
