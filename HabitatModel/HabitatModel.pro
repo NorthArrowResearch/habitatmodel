@@ -85,7 +85,7 @@ macx{
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
-    LIBS += -L$$OUT_PWD/../ModelCore -lModelCore
+    LIBS += -L$$DESTDIR -lModelCore
     LIBS += -L$$DESTDIR -lRasterManager
 
     # Where are we installing to
@@ -106,6 +106,9 @@ linux {
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
+
+    LIBS += -L$$DESTDIR -lModelCore
+    LIBS += -L$$DESTDIR -lRasterManager
 
     target.path = /usr/local/bin
     INSTALLS += target
