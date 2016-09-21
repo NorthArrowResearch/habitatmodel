@@ -69,7 +69,7 @@ protected:
      * @param yMax
      * @return bool
      */
-    bool init(double x1, double x2, double x3, double yMax);
+    bool init(double x1, double x2, double x3, double dyMax);
     /**
      * @brief
      *
@@ -80,7 +80,7 @@ protected:
      * @param yMax
      * @return bool
      */
-    bool init(double x1, double x2, double x3, double x4, double yMax);
+    bool init(double x1, double x2, double x3, double x4, double dyMax);
 public:
     FISMemberFunction();
     /**
@@ -234,6 +234,8 @@ public:
      */
     static double FISDefuzzSmallMax(FISMemberFunction* mf); //test!
 
+    double yMax;
+
 };
 
 /**
@@ -380,9 +382,10 @@ private:
          * @return double
          */
         double (*operator_) (double v1, double v2);
-        std::vector<int> inputs_; /**< TODO */
-        std::vector<int> mfs_; /**< TODO */
-        FISMemberFunction* output_; /**< TODO */
+        std::vector<int> inputs_;
+        std::vector<int> mfsInd_;
+        std::vector<int> mfsNOT_;
+        FISMemberFunction* output_;
         FISRule();
         /**
          * @brief
@@ -451,7 +454,20 @@ private:
      * @return bool
      */
     bool setError(QString msg);
+    /**
+     * @brief setInvalidInput
+     * @param line
+     * @return
+     */
     bool setInvalidInput(std::string line);
+
+    /**
+     * @brief getFuzzyVal
+     * @param rule
+     * @param ruleItemInd
+     * @return
+     */
+    double getFuzzyVal(FISRule rule, int ruleItemInd);
 protected:
     /**
      * @brief

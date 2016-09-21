@@ -32,7 +32,8 @@ bool FISMemberFunction::setError(QString msg) {
      * @param yMax The y value at x2. Must be in the interval (0,1].
      * @return True if successful, false otherwise.
      */
-bool FISMemberFunction::init(double x1, double x2, double x3, double yMax) {
+bool FISMemberFunction::init(double x1, double x2, double x3, double dyMax) {
+    yMax = dyMax;
     if ((yMax <= 0) || (yMax > 1))
         return setError(QString("Invalid yMax of %1. It must be between 0 and 1.").arg(yMax));
     else if ((x1 > x2) || (x2 > x3))
@@ -63,7 +64,8 @@ bool FISMemberFunction::init(double x1, double x2, double x3, double yMax) {
      * @param yMax The y value at x2 and x3. Must be in the interval (0,1].
      * @return True if successful, false otherwise.
      */
-bool FISMemberFunction::init(double x1, double x2, double x3, double x4, double yMax) {
+bool FISMemberFunction::init(double x1, double x2, double x3, double x4, double dyMax) {
+    yMax = dyMax;
     if ((yMax <= 0) || (yMax > 1))
         return setError(QString("Invalid yMax of %1. It must be between 0 and 1.").arg(yMax));
     else if ((x1 > x2) || (x2 >= x3) || (x3 > x4))
@@ -635,13 +637,26 @@ FISRuleSet::FISRule::FISRule() : n_(0), weight_(1) {}
      * @param mfIndex The index of the membership function (in the input variable).
      */
 void FISRuleSet::FISRule::addMf(int inputIndex, int mfIndex) {
-    inputs_.push_back(inputIndex);
-    mfs_.push_back(mfIndex);
+    if (mfIndex == 0)
+        return;
+
+    // Here's where we parse the NOT rule when the mfIndex is negative
+    // mfsNOT is a flag that means "Use the NOT operator here"
+    // Also note that we're storing the ARRAY INDEX, not the rule number
+    if (mfIndex < 0){
+        mfsInd_.push_back(abs(mfIndex) -1);
+        mfsNOT_.push_back(1);
+    }
+    else {
+        mfsInd_.push_back(mfIndex-1);
+        mfsNOT_.push_back(0);
+    }
     n_++;
 }
 
 /**
      * Add a membership function to a rule.
+     * NOTE: THiS DOESN'T GET USED
      * @param rule The rule to add the membership function to.
      * @param i The index of the input variable that the MF corresponds to.
      * @param name The name of the membership function
@@ -655,7 +670,7 @@ bool FISRuleSet::addMFToRule(FISRule* rule, int i, std::string name) {
     else {
         if ("NULL" != name) {
             rule->inputs_.push_back(i);
-            rule->mfs_.push_back(inputs_[i].indices_[name]);
+            rule->mfsInd_.push_back(inputs_[i].indices_[name]);
             rule->n_++;
         }
         return true;
@@ -790,7 +805,7 @@ bool FISRuleSet::parseOutput(std::ifstream& fisFile, std::string &line) {
 bool FISRuleSet::parseRules(std::ifstream& fisFile, std::string &line) {
     std::vector<std::string> tokens;
     std::vector<int> indices;
-    int i1, i2, mfIndex, nRules = 0;
+    int i1, i2, mfIndexRaw, mfIndex, nRules = 0;
     indices.resize(nInputs_);
     getline(fisFile, line);
     bool isDone = false;
@@ -799,17 +814,21 @@ bool FISRuleSet::parseRules(std::ifstream& fisFile, std::string &line) {
         if (line.length() > 0 && line.find_first_not_of(' ') != std::string::npos){
             i1 = line.find(",");
             Habitat::tokenize(line.substr(0, i1), tokens);
+            // mfs_ are everything left of the ","
             if ((int)tokens.size() != nInputs_)
                 return setError(QString("Wrong number of inputs: %1").arg(QString::fromStdString(line)));
             std::transform(tokens.begin(), tokens.end(), indices.begin(), Habitat::convertToInt);
             FISRule rule;
             for (int n=0; n<nInputs_; n++) {
-                mfIndex = indices[n];
+                // The raw value might be negative. The mfIndex is an actual index.
+                mfIndexRaw = indices[n];
+                mfIndex = abs(mfIndexRaw);
+                // Zero in this case means don't consider this input at all.
                 if (0 != mfIndex) {
-                    mfIndex--;
-                    if (0 > mfIndex || mfIndex >= inputs_[n].n_)
+                    if (mfIndex > inputs_[n].n_)
                         return setInvalidInput(line);
-                    rule.addMf(n, mfIndex);
+                    // We pass the raw value so that if it's negative it gets added correctly
+                    rule.addMf(n, mfIndexRaw);
                 }
             }
             i2 = line.find("(", i1 + 1);
@@ -1042,6 +1061,7 @@ void FISRuleSet::addOutputMFSet(const char* name, FISMemberFunctionSet mfs) {
 
 /**
      * Add a rule.
+     * NOTE::: THIS DOESN't EVER SEEM To BE USED
      * The inputs MUST be in the same order as they were added to the Rule Set. Use "NULL" to denote that
      * a specific input isn't need for this rule.
      * @param inputs The relevant member function names for each input, separated by spaces.
@@ -1091,6 +1111,25 @@ bool FISRuleSet::addRule(const char* inputs, const char* output, FISOperator op,
 }
 
 /**
+ * @brief FISRuleSet::getFuzzyVal
+ * @param rule
+ * @param ind
+ * @return
+ */
+double FISRuleSet::getFuzzyVal(FISRule rule, int ruleItemInd) {
+    int inputInd = rule.inputs_[ruleItemInd];
+    int mfsInd = rule.mfsInd_[ruleItemInd];
+    double fuzzyInput = fuzzyInputs_[inputInd][mfsInd];
+
+    if (rule.mfsNOT_[ruleItemInd] == 1) {
+        double yMax = inputs_[inputInd].mfs_[mfsInd].yMax;
+        fuzzyInput =  yMax - fuzzyInput;
+    }
+    return fuzzyInput;
+}
+
+
+/**
      * Calculate a crisp output based on a set of inputs to this rule set.
      * @param inputs The list of input values. These MUST be in the same order that the input variables
      *               were added to the rule set.
@@ -1109,15 +1148,23 @@ double FISRuleSet::calculate(std::vector<double> inputs) {
         for (j=0; j<inputs_[i].n_; j++)
             fuzzyInputs_[i][j] = inputs_[i].mfs_[j].fuzzify(inputs[i]);
     FISMemberFunction impMf, aggMf;
-    for (int r=0; r<nRules_; r++) {
+    // Loop over the rules and run the aggregator and implicators for each.
+    for (int r=0; r < nRules_; r++) {
         FISRule rule = rules_[r];
         double (*op) (double v1, double v2) = rule.operator_;
-        double impValue = fuzzyInputs_[rule.inputs_[0]][rule.mfs_[0]];
-        for (int i=1; i<rule.n_; i++)
-            impValue = op(impValue, fuzzyInputs_[rule.inputs_[i]][rule.mfs_[i]]);
+        double impValue = getFuzzyVal(rule, 0);
+        // Loop over rule items (probably same as number of inputs but not
+        // if some are 0 value
+        for (int i=1; i<rule.n_; i++){
+            // For now this is "and" or "or"
+            double fuzzyInput = getFuzzyVal(rule, i);
+            impValue = op(impValue, fuzzyInput);
+        }
         implicator_(rule.output_, &impMf, impValue, rule.weight_);
         aggregator_(&impMf, &aggMf);
     }
+    // The defuzzifier is where composite shape gets reduced
+    // to a single number
     return defuzzifier_(&aggMf);
 }
 
@@ -1165,9 +1212,10 @@ double FISRuleSet::calculate(std::vector<double>& dataArrays, bool checkNoData,
             for (int r=0; r<nRules_; r++)
             {
                 rule = &rules_[r];
-                impValue = fuzzyInputs_[rule->inputs_[0]][rule->mfs_[0]];
+                // This is where the NOT calculation happens.
+                impValue = fuzzyInputs_[rule->inputs_[0]][rule->mfsInd_[0]];
                 for (int m=1; m<rule->n_; m++)
-                    impValue = rule->operator_(impValue, fuzzyInputs_[rule->inputs_[m]][rule->mfs_[m]]);
+                    impValue = rule->operator_(impValue, fuzzyInputs_[rule->inputs_[m]][rule->mfsInd_[m]]);
                 implicator_(rule->output_, &impMf, impValue, rule->weight_);
                 aggregator_(&impMf, &aggMf);
             }
@@ -1190,9 +1238,10 @@ double FISRuleSet::calculate(std::vector<double>& dataArrays, bool checkNoData,
         for (int r=0; r<nRules_; r++)
         {
             rule = &rules_[r];
-            impValue = fuzzyInputs_[rule->inputs_[0]][rule->mfs_[0]];
+            // This is where the NOT calculation happens.
+            impValue = fuzzyInputs_[rule->inputs_[0]][rule->mfsInd_[0]];
             for (int m=1; m<rule->n_; m++)
-                impValue = rule->operator_(impValue, fuzzyInputs_[rule->inputs_[m]][rule->mfs_[m]]);
+                impValue = rule->operator_(impValue, fuzzyInputs_[rule->inputs_[m]][rule->mfsInd_[m]]);
             implicator_(rule->output_, &impMf, impValue, rule->weight_);
             aggregator_(&impMf, &aggMf);
         }
