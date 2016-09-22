@@ -640,6 +640,8 @@ void FISRuleSet::FISRule::addMf(int inputIndex, int mfIndex) {
     if (mfIndex == 0)
         return;
 
+    inputs_.push_back(inputIndex);
+
     // Here's where we parse the NOT rule when the mfIndex is negative
     // mfsNOT is a flag that means "Use the NOT operator here"
     // Also note that we're storing the ARRAY INDEX, not the rule number
