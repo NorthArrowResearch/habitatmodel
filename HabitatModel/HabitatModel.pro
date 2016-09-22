@@ -59,7 +59,7 @@ win32 {
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
 
-    DESTDIR = $$OUT_PWD/../../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 
     # Compile to a central location
     LIBS += -L$$DESTDIR -lModelCore

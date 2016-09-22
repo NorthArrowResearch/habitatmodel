@@ -105,7 +105,7 @@ win32 {
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH += $$GDALLIB/include
 
-    DESTDIR = $$OUT_PWD/../../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
     LIBS += -L$$DESTDIR -lRasterManager
 
 }
